@@ -1,0 +1,10 @@
+.Board {
+
+}
+
+.Board .Column, .Board .EmptyColumn {
+  width: 250px;
+  height: 100%;
+  float: left;
+  border: 1px solid black;
+}

@@ -1,0 +1,19 @@
+{
+  "name": "osliki-classifieds-js",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "normalize.css": "^8.0.0",
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2",
+    "react-scripts": "1.1.4",
+    "react-web3": "^0.4.5",
+    "react-web3-hoc": "^1.0.8"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
