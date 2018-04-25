@@ -15,7 +15,7 @@ class Column extends Component {
   render() {
     let {category, user} = this.props;
 
-    console.dir(this.context.contract);
+    //console.dir(this.context.contract);
 
     return (
       <section className="Column">

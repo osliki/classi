@@ -1,5 +1,5 @@
 .Board {
-
+  height: 100%;
 }
 
 .Board .Column, .Board .EmptyColumn {

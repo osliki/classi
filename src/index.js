@@ -6,7 +6,7 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import { Web3Provider } from 'react-web3';
 import oslikiClassifieds from './contracts/OslikiClassifieds.json';
-console.log(oslikiClassifieds.networks['4447'].address)
+//console.log(oslikiClassifieds.networks['4447'].address)
 ReactDOM.render(
 
     <App
