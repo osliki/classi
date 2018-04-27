@@ -1,62 +1,60 @@
 import React, { Component } from 'react';
 import './App.css';
-import Board from './components/Board';
 import PropTypes from 'prop-types';
 import Web3 from 'web3';
+import Board from './components/Board';
+
 
 class App extends Component {
   static propTypes = {
     contractAddress: PropTypes.string.isRequired,
     contractAbi: PropTypes.array.isRequired,
   }
-
+/*
   static contextTypes = {
     web3: PropTypes.object
-  }
+  }*/
 
   static childContextTypes = {
-    contract: PropTypes.object
+    web3: PropTypes.object,
+    contract: PropTypes.object,
+    account: PropTypes.string,
   }
 
   constructor(props, context) {
     super(props, context);
 
     this.state = {
-      contract: {}/*,
-      web3: new Web3(window.web3.currentProvider)*/
+      web3: {},
+      contract: {},
+      account: '',
     }
   }
 
-  componentDidMount () {
-    //const { web3 } = window;
-
-    let  web3 = new Web3(window.web3.currentProvider)
+  componentWillMount() {
+    const web3 = new Web3(window.web3.currentProvider);
 
     this.setState({
-      contract: new web3.eth.Contract(this.props.contractAbi, this.props.contractAddress)
-    }, () => {
+      web3: web3,
+      contract: new web3.eth.Contract(this.props.contractAbi, this.props.contractAddress),
+      account: window.web3.eth.defaultAccount,
+    });
+  }
 
-      /*.then((err)=>{
-        console.dir('err')
-        console.dir(err)
-      })
-      .catch((err)=>{
-        console.dir('err')
-        console.dir(err)
-      })*/;
-    })
-
-
-
-  };
 //this.state.contract.setUpPrice(Web3.utils.toWei('0.5', 'ether')).send({from: this.context.web3.accounts[0]});
   getChildContext() {
+    const { web3, contract, account } = this.state;
+
     return {
-      contract: this.state.contract
+      web3,
+      contract,
+      account
     };
   }
 
   async onClick() {
+
+    return
     const { web3 } = window
 
     console.log('thisstate............................contract')
@@ -118,7 +116,8 @@ class App extends Component {
 
     return (
       <div className="App" onClick={this.onClick.bind(this)}>
-        <Board />
+        <Board context={this.state} />
+
       </div>
     );
   }
