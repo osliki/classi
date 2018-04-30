@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import './index.css'
 import Column from '../Column'
 import EmptyColumn from '../EmptyColumn'
-import AdForm from '../AdForm'
 
 class Board extends Component {
   render() {
@@ -11,7 +10,7 @@ class Board extends Component {
         <Column />
 
         <EmptyColumn />
-        <AdForm/>
+
       </main>
     )
   }

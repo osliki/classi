@@ -1,9 +1,10 @@
 .Board {
   height: 100%;
+  display: inline-block;
 }
 
 .Board .Column, .Board .EmptyColumn {
-  width: 250px;
+  width: 350px;
   height: 100%;
   float: left;
   border: 1px solid black;
