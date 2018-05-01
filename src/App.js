@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import './App.css'
+import CssBaseline from 'material-ui/CssBaseline';
 import PropTypes from 'prop-types'
 import Board from './components/Board'
 import { Provider } from './store'
@@ -23,6 +24,7 @@ class App extends Component {
   render() {
     return (
       <Provider>
+        <CssBaseline />
         <div className="App">
           <Board context={this.state} />
         </div>

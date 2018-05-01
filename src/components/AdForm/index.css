@@ -1,0 +1,68 @@
+.AdForm {
+  max-width: 500px;
+  margin: 20px auto;
+}
+
+.img-list {
+  display: 'flex';
+  flex-wrap: 'wrap';
+  align-items: 'center';
+  justify-content: 'center';
+}
+
+div.img-loaded, div.upload {
+  display: inline-block;
+  overflow: hidden;
+  width: 90px;
+  height: 90px;
+  border: 1px solid #ddd;
+  text-align: center;
+  vertical-align: middle;
+  margin: 5px;
+  line-height: 80px;
+  position: relative;
+}
+
+.upload-progress {
+  position: relative;
+  bottom: 0px;
+  width: 100%;
+  line-height: 2em;
+  margin-top: -2em;
+}
+
+.img-list img {
+  vertical-align: middle;
+  width: 80px;
+
+}
+
+.upload span {
+  height: 100%;
+  width: 100%;
+  color: #777;
+}
+
+.upload span:hover {
+  background-color: #eee;
+}
+
+.img-remove {
+  display: block;
+  position: absolute;
+  top:0px;
+  right:0px;
+  line-height: 1em;
+}
+
+.img-remove button {
+  height:30px;
+  width:30px;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+
+
+.upload {
+
+}
