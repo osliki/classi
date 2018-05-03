@@ -2,8 +2,9 @@ import React, {Component } from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import './index.css'
-import 'react-perfect-scrollbar/dist/css/styles.css';
+import 'react-perfect-scrollbar/dist/css/styles.css'
 import PerfectScrollbar from 'react-perfect-scrollbar'
+import {CircularProgress} from 'material-ui/Progress'
 import Ad from '../Ad'
 
 import {getColumnAds} from '../../store/actions'
@@ -15,22 +16,26 @@ class Column extends Component {
   }
 
   async componentWillMount() {
-console.log('COLUMNcomponentWillMount', this.props)
     const {id, dispatch} = this.props
 
     var res = await dispatch(getColumnAds(id))
   }
 
   render() {
-console.log('COLUMNrender', this.props)
-    let {ads} = this.props.column
+    let {ads, loading} = this.props.column
+
     return (
       <section className="Column">
-        <PerfectScrollbar option={{suppressScrollX: true}}>
-          {ads.map(id => (
-            <Ad key={id} id={id} view="card" />
-          ))}
-        </PerfectScrollbar>
+        {loading
+          ?
+            <CircularProgress />
+          :
+            <PerfectScrollbar option={{suppressScrollX: true}}>
+              {ads.map(id => (
+                <Ad key={id} id={id} view="card" />
+              ))}
+            </PerfectScrollbar>
+        }
       </section>
     )
   }

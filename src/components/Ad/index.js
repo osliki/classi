@@ -14,7 +14,6 @@ class Ad extends Component {
   }
 
   async componentWillMount() {
-console.log('Ad componentWillMount')
     const {id, ad, dispatch} = this.props
 
     if (ad) return
@@ -26,13 +25,11 @@ console.log('Ad componentWillMount')
   render() {
     const {id, ad, view} = this.props
 
-    return (
-      <div>
-        {ad ?
-          (view === 'card' ? <AdCard ad={ad} /> : <AdDetails ad={ad} />) :
-          null
-        }
-      </div>
+    return (ad
+      ?
+        (view === 'card' ? <AdCard ad={ad} /> : <AdDetails ad={ad} />)
+      :
+        null
     )
   }
 }

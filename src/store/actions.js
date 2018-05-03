@@ -1,8 +1,13 @@
 import {contract, web3} from '../provider'
 import dotProp from 'dot-prop-immutable'
 
-const receiveColumnAds = (columnId, ads) => ({
-  type: 'receiveColumnAds',
+const getColumnAdsLoading = (columnId) => ({
+  type: 'getColumnAdsLoading',
+  columnId,
+})
+
+const getColumnAdsReceive = (columnId, ads) => ({
+  type: 'getColumnAdsReceive',
   columnId,
   ads,
 })
@@ -39,6 +44,8 @@ export const getColumnAds = (columnId, max = 2) => async (dispatch, getState) =>
     return ads
   }
 
+  dispatch(getColumnAdsLoading(columnId))
+
   let ads = []
   switch(column.type) {
     case 'all': {
@@ -52,10 +59,11 @@ export const getColumnAds = (columnId, max = 2) => async (dispatch, getState) =>
       break
     }
   }
-console.log('getColumnAds', ads)
 
-  dispatch(receiveColumnAds(columnId, ads))
+  dispatch(getColumnAdsReceive(columnId, ads))
 }
+
+
 
 const initNewAd = (id) => ({
   type: 'initNewAd',
@@ -88,16 +96,15 @@ const getAdSuccess = (from, id, ad) => ({
 
 
 export const getAd = (id) => async (dispatch, getState) => {
-console.log('getAd DISPATCHER')
   const ads = getState().ads
 
   if (ads.byId[id])
     return
 
-  if (!ads.allIds.includes(id))
-    dispatch(newAdId(id))
-
   dispatch(initNewAd(id))
+  dispatch(newAdId(id))
+
+  //if (!ads.allIds.includes(id)) // just in case
 
   dispatch(getAdLoading('eth', id))
 
