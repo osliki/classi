@@ -1,32 +1,18 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
+import { Provider } from 'react-redux'
 import './App.css'
 import CssBaseline from 'material-ui/CssBaseline';
-import PropTypes from 'prop-types'
 import Board from './components/Board'
-import { Provider } from './store'
+import store from './store'
 
 class App extends Component {
-
-/*
-  static contextTypes = {
-    web3: PropTypes.object
-  }*/
-
-
-  constructor(props, context) {
-    super(props, context)
-
-  }
-
-  componentWillMount() {
-  }
-
   render() {
     return (
-      <Provider>
-        <CssBaseline />
+      <Provider store={store}>
         <div className="App">
-          <Board context={this.state} />
+          <CssBaseline />
+          <Board />
         </div>
       </Provider>
     )

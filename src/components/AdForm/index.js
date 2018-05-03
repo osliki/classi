@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import './index.css'
 import PropTypes from 'prop-types'
-import { connect } from '../../store'
+import {connect} from 'react-redux'
 import TextField from 'material-ui/TextField'
 import Button from 'material-ui/Button';
 import ButtonBase from 'material-ui/ButtonBase';

@@ -1,0 +1,15 @@
+.img-fill{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height:150px;
+  width:300px;
+  margin: 0 auto;
+}
+
+.img-fill img {
+  flex-shrink: 0;
+  min-width: 100%;
+  min-height: 100%;
+}

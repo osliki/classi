@@ -1,62 +1,34 @@
-import React, { Component } from 'react'
-import './index.css'
+import React, {Component } from 'react'
+import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
+import './index.css'
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import PerfectScrollbar from 'react-perfect-scrollbar'
-import { connect } from '../../store'
+import Ad from '../Ad'
+
+import {getColumnAds} from '../../store/actions'
 
 class Column extends Component {
   static propTypes = {
-    category: PropTypes.number,
-    user: PropTypes.string
-  }
-
-  constructor(props) {
-    super(props)
-    this.state = {
-      ads: []
-    }
+    id: PropTypes.number.isRequired,
+    column: PropTypes.object.isRequired,
   }
 
   async componentWillMount() {
-    const { contract, account } = this.props
+console.log('COLUMNcomponentWillMount', this.props)
+    const {id, dispatch} = this.props
 
-    const adsCount = await contract.methods.getAdsCount().call()
-
-    let promises = []
-
-    let minId = adsCount - 1 - 3
-    if (minId < 0)
-      minId = 0
-
-    for (let id = adsCount - 1; id >= minId; id--) {
-      promises.push(contract.methods.ads(id).call())
-    }
-
-    const ads = await Promise.all(promises)
-
-    this.setState(prevState => {
-      return {
-        ads: [...ads, ...prevState.ads]
-      }
-    })
+    var res = await dispatch(getColumnAds(id))
   }
 
   render() {
-    let {category, user} = this.props
-
+console.log('COLUMNrender', this.props)
+    let {ads} = this.props.column
     return (
       <section className="Column">
         <PerfectScrollbar option={{suppressScrollX: true}}>
-          {this.state.ads.map((ad, id) => (
-            <div key={id}>
-              {ad.id}<br />
-              {ad.user}<br />
-              {ad.catId}<br />
-              {ad.text}<br />
-              {ad.createdAt}<br />
-              {ad.updateAt}<br />
-            </div>
+          {ads.map(id => (
+            <Ad key={id} id={id} view="card" />
           ))}
         </PerfectScrollbar>
       </section>
@@ -64,7 +36,31 @@ class Column extends Component {
   }
 }
 
-export default connect(state => ({
-  contract: state.contract,
-  account: state.account,
-}))(Column)
+export default connect((state, ownProps) => {
+  return {
+    column: state.columns.byId[ownProps.id]
+  }
+})(Column)
+
+
+
+/*
+  const adsCount = await contract.methods.getAdsCount().call()
+
+  let promises = []
+
+  let minId = adsCount - 1 - 3
+  if (minId < 0)
+    minId = 0
+
+  for (let id = adsCount - 1; id >= minId; id--) {
+    promises.push(contract.methods.ads(id).call())
+  }
+
+  const ads = await Promise.all(promises)
+
+  this.setState(prevState => {
+    return {
+      ads: [...ads, ...prevState.ads]
+    }
+  })*/
