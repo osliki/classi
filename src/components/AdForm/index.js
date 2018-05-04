@@ -1,7 +1,13 @@
 import React, { Component } from 'react'
-import './index.css'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
+import {contract, web3, account} from '../../provider'
+
+import './index.css'
+
+import Img from '../Img'
+import {SmallImgLoader} from '../Loaders'
+
 import TextField from 'material-ui/TextField'
 import Button from 'material-ui/Button';
 import ButtonBase from 'material-ui/ButtonBase';
@@ -55,7 +61,6 @@ class AdForm extends Component {
     console.log('handleUpload')
     e.preventDefault()
 
-    const { web3, contract, account } = this.props
     const files = e.target.files
 
     this.setState(prevState => {
@@ -109,7 +114,6 @@ class AdForm extends Component {
     console.log('handleSubmit')
     e.preventDefault()
 
-    const { web3, contract, account } = this.props
     const { catName, catId, header, text, photos } = this.state
 
 /*
@@ -185,7 +189,6 @@ return
     //let {category, user} = this.props
 
     //console.dir(this.context.contract)
-    const { web3, contract, account } = this.props
     const { loadedImgs, totalImgs } = this.state
 
     return (
@@ -235,11 +238,10 @@ return
 
             {this.state.photos.map((hash, index) => (
               <div className="img-loaded" key={index}>
-                <img
-                  src={`http://swarm-gateways.net/bzzr:/${hash}`}
-                  alt={`Loading img: ${hash}`}
-                  onError={(e) => { e.target.src = e.target.src }}
-                />
+                <Img
+                   src={`http://swarm-gateways.net/bzzr:/${hash}`}
+                   loader={<SmallImgLoader />}
+                 />
 
                 <div className="img-remove">
                   <IconButton size="small">
@@ -290,8 +292,8 @@ return
   }
 }
 
-export default connect(state => ({
-  web3: state.web3,
-  contract: state.contract,
-  account: state.account,
-}))(AdForm)
+export default connect((state, ownProps) => {
+  return {
+
+  }
+})(AdForm)

@@ -4,6 +4,8 @@ import './index.css'
 import Column from '../Column'
 import EmptyColumn from '../EmptyColumn'
 
+
+
 class Board extends Component {
   render() {
     const {columns} = this.props

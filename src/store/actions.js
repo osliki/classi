@@ -79,11 +79,11 @@ const getAdLoading = (from, id) => ({
   from,
   id,
 })
-const getAdError = (from, id, err) => ({
+const getAdError = (from, id, error) => ({
   type: 'getAdError',
   from,
   id,
-  err,
+  error,
 })
 const getAdSuccess = (from, id, ad) => ({
   type: 'getAdSuccess',
@@ -91,9 +91,6 @@ const getAdSuccess = (from, id, ad) => ({
   id,
   ad,
 })
-
-
-
 
 export const getAd = (id) => async (dispatch, getState) => {
   const ads = getState().ads
@@ -113,17 +110,21 @@ export const getAd = (id) => async (dispatch, getState) => {
     newAd = await contract.methods.ads(id).call()
   } catch(err) {
     dispatch(getAdError('eth', id, err))
+    return
   }
 
   dispatch(getAdSuccess('eth', id, newAd))
 }
 
 export const getAdDetails = (id) => async (dispatch, getState) => {
-console.log('getAdDetails DISPATCHER')
   const ads = getState().ads
-  const contentAddress = dotProp.get(ads, `byId.${id}.eth.data.text`)
 
+  const contentAddress = dotProp.get(ads, `byId.${id}.eth.data.text`)
   if (!contentAddress)
+    return
+
+  const loading = dotProp.get(ads, `byId.${id}.bzz.loading`)
+  if (loading)
     return
 
   dispatch(getAdLoading('bzz', id))
@@ -133,8 +134,8 @@ console.log('getAdDetails DISPATCHER')
     adDetailsRaw = await web3.bzz.download(contentAddress)
     adDetails = JSON.parse(new TextDecoder("utf-8").decode(adDetailsRaw))
   } catch(err) {
-console.log(err)
     dispatch(getAdError('bzz', id, err))
+    return
   }
 
   dispatch(getAdSuccess('bzz', id, adDetails))

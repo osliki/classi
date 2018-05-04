@@ -4,8 +4,9 @@ import PropTypes from 'prop-types'
 import './index.css'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import PerfectScrollbar from 'react-perfect-scrollbar'
-import {CircularProgress} from 'material-ui/Progress'
 import Ad from '../Ad'
+
+import {CircularProgress} from 'material-ui/Progress'
 
 import {getColumnAds} from '../../store/actions'
 

@@ -8,18 +8,37 @@ import AdDetails from './AdDetails'
 import {getAd, getAdDetails} from '../../store/actions'
 
 class Ad extends Component {
+
   static propTypes = {
     id: PropTypes.number.isRequired,
     view: PropTypes.oneOf(['card', 'details']).isRequired,
   }
 
-  async componentWillMount() {
-    const {id, ad, dispatch} = this.props
+  constructor(props) {
+    super(props)
+
+    this.onReload = this.onReload.bind(this)
+  }
+
+  componentWillMount() {
+    const {ad} = this.props
 
     if (ad) return
 
+    this.load()
+  }
+
+  load = async () => {
+    const {id, dispatch} = this.props
+
     await dispatch(getAd(id))
     dispatch(getAdDetails(id))
+  }
+
+  onReload = (e) => {
+    e.preventDefault()
+
+    this.load()
   }
 
   render() {
@@ -27,7 +46,7 @@ class Ad extends Component {
 
     return (ad
       ?
-        (view === 'card' ? <AdCard ad={ad} /> : <AdDetails ad={ad} />)
+        (view === 'card' ? <AdCard ad={ad} onReload={this.onReload} /> : <AdDetails ad={ad} />)
       :
         null
     )

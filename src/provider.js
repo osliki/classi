@@ -8,9 +8,10 @@ const contract = new web3.eth.Contract(contractAbi, contractAddress)
 
 web3.bzz.setProvider('http://swarm-gateways.net')
 
-//const account = window.web3.eth.defaultAccount
+const account = window.web3.eth.defaultAccount
 
 export {
   contract,
-  web3
+  web3,
+  account
 }

@@ -4,11 +4,10 @@ import PropTypes from 'prop-types'
 import moment from 'moment'
 import dotProp from 'dot-prop-immutable-chain'
 import './index.css'
-//import 'placeholder-loading/dist/css/placeholder-loading.min.css'
 
 import Ad from './index'
 import AdDetails from './AdDetails'
-import AdCardLoading from './AdCardLoading'
+import {ImgLoader, HeaderLoader, TextLoader, CardLoader} from '../Loaders'
 
 import {CircularProgress} from 'material-ui/Progress';
 import Typography from 'material-ui/Typography';
@@ -16,6 +15,7 @@ import Button from 'material-ui/Button'
 import IconButton from 'material-ui/IconButton'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import Dialog, {
   DialogActions,
   DialogContent,
@@ -23,13 +23,15 @@ import Dialog, {
   DialogTitle,
 } from 'material-ui/Dialog'
 
-import Image from "react-graceful-image";
+import Img from '../Img'
+// import Image from "react-graceful-image";
 
 import Card, { CardHeader, CardActions, CardContent, CardMedia } from 'material-ui/Card'
 
 class AdCard extends Component {
   static propTypes = {
     ad: PropTypes.object.isRequired,
+    onReload: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -38,7 +40,6 @@ class AdCard extends Component {
     this.state = {
       detailsShowed: false,
     }
-
   }
 
   showAdDetails = () => {
@@ -49,29 +50,34 @@ class AdCard extends Component {
     this.setState({ detailsShowed: false });
   }
 
-  render() {
-    const {ad} = this.props
 
+  cut = (text = '', max) => {
+    return text.substr(0, max) + (text.length > max ? '...' : '')
+  }
+
+  render() {
+    const {ad, onReload} = this.props
+/*
     if (!ad.eth.loaded) {
       return (
         <div className="AdCard">
-          <AdCardLoading />
+        <Card>
+          <CardLoader />
+          </Card>
         </div>
       )
-    }
+    }*/
 
     const bzzLoaded = ad.bzz.loaded
 
     const {user = '', createdAt} = ad.eth.data
-    const {header, text, photos = []} = ad.bzz.data
+    const {header, text = '', photos = []} = ad.bzz.data
 
     const userShort = '@' + user.substr(2, 2) + '...' +  user.substr(38)
     const photo = photos[0]
 
     const date = createdAt ? moment(createdAt * 1000).fromNow() : ''
-
-
-
+console.log('render AdCard')
     return (
       <div className="AdCard">
 
@@ -84,54 +90,58 @@ class AdCard extends Component {
              </IconButton>
             }
             title={userShort}
-            subheader={date}
+            subheader={`Published: ${date}`}
+            classes={{
+              title: 'card-header'
+            }}
           />
 
-
-          {photo
+          {(!bzzLoaded || (bzzLoaded && photo))
             ?
               <div className="img-fill">
-                <Image
-                   src={`http://swarm-gateways.net/bzzr:/${photo}`}
-                   retry={{delay: 1, accumulate: 'add'}}
-                   alt="Loading"
-                   noLazyLoad
-                   placeholderColor="#eee"
-                 />
+                {bzzLoaded ?
+                    <Img
+                       src={`http://swarm-gateways.net/bzzr:/${photo}`}
+                       alt={header}
+                       loader={<ImgLoader />}
+                     />
+                  :
+                    <ImgLoader animate={!ad.bzz.error} />
+                }
               </div>
             :
-              (!bzzLoaded
-                ?
-                  <div class="ph-item">
-                    <div class="ph-picture"></div>
-                  </div>
-
-                :
-                  null
-              )
+              null
           }
 
-          <CardContent>
-            {bzzLoaded
-              ?
-                <h3>{header}</h3>
-              :
-                <h3>placeholderHeader</h3>
-            }
+          {bzzLoaded ?
+              <CardContent>
+                <Typography variant="title" component="h2">{this.cut(header, 25)}</Typography>
+                <br/>
+                <Typography paragraph>{this.cut(text, 140)}</Typography>
+              </CardContent>
+            :
+              <CardContent>
+                <HeaderLoader animate={!ad.bzz.error} />
+                <TextLoader animate={!ad.bzz.error} />
+                {ad.bzz.error ?
+                  <div className="retry-link">
+                    <a href="" onClick={onReload}>Reload ad</a>
+                  </div> :
+                  null
+                }
+              </CardContent>
+          }
 
-            {bzzLoaded
-              ?
-                <p>{text}</p>
-              :
-                <p>placeholderText</p>
-            }
-
-          </CardContent>
 
 
-          <CardActions disableActionSpacing>
+
+
+          <CardActions disableActionSpacing={true}>
             <IconButton>
               <FavoriteIcon />
+            </IconButton>
+            <IconButton>
+              <ArrowUpwardIcon />
             </IconButton>
           </CardActions>
         </Card>
