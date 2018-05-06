@@ -1,12 +1,19 @@
+
 .Board {
   height: 100%;
-  display: inline-block;
+  width: 100%;
+  display: table;
+  table-layout: fixed;
 }
 
 .Board .Column, .Board .EmptyColumn {
-  width: 350px;
   height: 100%;
-  float: left;
-  border-right:  1px solid #ddd;
-  padding: 0 0px;
+  width: 350px;
+  border-right:  1px solid #ccc;
+  display: table-cell;
+}
+
+.scrl{
+  height: 100%;
+  overflow:hidden;
 }

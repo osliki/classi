@@ -6,6 +6,7 @@ import {node, string, number} from 'prop-types'
 class Img extends Component {
   static propTypes = {
     loader: node,
+    loaded: node,
     unloader: node,
     retryDelay: number,
     retryCount: number,
@@ -14,6 +15,7 @@ class Img extends Component {
 
   static defaultProps = {
     loader: null,
+    loaded: null,
     unloader: null,
     retryDelay: 1,
     retryCount: 8
@@ -27,13 +29,16 @@ class Img extends Component {
       isLoaded: false,
       retryCounter: props.retryCount
     }
+
   }
 
   onLoad = () => {
+console.log('IMG onLoad')
     this.setState({isLoading: false, isLoaded: true})
   }
 
   onError = () => {
+console.log('IMG onError')
     if (this.state.retryCounter > 0) {
       setTimeout(this.loadImg, this.props.retryDelay * 1000)
 
@@ -56,10 +61,10 @@ class Img extends Component {
   }
 
   unloadImg = () => {
-    delete this.i.onerror
-    delete this.i.onload
-    delete this.i.src
-    delete this.i
+    if (this.i) {
+      this.i.onerror = null
+      this.i.onload = null
+    }
   }
 
   componentWillMount() {
@@ -67,16 +72,16 @@ class Img extends Component {
   }
 
   componentWillUnmount() {
-    if (this.i) this.unloadImg()
+    this.unloadImg()
   }
 
   render() {
     const {isLoaded, isLoading, retryCounter} = this.state
-    const {src, loader, unloader, retryCount, retryDelay, ...rest} = this.props
+    const {src, loader, loaded, unloader, retryCount, retryDelay, ...rest} = this.props
 
     // if we have loaded, show img
     if (isLoaded)
-      return <img src={src} {...rest} />
+      return loaded ? loaded : <img src={src} {...rest} />
 
     // if we are still trying to load, show img and a Loader if requested
     if (!isLoaded && isLoading)

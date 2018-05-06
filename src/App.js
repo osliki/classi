@@ -5,6 +5,8 @@ import './App.css'
 import Board from './components/Board'
 import store from './store'
 
+import 'react-perfect-scrollbar/dist/css/styles.css'
+
 import 'typeface-roboto'
 import CssBaseline from 'material-ui/CssBaseline'
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'

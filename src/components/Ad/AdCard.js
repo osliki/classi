@@ -5,9 +5,8 @@ import moment from 'moment'
 import dotProp from 'dot-prop-immutable-chain'
 import './index.css'
 
-import Ad from './index'
-import AdDetails from './AdDetails'
 import {ImgLoader, HeaderLoader, TextLoader, CardLoader} from '../Loaders'
+import Img from '../Img'
 
 import {CircularProgress} from 'material-ui/Progress';
 import Typography from 'material-ui/Typography';
@@ -16,59 +15,50 @@ import IconButton from 'material-ui/IconButton'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from 'material-ui/Dialog'
-
-import Img from '../Img'
-// import Image from "react-graceful-image";
 
 import Card, { CardHeader, CardActions, CardContent, CardMedia } from 'material-ui/Card'
+import Menu, { MenuItem } from 'material-ui/Menu'
+
+// import Image from "react-graceful-image";
+
+
 
 class AdCard extends Component {
   static propTypes = {
     ad: PropTypes.object.isRequired,
     onReload: PropTypes.func.isRequired,
+    onEdit: PropTypes.func.isRequired,
+    onShowAdDetails: PropTypes.func.isRequired,
   }
 
   constructor(props) {
     super(props)
 
     this.state = {
-      detailsShowed: false,
+      anchorEl: null
     }
   }
-
-  showAdDetails = () => {
-    this.setState({ detailsShowed: true })
-  }
-
-  closeAdDetails = () => {
-    this.setState({ detailsShowed: false });
-  }
-
 
   cut = (text = '', max) => {
     return text.substr(0, max) + (text.length > max ? '...' : '')
   }
 
+  handleMenu = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  }
+
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  }
+
   render() {
-    const {ad, onReload} = this.props
-/*
-    if (!ad.eth.loaded) {
-      return (
-        <div className="AdCard">
-        <Card>
-          <CardLoader />
-          </Card>
-        </div>
-      )
-    }*/
+    const {ad, onReload, onEdit} = this.props
 
     const bzzLoaded = ad.bzz.loaded
+
+    const onShowAdDetails = () => {
+      if (bzzLoaded && !ad.bzz.error) this.props.onShowAdDetails()
+    }
 
     const {user = '', createdAt} = ad.eth.data
     const {header, text = '', photos = []} = ad.bzz.data
@@ -77,17 +67,39 @@ class AdCard extends Component {
     const photo = photos[0]
 
     const date = createdAt ? moment(createdAt * 1000).fromNow() : ''
-console.log('render AdCard')
+
+    const { anchorEl } = this.state
+    const open = Boolean(anchorEl)
+
     return (
       <div className="AdCard">
 
         <Card>
-
           <CardHeader
-           action={
-             <IconButton>
-               <MoreVertIcon />
-             </IconButton>
+            action={
+              <div>
+                <IconButton  onClick={this.handleMenu} style={{display: bzzLoaded ? 'inherit' : 'none'}}>
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={open}
+                  onClose={this.handleClose}
+                >
+                  <MenuItem onClick={this.handleClose}>Show user`s ads</MenuItem>
+                  <MenuItem onClick={this.handleClose}>Add user to Blacklist</MenuItem>
+                  <MenuItem onClick={(e) => {onReload(); this.handleClose(e)}}>Reload</MenuItem>
+                  <MenuItem onClick={(e) => {onEdit(ad); this.handleClose(e)}}>Edit</MenuItem>
+                </Menu>
+             </div>
             }
             title={userShort}
             subheader={`Published: ${date}`}
@@ -98,13 +110,13 @@ console.log('render AdCard')
 
           {(!bzzLoaded || (bzzLoaded && photo))
             ?
-              <div className="img-fill">
+              <div className="img-cover" onClick={onShowAdDetails}>
                 {bzzLoaded ?
                     <Img
-                       src={`http://swarm-gateways.net/bzzr:/${photo}`}
-                       alt={header}
-                       loader={<ImgLoader />}
-                     />
+                      src={`http://swarm-gateways.net/bzzr:/${photo}`}
+                      alt={header}
+                      loader={<ImgLoader />}
+                    />
                   :
                     <ImgLoader animate={!ad.bzz.error} />
                 }
@@ -114,27 +126,23 @@ console.log('render AdCard')
           }
 
           {bzzLoaded ?
-              <CardContent>
-                <Typography variant="title" component="h2">{this.cut(header, 25)}</Typography>
-                <br/>
-                <Typography paragraph>{this.cut(text, 140)}</Typography>
-              </CardContent>
-            :
-              <CardContent>
-                <HeaderLoader animate={!ad.bzz.error} />
-                <TextLoader animate={!ad.bzz.error} />
-                {ad.bzz.error ?
-                  <div className="retry-link">
-                    <a href="" onClick={onReload}>Reload ad</a>
-                  </div> :
-                  null
-                }
-              </CardContent>
+            <CardContent onClick={onShowAdDetails}>
+              <Typography variant="title" component="h2">{this.cut(header, 25)}</Typography>
+              <br/>
+              <Typography paragraph>{this.cut(text, 140)}</Typography>
+            </CardContent>
+          :
+            <CardContent>
+              <HeaderLoader animate={!ad.bzz.error} />
+              <TextLoader animate={!ad.bzz.error} />
+              {ad.bzz.error ?
+                <div className="retry-link">
+                  <a href="#" onClick={onReload}>Reload</a>
+                </div> :
+                null
+              }
+            </CardContent>
           }
-
-
-
-
 
           <CardActions disableActionSpacing={true}>
             <IconButton>
@@ -146,24 +154,11 @@ console.log('render AdCard')
           </CardActions>
         </Card>
 
-
-        <Dialog
-          fullScreen
-          open={this.state.detailsShowed}
-          onClose={this.closeAdDetails}
-        >
-          <Ad id={ad.id} />
-          <Button onClick={this.closeAdDetails}>
-            Cancel
-          </Button>
-        </Dialog>
-
-
-
       </div>
     )
   }
 
 }
+
 
 export default AdCard

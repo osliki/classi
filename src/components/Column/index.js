@@ -1,12 +1,18 @@
 import React, {Component } from 'react'
-import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
+import {connect} from 'react-redux'
 import './index.css'
-import 'react-perfect-scrollbar/dist/css/styles.css'
 import PerfectScrollbar from 'react-perfect-scrollbar'
-import Ad from '../Ad'
 
 import {CircularProgress} from 'material-ui/Progress'
+import AppBar from 'material-ui/AppBar'
+import Toolbar from 'material-ui/Toolbar'
+import Typography from 'material-ui/Typography'
+import IconButton from 'material-ui/IconButton'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
+import Menu, { MenuItem } from 'material-ui/Menu'
+
+import Ad from '../Ad'
 
 import {getColumnAds} from '../../store/actions'
 
@@ -16,27 +22,89 @@ class Column extends Component {
     column: PropTypes.object.isRequired,
   }
 
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      anchorEl: null,
+      winHeight: document.body.clientHeight
+    }
+  }
+
   async componentWillMount() {
     const {id, dispatch} = this.props
 
-    var res = await dispatch(getColumnAds(id))
+    window.addEventListener('resize', this.onResize)
+
+    await dispatch(getColumnAds(id))
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.onResize)
+  }
+
+  onResize = () => {
+    this.setState({winHeight: document.body.clientHeight})
+  }
+
+  handleMenu = (e) => {
+    this.setState({anchorEl: e.currentTarget})
+  }
+
+  handleClose = () => {
+    this.setState({anchorEl: null})
   }
 
   render() {
-    let {ads, loading} = this.props.column
+    let {ads, loading, type, param} = this.props.column
+
+    const { anchorEl } = this.state
+    const open = Boolean(anchorEl)
 
     return (
       <section className="Column">
-        {loading
-          ?
-            <CircularProgress />
-          :
-            <PerfectScrollbar option={{suppressScrollX: true}}>
-              {ads.map(id => (
-                <Ad key={id} id={id} view="card" />
-              ))}
-            </PerfectScrollbar>
-        }
+        <div className="scrl" style={{height: this.state.winHeight}}>
+
+          {loading
+            ?
+              <CircularProgress />
+            :
+              <PerfectScrollbar option={{suppressScrollX: true}}>
+                <AppBar position="sticky" color="default">
+                  <Toolbar>
+                    <Typography noWrap variant="subheading" style={{flex: 1}}>
+                      {type} {param ? `: ${param}` : ''}
+                    </Typography>
+
+                    <IconButton  onClick={this.handleMenu}>
+                      <MoreVertIcon />
+                    </IconButton>
+                    <Menu
+                      anchorEl={anchorEl}
+                      anchorOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                      }}
+                      transformOrigin={{
+                        vertical: 'top',
+                        horizontal: 'right',
+                      }}
+                      open={open}
+                      onClose={this.handleClose}
+                    >
+                      <MenuItem onClick={(e) => { this.handleClose(e)}}>Remove</MenuItem>
+                    </Menu>
+
+                  </Toolbar>
+                </AppBar>
+
+                {ads.map(id => (
+                  <Ad key={id} id={id} view="card" />
+                ))}
+              </PerfectScrollbar>
+          }
+
+        </div>
       </section>
     )
   }

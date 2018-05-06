@@ -1,4 +1,49 @@
 body, html, #root{
   height:100%;
   font-size: 14px;
+  overflow-y:hidden;
+}
+
+.img-cover {
+  width:100%;
+  height:150px;
+}
+
+.img-cover img, .img-cover svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+.img-contain img {
+  height: 100%;
+  width: 100%;
+  object-fit: contain;
+}
+*/
+
+
+.img-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  /*justify-content: center;*/
+}
+
+.img-list .img-item {
+  border: 1px solid #eee;
+  margin: 5px;
+  position: relative;
+  overflow: hidden;
+}
+
+.img-list .img-item img {
+  width: 100%;
+  object-fit: contain;
+
+  position:absolute;
+  top:0;
+  bottom:0;
+  margin:auto;
 }

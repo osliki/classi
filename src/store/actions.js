@@ -1,5 +1,5 @@
-import {contract, web3} from '../provider'
-import dotProp from 'dot-prop-immutable'
+import {contract, web3, account} from '../provider'
+import dotProp from 'dot-prop-immutable-chain'
 
 const getColumnAdsLoading = (columnId) => ({
   type: 'getColumnAdsLoading',
@@ -69,6 +69,7 @@ const initNewAd = (id) => ({
   type: 'initNewAd',
   id,
 })
+
 const newAdId = (id) => ({
   type: 'newAdId',
   id,
@@ -79,12 +80,14 @@ const getAdLoading = (from, id) => ({
   from,
   id,
 })
+
 const getAdError = (from, id, error) => ({
   type: 'getAdError',
   from,
   id,
   error,
 })
+
 const getAdSuccess = (from, id, ad) => ({
   type: 'getAdSuccess',
   from,
@@ -94,9 +97,9 @@ const getAdSuccess = (from, id, ad) => ({
 
 export const getAd = (id) => async (dispatch, getState) => {
   const ads = getState().ads
-
+/*
   if (ads.byId[id])
-    return
+    return*/
 
   dispatch(initNewAd(id))
   dispatch(newAdId(id))
@@ -143,14 +146,165 @@ export const getAdDetails = (id) => async (dispatch, getState) => {
 }
 
 
-/*
-export const getCats = async ({ catsCount, cats }) => {
-  const freshCatsCount = await contract.methods.getCatsCount()
-  if (freshCatsCount === catsCount) {
-    return { cats }
-  } else {
 
-    //const freshCatsCount = await contract.methods.getCatsCount()
-  }
+export const showAd = (id) => ({
+  type: 'showAd',
+  id
+})
+
+export const closeAd = () => ({
+  type: 'closeAd'
+})
+
+export const zoomAd = () => ({
+  type: 'zoomAd'
+})
+
+export const unzoomAd = () => ({
+  type: 'unzoomAd'
+})
+
+
+
+export const showAdForm = (draftId) => ({
+  type: 'showAdForm',
+  draftId
+})
+
+export const closeAdForm = () => ({
+  type: 'closeAdForm'
+})
+
+
+
+export const initDraft = (draftId, data) => ({
+  type: 'initDraft',
+  draftId,
+  data
+})
+
+export const adFormChange = (draftId, name, value) => ({
+  type: 'adFormChange',
+  draftId,
+  name,
+  value
+})
+
+export const adFormPhotoRemove = (draftId, index) => ({
+  type: 'adFormPhotoRemove',
+  draftId,
+  index,
+})
+
+export const adFormPhotoUploadStart = (draftId, length) => ({
+  type: 'adFormPhotoUploadStart',
+  draftId,
+  length,
+})
+
+export const adFormPhotoUploadSuccess = (draftId, hash) => ({
+  type: 'adFormPhotoUploadSuccess',
+  draftId,
+  hash,
+})
+
+export const adFormPhotoUploadError = (draftId) => ({
+  type: 'adFormPhotoUploadError',
+  draftId
+})
+
+export const adFormPhotoUpload = (draftId, files) => async (dispatch, getState) => {
+  dispatch(adFormPhotoUploadStart(draftId, files.length))
+
+  Array.from(files).forEach(file => {
+    const reader = new FileReader()
+
+    reader.onload = (e) => {
+      const data = new Uint8Array(e.target.result)
+
+      web3.bzz.upload(data).then(hash => {
+        dispatch(adFormPhotoUploadSuccess(draftId, hash))
+      }).catch(err => {
+        alert(`Error while uploading img ${file.name}`)
+
+        dispatch(adFormPhotoUploadError(draftId))
+      })
+    }
+
+    reader.readAsArrayBuffer(file);
+  })
 }
-*/
+
+export const adFormStart = (draftId) => ({
+  type: 'adFormStart',
+  draftId
+})
+
+export const adFormSuccess = (draftId) => ({
+  type: 'adFormSuccess',
+  draftId
+})
+
+export const adFormError = (draftId, error) => ({
+  type: 'adFormError',
+  draftId,
+  error
+})
+
+export const adFormSubmit = (draftId) => async (dispatch, getState) => {
+  dispatch(adFormStart(draftId))
+
+  const {header, text, photos, catName, catId, id} = getState().drafts[draftId]
+
+  let hash
+  try {
+    hash = await web3.bzz.upload(JSON.stringify({
+      header,
+      text,
+      photos
+    }))
+
+    console.log("Uploaded file:", hash)
+  } catch(error) {
+    dispatch(adFormError(draftId, error))
+  }
+
+  if (!hash) return
+
+  let request
+
+  if (id === '') {
+    if (catId === '') {
+      request = contract.methods.newCatWithAd(catName, hash).send({
+        from: account,
+        gasPrice: web3.utils.toWei('1', 'gwei'),
+        gas: 300000
+      })
+    } else {
+      request = contract.methods.newAd(catId, hash).send({
+        from: account,
+        gasPrice: web3.utils.toWei('1', 'gwei'),
+        gas: 300000
+      })
+    }
+  } else {
+    request = contract.methods.editAd(id, hash).send({
+      from: account,
+      gasPrice: web3.utils.toWei('1', 'gwei'),
+      gas: 100000
+    })
+
+  }
+
+
+  request.on('receipt', receipt => {
+    console.log('receipt', receipt)
+    dispatch(adFormSuccess(draftId))
+  }).on('confirmation', (confirmationNumber, receipt) => {
+    if (confirmationNumber === 5)
+      console.log('confirmationNumber', receipt)
+  }).on('error', (error, receit) => {
+    console.log('error', error, receit)
+    dispatch(adFormError(draftId, error))
+  })
+}

@@ -1,10 +1,11 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import './index.css'
+
 import Column from '../Column'
 import EmptyColumn from '../EmptyColumn'
-
-
+import AdDetailsDialog from '../Ad/AdDetailsDialog'
+import AdFormDialog from '../AdForm/AdFormDialog'
 
 class Board extends Component {
   render() {
@@ -12,12 +13,14 @@ class Board extends Component {
 
     return (
       <main className="Board">
-        {columns.allIds.map(id => (
-          <Column key={id} id={id} />
-        ))}
+          {columns.allIds.map(id => (
+            <Column key={id} id={id} />
+          ))}
 
-        <EmptyColumn />
+          <EmptyColumn />
 
+        <AdFormDialog/>
+        <AdDetailsDialog/>
       </main>
     )
   }

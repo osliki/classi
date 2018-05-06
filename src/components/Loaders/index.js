@@ -8,6 +8,14 @@ export const ImgLoader = (props) => (
   </ContentLoader>
 )
 
+
+export const ImgMiddleLoader = (props) => (
+  <ContentLoader width="150" height="150" {...props}>
+    {/* Pure SVG */}
+    <rect x="0" y="0" rx="3" ry="3" width="100%" height="100%" />
+  </ContentLoader>
+)
+
 export const SmallImgLoader = (props) => (
   <ContentLoader width="80" height="80" {...props}>
     {/* Pure SVG */}

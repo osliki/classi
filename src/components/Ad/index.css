@@ -1,35 +1,59 @@
-.img-fill{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-  height:150px;
-  /*width:300px;*/
-  margin: 0 auto;
+.AdDetails .img-item {
+  width: 150px;
+  height: 150px;
+  line-height: 144px;
+
 }
 
-.img-fill img, .img-fill svg {
-  flex-shrink: 0;
-  min-width: 100%;
-  min-height: 100%;
+.AdDetails .img-item img {
+  width: 148px;
 }
+
+
+  /*
+.AdDetails .img-fill {
+  object-fit: cover;
+  display: inline-block;
+  overflow: hidden;
+  height: 152px;
+  width: 152px;
+  border: 1px solid #ddd;
+  text-align: center;
+  vertical-align: middle;
+  margin: 5px;
+  line-height: 148px;
+  position: relative;
+}*/
 
 .AdCard .card-header {
   font-size: 0.9rem;
 }
 
 .AdCard {
-  margin: 0 5px 10px 5px;
-  position: relative;
+  margin: 0 10px 10px 10px;
 }
 
 .retry-link {
   display: flex;
-    justify-content: center;
-    align-items: center;
+  justify-content: center;
+  align-items: center;
   height: 100%;
   width:100%;
   position: relative;
   top:-85px;
   left:0;
+}
+
+.AdDetails {
+  width: 900px;
+  margin: 20px auto;
+  padding: 50px;
+}
+
+pre {
+  white-space: pre-wrap;       /* css-3 */
+}
+
+.details-modal-root > div {
+  background-color: #555;
 }

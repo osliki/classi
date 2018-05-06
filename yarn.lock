@@ -5829,6 +5829,10 @@ react-lifecycles-compat@^2.0.0:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-2.0.2.tgz#00a23160eec17a43b94dd74f95d44a1a2c3c5ec1"
 
+react-medium-image-zoom@^3.0.10:
+  version "3.0.10"
+  resolved "https://registry.yarnpkg.com/react-medium-image-zoom/-/react-medium-image-zoom-3.0.10.tgz#7e011844b02605aef0500b36f10dcc2808731583"
+
 react-perfect-scrollbar@^1.1.1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/react-perfect-scrollbar/-/react-perfect-scrollbar-1.1.1.tgz#60f2aa9ab61ecb45ef890070fc3b3a657f2491a9"

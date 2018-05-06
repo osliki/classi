@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux'
+
 import './index.css';
+
 import Button from 'material-ui/Button'
 import TextField from 'material-ui/TextField'
 import Dialog, {
@@ -8,22 +11,19 @@ import Dialog, {
   DialogContentText,
   DialogTitle,
 } from 'material-ui/Dialog'
+
 import AdForm from '../AdForm'
 
-class EmptyColumn extends Component {
-  state = {
-    open: false,
-  }
+import {showAdForm, initDraft} from '../../store/actions'
 
+class EmptyColumn extends Component {
   handleClickOpen = () => {
     this.setState({ open: true });
   }
 
-  handleClose = () => {
-    this.setState({ open: false });
-  }
-
   render() {
+    const {newAd} = this.props
+
     return (
       <section className="EmptyColumn">
         <ul>
@@ -43,23 +43,24 @@ class EmptyColumn extends Component {
             <a href="">Black list</a>
           </li>
           <li>
-            <Button onClick={this.handleClickOpen}>New ad</Button>
+            <Button onClick={newAd}>New ad</Button>
           </li>
         </ul>
 
-        <Dialog
-          fullScreen
-          open={this.state.open}
-          onClose={this.handleClose}
-        >
-          <AdForm />
-          <Button onClick={this.handleClose}>
-              Cancel
-              </Button>
-        </Dialog>
       </section>
     );
   }
 }
 
-export default EmptyColumn;
+export default connect((state, ownProps) => {
+    return {
+
+    }
+  }, (dispatch, ownProps) => {
+    return {
+      newAd: () => {
+        dispatch(initDraft('new'))
+        dispatch(showAdForm('new'))
+      }
+    }
+})(EmptyColumn)

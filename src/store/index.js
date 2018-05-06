@@ -25,11 +25,12 @@ const initialState = {
         ads: [],
       }
     },
-    allIds: [0, 2, 5],
+    allIds: [0, 2, 5, 0, 2, 5],
   },
   ads: {
     byId: {
       0: {
+        id: 0,
         eth: {
           loading: false,
           error: undefined,
@@ -43,7 +44,20 @@ const initialState = {
       }
     },
     allIds: [0],
-  }
+  },
+  ad: {
+    id: null,
+    zoom: false,
+    opened: false
+  },
+  adForm: {
+    draftId: null,
+    opened: false
+  },
+  drafts: {
+  }/*,
+  transactions: {
+  }*/
 }
 
 const store = createStore(
