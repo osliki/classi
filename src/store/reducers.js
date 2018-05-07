@@ -1,8 +1,48 @@
 import { combineReducers } from 'redux'
 import dotProp from 'dot-prop-immutable-chain'
 
-const cats = (state = [], action) => {
+const cats = (state = {}, action) => {
   switch (action.type) {
+    case 'getCatLoading':
+  console.log('getCatLoading', action)
+      return dotProp(state)
+        .set(`${action.id}`, {
+          id: '',
+          name: '',
+          adsCount: 0,
+          loading: false,
+          error: action.error
+        })
+        .value()
+
+    case 'getCatError':
+      return dotProp(state)
+        .set(`${action.id}`, {
+          id: '',
+          name: '',
+          adsCount: 0,
+          loading: false,
+          error: action.error
+        })
+        .value()
+
+    case 'getCatSuccess':
+console.log('getCatSuccess', action)
+      return dotProp(state)
+        .set(`${action.id}`, {
+          id: action.id,
+          name: action.name,
+          adsCount: action.adsCount,
+          loading: false,
+          error: null
+        })
+        .value()
+
+    case 'catNewAdsCount':
+      return dotProp(state)
+        .set(`${action.id}.adsCount`, action.adsCount)
+        .value()
+
     default:
       return state
   }
@@ -134,6 +174,7 @@ const adForm = (state = {
 }
 
 const getDefaultDraft = () => ({
+  id: '',
   catId: '',
   catName: '',
   header: '',
@@ -158,6 +199,7 @@ const drafts = (state = getDefaultDraft(), action) => {
     case 'adFormStart':
       return dotProp(state)
         .set(`${id}.loading`, true)
+        .set(`${id}.error`, null)
         .value()
 
     case 'adFormSuccess':

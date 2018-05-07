@@ -1,6 +1,5 @@
 .AdForm {
-  /*max-width: 500px;
-  margin: 20px auto*/
+  min-width: 500px;
 }
 
 
@@ -62,4 +61,21 @@
 
 .upload {
 
+}
+
+
+
+.downshift-container {
+  flexGrow: 1;
+  position: relative;
+}
+
+.downshift-paper {
+  position: absolute;
+  z-index: 1;
+  margin-top: 0px;
+  left: 0;
+  right: 0;
+  max-height: 250px;
+  overflow-y: auto;
 }

@@ -2,12 +2,21 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import './index.css'
 
+import AppBar from 'material-ui/AppBar'
+import Toolbar from 'material-ui/Toolbar'
+
 import Column from '../Column'
 import EmptyColumn from '../EmptyColumn'
 import AdDetailsDialog from '../Ad/AdDetailsDialog'
 import AdFormDialog from '../AdForm/AdFormDialog'
 
+import {getCats} from '../../store/actions'
+
 class Board extends Component {
+  componentWillMount() {
+    this.props.getCats()
+  }
+
   render() {
     const {columns} = this.props
 
@@ -26,11 +35,14 @@ class Board extends Component {
   }
 }
 
-/*  <Column category={1} />
-  <Column user="0x7aFCDbF97DDA2699de5E93365F93F69d52Ba97B0" />*/
-
-export default connect(state => {
+export default connect((state) => {
   return {
     columns: state.columns,
+  }
+}, (dispatch, ownProps) => {
+  return {
+    getCats: () => {
+      dispatch(getCats())
+    }
   }
 })(Board)

@@ -3,7 +3,7 @@ import thunk from 'redux-thunk'
 import rootReducer from './reducers'
 
 const initialState = {
-  cats: [], //{id, name, adsCount}
+  cats: {}, //{id, name, adsCount}
   columns: {
     byId: {
       0: {
@@ -25,7 +25,7 @@ const initialState = {
         ads: [],
       }
     },
-    allIds: [0, 2, 5, 0, 2, 5],
+    allIds: [0, 2, 5],
   },
   ads: {
     byId: {

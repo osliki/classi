@@ -1,6 +1,58 @@
 import {contract, web3, account} from '../provider'
 import dotProp from 'dot-prop-immutable-chain'
 
+
+
+const getCatLoading = (id) => ({
+  type: 'getCatLoading',
+  id
+})
+
+const getCatError = (id, error) => ({
+  type: 'getCatError',
+  id,
+  error
+})
+
+const getCatSuccess = (id, name, adsCount) => ({
+  type: 'getCatSuccess',
+  id,
+  name,
+  adsCount
+})
+
+export const getCat = (id) => async (dispatch, getState) => {
+  dispatch(getCatLoading(id))
+
+  let name, adsCount
+
+  try {
+    [name, adsCount] = await Promise.all([
+      contract.methods.catsRegister(id).call(),
+      contract.methods.getAdsCountByCat(id).call()
+    ])
+  } catch(err) {
+    dispatch(getCatError(id, err))
+    return
+  }
+
+  dispatch(getCatSuccess(id, name, adsCount))
+}
+
+export const getCats = () => async (dispatch, getState) => {
+  const catsCount = await contract.methods.getCatsCount().call()
+
+  //let promises = []
+  for (let id = 0; id < catsCount; id++) {
+    dispatch(getCat(id))
+    //promises.push(getCat(id))
+  }
+
+  //return Promise.all(promises)
+}
+
+
+
 const getColumnAdsLoading = (columnId) => ({
   type: 'getColumnAdsLoading',
   columnId,
@@ -265,8 +317,8 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
     }))
 
     console.log("Uploaded file:", hash)
-  } catch(error) {
-    dispatch(adFormError(draftId, error))
+  } catch(err) {
+    dispatch(adFormError(draftId, err))
   }
 
   if (!hash) return

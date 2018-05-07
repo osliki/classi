@@ -8,7 +8,7 @@
 
 .Board .Column, .Board .EmptyColumn {
   height: 100%;
-  width: 350px;
+  width: 280px;
   border-right:  1px solid #ccc;
   display: table-cell;
 }

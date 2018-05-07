@@ -14,8 +14,8 @@ import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 const theme = createMuiTheme({
   typography: {
     // In Japanese the characters are usually larger.
-    fontSize: 12,
-    htmlFontSize: 14,
+    fontSize: 10,
+    htmlFontSize: 12,
   },
 });
 
