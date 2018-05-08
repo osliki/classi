@@ -1,6 +1,7 @@
 import React, {Component } from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
+import dotProp from 'dot-prop-immutable-chain'
 import {account} from '../../provider'
 import {getUserShort} from '../../utils'
 import './index.css'
@@ -63,7 +64,7 @@ class Column extends Component {
 
     switch(type) {
       case 'user':
-        if (param === account) return 'my'
+        if (param.toLowerCase() === account) return 'my'
 
         return getUserShort(param)
 
@@ -77,56 +78,83 @@ class Column extends Component {
   }
 
   render() {
-    const {removeColumn, column, id} = this.props
-    const {ads, loading, type} = column
+    const {removeColumn, column, id, favs} = this.props
+    const {loading, type, error} = column
+
+    const ads = (type === 'fav' ? favs : column.ads)
 
     const header = this.getHeader()
 
-    const { anchorEl } = this.state
+    const {anchorEl} = this.state
     const open = Boolean(anchorEl)
+
+console.log('Render column', column)
 
     return (
       <section className="Column">
         <div className="scrl" style={{height: this.state.winHeight}}>
 
-          {loading
-            ?
-              <CircularProgress />
-            :
-              <PerfectScrollbar option={{suppressScrollX: true}}>
-                <AppBar position="sticky" color="default">
-                  <Toolbar>
-                    <Typography noWrap variant="subheading" style={{flex: 1}}>
-                      {type}{header ? `: ${header}` : ''}
+          <PerfectScrollbar option={{suppressScrollX: true}}>
+            <AppBar position="sticky" color="default">
+              <Toolbar>
+                <Typography noWrap variant="subheading" style={{flex: 1}}>
+                  {type}{header ? `: ${header}` : ''}
+                </Typography>
+
+                <IconButton onClick={this.handleMenu}>
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={open}
+                  onClose={this.handleClose}
+                >
+                  <MenuItem onClick={(e) => { this.handleClose(e); removeColumn(id); }}>Remove</MenuItem>
+                </Menu>
+
+              </Toolbar>
+            </AppBar>
+
+            {loading
+              ?
+                <CircularProgress />
+              :
+                (error
+                  ?
+                    <Typography align="center" style={{flex: 1}}>
+                      <br/><br/>
+                      Something went wrong :(
+                      <br/>
+                      <br/>
+                      <small>{error.message}</small>
                     </Typography>
+                  :
+                    (ads.length
+                      ?
+                        ads.map(id => (
+                          <Ad key={id} id={id} view="card" />
+                        ))
+                      :
+                        <Typography align="center" style={{flex: 1}}>
+                          <br/><br/>
+                          Ads not found
+                        </Typography>
+                    )
+                )
+            }
 
-                    <IconButton onClick={this.handleMenu}>
-                      <MoreVertIcon />
-                    </IconButton>
-                    <Menu
-                      anchorEl={anchorEl}
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      open={open}
-                      onClose={this.handleClose}
-                    >
-                      <MenuItem onClick={(e) => { this.handleClose(e); removeColumn(id); }}>Remove</MenuItem>
-                    </Menu>
+          </PerfectScrollbar>
 
-                  </Toolbar>
-                </AppBar>
 
-                {ads.map(id => (
-                  <Ad key={id} id={id} view="card" />
-                ))}
-              </PerfectScrollbar>
-          }
+
 
         </div>
       </section>
@@ -134,10 +162,15 @@ class Column extends Component {
   }
 }
 
+const emptyFavs = []
+
 export default connect((state, ownProps) => {
+  const column = state.columns.byId[ownProps.id]
+
   return {
-    column: state.columns.byId[ownProps.id],
-    cats: state.cats
+    column: column,
+    cats: state.cats.byId,
+    favs: column.type === 'fav' ? state.favs : emptyFavs
   }
 }, (dispatch, ownProps) => {
   const columnId = ownProps.id

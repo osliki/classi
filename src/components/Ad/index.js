@@ -9,8 +9,8 @@ import './index.css'
 import AdCard from './AdCard'
 import AdDetails from './AdDetails'
 
-import {getAd, getAdDetails, showAd, zoomAd, unzoomAd, showAdForm, initDraft} from '../../store/actions'
-import {getCatsByName} from '../../store/selectors'
+import {getAd, getAdDetails, showAd, zoomAd, unzoomAd, showAdForm, initDraft, newColumn, addFav, removeFav} from '../../store/actions'
+import {getCatsByName, getFavsById} from '../../store/selectors'
 
 class Ad extends Component {
   static propTypes = {
@@ -34,13 +34,16 @@ class Ad extends Component {
 
 
   render() {
-    const {id, ad, view, onShowAdDetails, onZoom, onUnzoom, loadAd, onEdit, cats} = this.props
+    const {id, ad, view, onShowAdDetails, onZoom, onUnzoom, loadAd, onEdit, cats, onShowUser, onAddFav, onRemoveFav, inFav} = this.props
     const catId = dotProp(ad).get('eth.data.catId').value()
 
     const commonProps = {
       onReload: loadAd,
-      onEdit: onEdit,
-      catName: catId ? cats[catId].name : ''
+      onEdit,
+      catName: catId ? cats[catId].name : '',
+      onAddFav,
+      onRemoveFav,
+      inFav
     }
 
     return (ad
@@ -50,6 +53,7 @@ class Ad extends Component {
           <AdCard
             ad={ad}
             onShowAdDetails={onShowAdDetails}
+            onShowUser={onShowUser}
             {...commonProps}
           />
         :
@@ -69,7 +73,8 @@ class Ad extends Component {
 export default connect((state, ownProps) => {
     return {
       ad: state.ads.byId[ownProps.id],
-      cats: state.cats
+      cats: state.cats.byId,
+      inFav: getFavsById(state)[ownProps.id]
     }
   }, (dispatch, ownProps) => {
     const id = ownProps.id
@@ -100,6 +105,15 @@ export default connect((state, ownProps) => {
       onUnzoom: () => {
         dispatch(unzoomAd())
       },
+      onShowUser: (param) => {
+        dispatch(newColumn('user', param))
+      },
+      onAddFav: (adId) => {
+        dispatch(addFav(adId))
+      },
+      onRemoveFav: (adId) => {
+        dispatch(removeFav(adId))
+      }
     }
   }
 )(Ad)

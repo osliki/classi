@@ -2,6 +2,12 @@ import {contract, web3, account} from '../provider'
 import dotProp from 'dot-prop-immutable-chain'
 
 
+/*** Cats ***/
+
+const initNewCat = (id) => ({
+  type: 'initNewCat',
+  id
+})
 
 const getCatLoading = (id) => ({
   type: 'getCatLoading',
@@ -22,9 +28,10 @@ const getCatSuccess = (id, name, adsCount) => ({
 })
 
 export const getCat = (id) => async (dispatch, getState) => {
-  dispatch(getCatLoading(id))
-
   let name, adsCount
+
+  dispatch(initNewCat(id))
+  dispatch(getCatLoading(id))
 
   try {
     [name, adsCount] = await Promise.all([
@@ -42,20 +49,14 @@ export const getCat = (id) => async (dispatch, getState) => {
 export const getCats = () => async (dispatch, getState) => {
   const catsCount = await contract.methods.getCatsCount().call()
 
-  //let promises = []
   for (let id = 0; id < catsCount; id++) {
     dispatch(getCat(id))
-    //promises.push(getCat(id))
   }
-
-  //return Promise.all(promises)
 }
 
 
-export const removeColumn = (columnId) => ({
-  type: 'removeColumn',
-  columnId
-})
+
+/*** Columns ***/
 
 export const newColumn = (typeColumn, param) => ({
   type: 'newColumn',
@@ -63,15 +64,26 @@ export const newColumn = (typeColumn, param) => ({
   param
 })
 
-const getColumnAdsLoading = (columnId) => ({
-  type: 'getColumnAdsLoading',
-  columnId,
+export const removeColumn = (columnId) => ({
+  type: 'removeColumn',
+  columnId
 })
 
-const getColumnAdsReceive = (columnId, ads) => ({
-  type: 'getColumnAdsReceive',
+const getColumnAdsLoading = (columnId) => ({
+  type: 'getColumnAdsLoading',
+  columnId
+})
+
+const getColumnAdsSuccess = (columnId, ads) => ({
+  type: 'getColumnAdsSuccess',
   columnId,
-  ads,
+  ads
+})
+
+const getColumnAdsError = (columnId, error) => ({
+  type: 'getColumnAdsError',
+  columnId,
+  error
 })
 
 export const getColumnAds = (columnId, max = 20) => async (dispatch, getState) => {
@@ -80,11 +92,14 @@ export const getColumnAds = (columnId, max = 20) => async (dispatch, getState) =
   const getAds = async (totalMethod, getMethod) => {
     const param = column.param
 
-    // or else throw error
-    const total = await (totalMethod === 'getAdsCount' ?
+    let total = await (totalMethod === 'getAdsCount' ?
       contract.methods[totalMethod]() :
       contract.methods[totalMethod](param)
     ).call()
+
+    total = Number(total)
+
+    if (total === 0) return []
 
     let last = column.ads.length - 1
     if (last < 0) last = 0
@@ -97,10 +112,12 @@ export const getColumnAds = (columnId, max = 20) => async (dispatch, getState) =
 
     let promises = [], ads = []
     for (let index = start; index >= end; index--) {
-      getMethod ? promises.push(contract.methods[getMethod](param, index).call()) : ads.push(index)
+      getMethod ?
+        promises.push(contract.methods[getMethod](param, index).call()) :
+        ads.push(index)
     }
 
-    if (promises.length)
+    if (promises.length) // important!!!
       ads = await Promise.all(promises)
 
     return ads
@@ -109,65 +126,63 @@ export const getColumnAds = (columnId, max = 20) => async (dispatch, getState) =
   dispatch(getColumnAdsLoading(columnId))
 
   let ads = []
-  switch(column.type) {
-    case 'all': {
-      ads = await getAds('getAdsCount')
-      break
-    } case 'user': {
-      ads = await getAds('getAdsCountByUser', 'getAdIdByUser')
-      break
-    } case 'cat': {
-      ads = await getAds('getAdsCountByCat', 'getAdIdByCat')
-      break
+
+  try {
+    switch(column.type) {
+      case 'all':
+        ads = await getAds('getAdsCount')
+        break
+
+      case 'user':
+        ads = await getAds('getAdsCountByUser', 'getAdIdByUser')
+        break
+
+      case 'cat':
+        ads = await getAds('getAdsCountByCat', 'getAdIdByCat')
+        break
     }
+  } catch (error) {
+    dispatch(getColumnAdsError(columnId, error))
+    return
   }
 
-  dispatch(getColumnAdsReceive(columnId, ads))
+  dispatch(getColumnAdsSuccess(columnId, ads))
 }
 
 
 
+/*** Ad Data ***/
+
 const initNewAd = (id) => ({
   type: 'initNewAd',
-  id,
-})
-
-const newAdId = (id) => ({
-  type: 'newAdId',
-  id,
+  id
 })
 
 const getAdLoading = (from, id) => ({
   type: 'getAdLoading',
   from,
-  id,
+  id
 })
 
 const getAdError = (from, id, error) => ({
   type: 'getAdError',
   from,
   id,
-  error,
+  error
 })
 
 const getAdSuccess = (from, id, ad) => ({
   type: 'getAdSuccess',
   from,
   id,
-  ad,
+  ad
 })
 
 export const getAd = (id) => async (dispatch, getState) => {
   const ads = getState().ads
-/*
-  if (ads.byId[id])
-    return*/
-
-  dispatch(initNewAd(id))
-  dispatch(newAdId(id))
-
   //if (!ads.allIds.includes(id)) // just in case
 
+  dispatch(initNewAd(id))
   dispatch(getAdLoading('eth', id))
 
   let newAd
@@ -204,10 +219,11 @@ export const getAdDetails = (id) => async (dispatch, getState) => {
   }
 
   dispatch(getAdSuccess('bzz', id, adDetails))
-
 }
 
 
+
+/*** Ad Details ***/
 
 export const showAd = (id) => ({
   type: 'showAd',
@@ -228,6 +244,8 @@ export const unzoomAd = () => ({
 
 
 
+/*** Ad Form ***/
+
 export const showAdForm = (draftId) => ({
   type: 'showAdForm',
   draftId
@@ -236,8 +254,6 @@ export const showAdForm = (draftId) => ({
 export const closeAdForm = () => ({
   type: 'closeAdForm'
 })
-
-
 
 export const initDraft = (draftId, data) => ({
   type: 'initDraft',
@@ -327,11 +343,12 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
     }))
 
     console.log("Uploaded file:", hash)
-  } catch(err) {
-    dispatch(adFormError(draftId, err))
+  } catch(error) {
+    dispatch(adFormError(draftId, error))
+    return
   }
 
-  if (!hash) return
+  //if (!hash) return
 
   let request
 
@@ -370,3 +387,17 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
     dispatch(adFormError(draftId, error))
   })
 }
+
+
+
+/*** FAVS ***/
+
+export const addFav = (adId) => ({
+  type: 'addFav',
+  adId
+})
+
+export const removeFav = (adId) => ({
+  type: 'removeFav',
+  adId
+})

@@ -41,10 +41,9 @@
 
 .AdCard .img-cover {
   margin-bottom: 20px;
-  cursor: pointer;
 }
 
-.AdCard .card-content {
+.AdCard .card-content, .AdCard .img-cover img {
   cursor: pointer;
 }
 

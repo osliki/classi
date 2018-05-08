@@ -34,7 +34,9 @@ class EmptyColumn extends Component {
     }
   }
 
-  onAdd = () => {
+  onSubmit = (e) => {
+    if (e) e.preventDefault()
+
     const {type, param} = this.state
 
     this.props.onAdd(type, param)
@@ -61,6 +63,10 @@ class EmptyColumn extends Component {
       case 'my':
         onAdd('user', account)
         return
+
+      case 'fav':
+        onAdd('fav')
+        return
     }
 
     this.setState({
@@ -73,18 +79,12 @@ class EmptyColumn extends Component {
 
   render() {
     const {newAd, catsArray} = this.props
-    const {opened, catValue, type} = this.state
+    const {opened, catValue, type, param} = this.state
 
     return (
       <section className="EmptyColumn">
 
         <List component="nav">
-
-          <ListItem button onClick={() => this.newColumn('my')}>
-            <ListItemText>
-              New 'my' column
-            </ListItemText>
-          </ListItem>
 
           <ListItem button onClick={() => this.newColumn('all')}>
             <ListItemText>
@@ -92,13 +92,23 @@ class EmptyColumn extends Component {
             </ListItemText>
           </ListItem>
 
+          <ListItem button onClick={() => this.newColumn('my')}>
+            <ListItemText>
+              New 'my' column
+            </ListItemText>
+          </ListItem>
+
+          <ListItem button onClick={() => this.newColumn('fav')}>
+            <ListItemText>
+              New 'fav' column
+            </ListItemText>
+          </ListItem>
 
           <ListItem button onClick={() => this.newColumn('cat')}>
             <ListItemText>
               New 'category' column
             </ListItemText>
           </ListItem>
-
 
           <ListItem button onClick={() => this.newColumn('user')}>
             <ListItemText>
@@ -117,7 +127,6 @@ class EmptyColumn extends Component {
           </ListItem>
         </List>
 
-
         <Dialog
           open={opened}
           onClose={this.onClose}
@@ -126,34 +135,51 @@ class EmptyColumn extends Component {
           <DialogTitle>New Column</DialogTitle>
 
           <DialogContent classes={{root: 'new-column-dialog-content'}}>
-
-            <CatsAutocomplete
-              items={catsArray}
-              inputValue={catValue}
-              onInputChange={(e) => {
-                this.setState({catValue: e.target.value})
-              }}
-              onChange={(selectedItem) => {
-                this.props.onAdd('cat', selectedItem.id)
-                this.onClose()
-              }}
-            />
-
+            <form onSubmit={this.onSubmit}>
+              {type === 'cat'
+                ?
+                  <CatsAutocomplete
+                    items={catsArray}
+                    inputValue={catValue}
+                    onInputChange={(e) => {
+                      this.setState({catValue: e.target.value})
+                    }}
+                    onChange={(selectedItem) => {
+                      this.setState({param: selectedItem.id}, () => {
+                        this.onSubmit()
+                        this.onClose()
+                      })
+                    }}
+                  />
+                :
+                  <TextField
+                    name="user"
+                    label="User (ethereum address 0x...)"
+                    margin="normal"
+                    fullWidth
+                    required
+                    value={param}
+                    onChange={(e) => this.setState({param: e.target.value})}
+                  />
+              }
+            </form>
           </DialogContent>
 
-          {type === 'cat'
-            ?
-              null
-            :
-              <DialogActions>
-                <Button onClick={this.onClose}>
-                  Cancel
-                </Button>
-                <Button onClick={this.onAdd}>
-                  Add
-                </Button>
-              </DialogActions>
-          }
+            {type === 'cat'
+              ?
+                null
+              :
+                <DialogActions>
+                  <Button onClick={this.onClose}>
+                    Cancel
+                  </Button>
+                  <Button onClick={this.onSubmit}>
+                    Add
+                  </Button>
+                </DialogActions>
+            }
+
+
         </Dialog>
 
       </section>

@@ -29,11 +29,16 @@ class AdCard extends Component {
     onReload: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
     onShowAdDetails: PropTypes.func.isRequired,
-    catName: PropTypes.string.isRequired
+    catName: PropTypes.string.isRequired,
+    onShowUser: PropTypes.func.isRequired,
+    onAddFav: PropTypes.func.isRequired,
+    onRemoveFav: PropTypes.func.isRequired,
+    inFav: PropTypes.bool.isRequired,
   }
 
   static defaultProps  = {
-    catName: ''
+    catName: '',
+    inFav: false
   }
 
   constructor(props) {
@@ -57,7 +62,8 @@ class AdCard extends Component {
   }
 
   render() {
-    const {ad, onReload, onEdit, catName} = this.props
+console.log('RENDER AdCard')
+    const {ad, onReload, onEdit, catName, onShowUser, onAddFav, onRemoveFav, inFav} = this.props
 
     const bzzLoaded = ad.bzz.loaded
 
@@ -99,7 +105,7 @@ class AdCard extends Component {
                   open={open}
                   onClose={this.handleClose}
                 >
-                  <MenuItem onClick={this.handleClose}>Show user`s ads</MenuItem>
+                  <MenuItem onClick={(e) => {onShowUser(ad.eth.data.user); this.handleClose(e)}}>Show user`s ads</MenuItem>
                   <MenuItem onClick={this.handleClose}>Add user to Blacklist</MenuItem>
                   <MenuItem onClick={(e) => {onReload(); this.handleClose(e)}}>Reload</MenuItem>
                   <MenuItem onClick={(e) => {onEdit(ad); this.handleClose(e)}}>Edit</MenuItem>
@@ -162,8 +168,8 @@ class AdCard extends Component {
           </CardContent>
 
           <CardActions disableActionSpacing={true}>
-            <IconButton>
-              <FavoriteIcon />
+            <IconButton onClick={() => {inFav ? onRemoveFav(ad.id) :  onAddFav(ad.id)}}>
+              <FavoriteIcon color={inFav ? 'error' :  'action'} />
             </IconButton>
             <IconButton>
               <ArrowUpwardIcon />

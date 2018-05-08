@@ -7,13 +7,19 @@ import TextField from 'material-ui/TextField'
 import Paper from 'material-ui/Paper'
 import { MenuItem } from 'material-ui/Menu'
 
-const CatsAutocomplete = (props) => {
-
+const CatsAutocomplete = ({
+  items,
+  onChange,
+  defaultSelectedItem,
+  inputRef,
+  inputValue,
+  onInputChange = () => {}
+}) => {
   return (
     <Downshift
-      onChange={props.onChange}
+      onChange={onChange}
       itemToString={(item) => (item == null || item.name == null ? '' : String(item.name))}
-      defaultSelectedItem={props.defaultSelectedItem}
+      defaultSelectedItem={defaultSelectedItem}
     >
       {({getInputProps,
         getItemProps,
@@ -30,17 +36,17 @@ const CatsAutocomplete = (props) => {
             label="Category"
             margin="normal"
             fullWidth
-            inputRef={props.inputRef}
+            inputRef={inputRef}
             required
             {...getInputProps({
-              value: props.inputValue,
-              onChange: (e) => props.onInputChange ? props.onInputChange(e, clearSelection, selectItem) : null
+              value: inputValue,
+              onChange: (e) => onInputChange(e, clearSelection, selectItem)
             })}
           />
 
           {isOpen ? (
             <Paper className="downshift-paper" square>
-              {matchSorter(props.items, inputValue, {
+              {matchSorter(items, inputValue, {
                   keys: ['name']
                 }).map((item, index) => (
                   <MenuItem

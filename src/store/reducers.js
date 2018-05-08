@@ -1,36 +1,42 @@
 import { combineReducers } from 'redux'
 import dotProp from 'dot-prop-immutable-chain'
 
-const cats = (state = {}, action) => {
+const cats = (state = {
+  byId: {},  //{id, name, adsCount, loading, error}
+  allIds: []
+}, action) => {
   switch (action.type) {
-    case 'getCatLoading':
-
+    case 'initNewCat':
       return dotProp(state)
-        .set(`${action.id}`, {
-          id: '',
+        .merge(`allIds`, [action.id])
+        .set(`byId.${action.id}`, {
+          id: action.id,
           name: '',
           adsCount: 0,
+          loading: true,
+          error: null
+        })
+        .value()
+
+    case 'getCatLoading':
+      return dotProp(state)
+        .merge(`byId.${action.id}`, {
           loading: false,
-          error: action.error
+          error: null
         })
         .value()
 
     case 'getCatError':
       return dotProp(state)
-        .set(`${action.id}`, {
-          id: '',
-          name: '',
-          adsCount: 0,
+        .merge(`byId.${action.id}`, {
           loading: false,
           error: action.error
         })
         .value()
 
     case 'getCatSuccess':
-
       return dotProp(state)
-        .set(`${action.id}`, {
-          id: action.id,
+        .merge(`byId.${action.id}`, {
           name: action.name,
           adsCount: action.adsCount,
           loading: false,
@@ -38,10 +44,10 @@ const cats = (state = {}, action) => {
         })
         .value()
 
-    case 'catNewAdsCount':
+    /*case 'catNewAdsCount':
       return dotProp(state)
-        .set(`${action.id}.adsCount`, action.adsCount)
-        .value()
+        .set(`byId.${action.id}.adsCount`, action.adsCount)
+        .value()*/
 
     default:
       return state
@@ -54,48 +60,52 @@ const ads = (state = {
 }, action) => {
   switch (action.type) {
     case 'initNewAd':
-      return dotProp.set(state, `byId.${action.id}`, {
-        id: action.id,
-        eth: {
-          loading: false,
-          loaded: false,
-          error: null,
-          data: {},
-        },
-        bzz: {
-          loading: false,
-          loaded: false,
-          error: null,
-          data: {},
-        },
-      })
-
-    case 'newAdId':
-      return dotProp.merge(state, `ads.allIds`, [Number(action.id)])
+      return dotProp(state)
+        .merge(`allIds`, [Number(action.id)])
+        .set(`byId.${action.id}`, {
+          id: action.id,
+          eth: {
+            loading: false,
+            loaded: false,
+            error: null,
+            data: {},
+          },
+          bzz: {
+            loading: false,
+            loaded: false,
+            error: null,
+            data: {},
+          },
+        })
+        .value()
 
     case 'getAdLoading':
-      return dotProp.set(state, `byId.${action.id}.${action.from}`, {
-        loading: true,
-        loaded: false,
-        error: null,
-        data: {},
-      })
+      return dotProp(state)
+        .merge(`byId.${action.id}.${action.from}`, {
+          loading: true,
+          loaded: false,
+          error: null
+        })
+        .value()
 
     case 'getAdError':
-      return dotProp.set(state, `byId.${action.id}.${action.from}`, {
-        loading: false,
-        loaded: false,
-        error: action.error,
-        data: {},
-      })
+      return dotProp(state)
+        .merge(`byId.${action.id}.${action.from}`, {
+          loading: false,
+          loaded: false,
+          error: action.error
+        })
+        .value()
 
     case 'getAdSuccess':
-      return dotProp.set(state, `byId.${action.id}.${action.from}`, {
-        loading: false,
-        loaded: true,
-        error: null,
-        data: action.ad,
-      })
+      return dotProp(state)
+        .set(`byId.${action.id}.${action.from}`, {
+          loading: false,
+          loaded: true,
+          error: null,
+          data: action.ad,
+        })
+        .value()
 
     default:
       return state
@@ -107,14 +117,6 @@ const columns = (state = {
   allIds: []
 }, action) => {
   switch (action.type) {
-    case 'getColumnAdsLoading':
-      return dotProp.set(state, `byId.${action.columnId}.loading`, true)
-
-    case 'getColumnAdsReceive':
-      return dotProp(state)
-        .set(`byId.${action.columnId}.loading`, false)
-        .set(`byId.${action.columnId}.ads`, action.ads.map(id => Number(id)))
-        .value()
 
     case 'newColumn':
       const newColumnId = state.allIds.length ? Math.max(...state.allIds) + 1 : 0
@@ -125,17 +127,45 @@ const columns = (state = {
           id: newColumnId,
           type: action.typeColumn,
           param: action.param,
+          loading: false,
+          error: null,
           ads: [],
         })
         .value()
 
-      case 'removeColumn':
-        const removeIndex = state.allIds.findIndex((el) => el === action.columnId)
+    case 'removeColumn':
+      const removeIndex = state.allIds.findIndex((el) => el === action.columnId)
 
-        return dotProp(state)
-          .delete(`allIds.${removeIndex}`)
-          .delete(`byId.${action.columnId}`)
-          .value()
+      return dotProp(state)
+        .delete(`allIds.${removeIndex}`)
+        .delete(`byId.${action.columnId}`)
+        .value()
+
+    case 'getColumnAdsLoading':
+      return dotProp(state)
+        .merge(`byId.${action.columnId}`, {
+          loading: true,
+          error: null
+        })
+        .value()
+
+    case 'getColumnAdsError':
+      return dotProp(state)
+        .merge(`byId.${action.columnId}`, {
+          loading: false,
+          error: action.error
+        })
+        .value()
+
+    case 'getColumnAdsSuccess':
+      return dotProp(state)
+        .merge(`byId.${action.columnId}`, {
+          loading: false,
+          error: null,
+          ads: action.ads.map(id => Number(id))
+        })
+        .value()
+
     default:
       return state
   }
@@ -264,13 +294,36 @@ const drafts = (state = getDefaultDraft(), action) => {
   }
 }
 
+const favs = (state = [], action) => {
+  switch (action.type) {
+    case 'addFav':
+    console.log('addFavaddFavaddFav', state, action.adId)
+      if (state.find(el => el === action.adId) === undefined)
+        return [...state, action.adId]
+      else
+        return state
+
+    case 'removeFav':
+      const removeIndex = state.findIndex(el => el === action.adId)
+      console.log('removeFavremoveFav', state, removeIndex)
+
+      return dotProp(state)
+        .delete(`${removeIndex}`)
+        .value()
+
+    default:
+      return state
+  }
+}
+
 const rootReducer = combineReducers({
   cats,
   ads,
   columns,
   ad,
   adForm,
-  drafts
+  drafts,
+  favs
 })
 
 export default rootReducer
