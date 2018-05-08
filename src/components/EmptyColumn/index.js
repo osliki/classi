@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux'
+import {account} from '../../provider'
 
 import './index.css';
 
@@ -11,21 +12,154 @@ import Dialog, {
   DialogContentText,
   DialogTitle,
 } from 'material-ui/Dialog'
+import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import AddIcon from '@material-ui/icons/Add'
 
 import AdForm from '../AdForm'
+import CatsAutocomplete from '../AdForm/CatsAutocomplete'
 
-import {showAdForm, initDraft} from '../../store/actions'
+import {getCatsArray, getCatsByName} from '../../store/selectors'
+import {showAdForm, initDraft, newColumn} from '../../store/actions'
 
 class EmptyColumn extends Component {
-  handleClickOpen = () => {
-    this.setState({ open: true });
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      opened: false,
+      type: '',
+      param: '',
+      catValue: ''
+    }
+  }
+
+  onAdd = () => {
+    const {type, param} = this.state
+
+    this.props.onAdd(type, param)
+
+    this.setState({
+      opened: false
+    })
+  }
+
+  onClose = () => {
+    this.setState({
+      opened: false
+    })
+  }
+
+  newColumn = (type) => {
+    const {onAdd} = this.props
+
+    switch (type) {
+      case 'all':
+        onAdd('all')
+        return
+
+      case 'my':
+        onAdd('user', account)
+        return
+    }
+
+    this.setState({
+      opened: true,
+      type: type,
+      param: '',
+      catValue: ''
+    })
   }
 
   render() {
-    const {newAd} = this.props
+    const {newAd, catsArray} = this.props
+    const {opened, catValue, type} = this.state
 
     return (
       <section className="EmptyColumn">
+
+        <List component="nav">
+
+          <ListItem button onClick={() => this.newColumn('my')}>
+            <ListItemText>
+              New 'my' column
+            </ListItemText>
+          </ListItem>
+
+          <ListItem button onClick={() => this.newColumn('all')}>
+            <ListItemText>
+              New 'all' column
+            </ListItemText>
+          </ListItem>
+
+
+          <ListItem button onClick={() => this.newColumn('cat')}>
+            <ListItemText>
+              New 'category' column
+            </ListItemText>
+          </ListItem>
+
+
+          <ListItem button onClick={() => this.newColumn('user')}>
+            <ListItemText>
+              New 'user' column
+            </ListItemText>
+          </ListItem>
+
+          <ListItem button onClick={newAd}>
+            <ListItemIcon>
+              <AddIcon />
+            </ListItemIcon>
+
+            <ListItemText>
+              Create Ad
+            </ListItemText>
+          </ListItem>
+        </List>
+
+
+        <Dialog
+          open={opened}
+          onClose={this.onClose}
+          classes={{paper: 'new-column-dialog'}}
+        >
+          <DialogTitle>New Column</DialogTitle>
+
+          <DialogContent classes={{root: 'new-column-dialog-content'}}>
+
+            <CatsAutocomplete
+              items={catsArray}
+              inputValue={catValue}
+              onInputChange={(e) => {
+                this.setState({catValue: e.target.value})
+              }}
+              onChange={(selectedItem) => {
+                this.props.onAdd('cat', selectedItem.id)
+                this.onClose()
+              }}
+            />
+
+          </DialogContent>
+
+          {type === 'cat'
+            ?
+              null
+            :
+              <DialogActions>
+                <Button onClick={this.onClose}>
+                  Cancel
+                </Button>
+                <Button onClick={this.onAdd}>
+                  Add
+                </Button>
+              </DialogActions>
+          }
+        </Dialog>
+
+      </section>
+
+
+      /*<section className="EmptyColumn">
         <ul>
           <li>
             <a href="">Ads from a category</a>
@@ -47,17 +181,20 @@ class EmptyColumn extends Component {
           </li>
         </ul>
 
-      </section>
+      </section>*/
     );
   }
 }
 
 export default connect((state, ownProps) => {
     return {
-
+      catsArray: getCatsArray(state)
     }
   }, (dispatch, ownProps) => {
     return {
+      onAdd: (type, param) => {
+        dispatch(newColumn(type, param))
+      },
       newAd: () => {
         dispatch(initDraft('new'))
         dispatch(showAdForm('new'))

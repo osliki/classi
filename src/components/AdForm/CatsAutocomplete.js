@@ -34,7 +34,7 @@ const CatsAutocomplete = (props) => {
             required
             {...getInputProps({
               value: props.inputValue,
-              onChange: (e) => props.onInputChange(e, clearSelection, selectItem)
+              onChange: (e) => props.onInputChange ? props.onInputChange(e, clearSelection, selectItem) : null
             })}
           />
 

@@ -19,7 +19,7 @@ class Board extends Component {
 
   render() {
     const {columns} = this.props
-
+console.dir(columns)
     return (
       <main className="Board">
           {columns.allIds.map(id => (

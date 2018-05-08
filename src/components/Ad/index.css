@@ -1,3 +1,9 @@
+.AdDetails {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 50px;
+}
+
 .AdDetails .img-item {
   width: 150px;
   height: 150px;
@@ -25,12 +31,21 @@
   position: relative;
 }*/
 
+.AdCard {
+  margin: 10px 10px 10px 10px;
+}
+
 .AdCard .card-header {
   font-size: 0.9rem;
 }
 
-.AdCard {
-  margin: 0 10px 10px 10px;
+.AdCard .img-cover {
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.AdCard .card-content {
+  cursor: pointer;
 }
 
 .retry-link {
@@ -44,11 +59,7 @@
   left:0;
 }
 
-.AdDetails {
-  width: 900px;
-  margin: 20px auto;
-  padding: 50px;
-}
+
 
 pre {
   white-space: pre-wrap;       /* css-3 */

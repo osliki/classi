@@ -4,7 +4,7 @@ import dotProp from 'dot-prop-immutable-chain'
 const cats = (state = {}, action) => {
   switch (action.type) {
     case 'getCatLoading':
-  console.log('getCatLoading', action)
+
       return dotProp(state)
         .set(`${action.id}`, {
           id: '',
@@ -27,7 +27,7 @@ const cats = (state = {}, action) => {
         .value()
 
     case 'getCatSuccess':
-console.log('getCatSuccess', action)
+
       return dotProp(state)
         .set(`${action.id}`, {
           id: action.id,
@@ -109,11 +109,33 @@ const columns = (state = {
   switch (action.type) {
     case 'getColumnAdsLoading':
       return dotProp.set(state, `byId.${action.columnId}.loading`, true)
+
     case 'getColumnAdsReceive':
       return dotProp(state)
         .set(`byId.${action.columnId}.loading`, false)
         .set(`byId.${action.columnId}.ads`, action.ads.map(id => Number(id)))
         .value()
+
+    case 'newColumn':
+      const newColumnId = state.allIds.length ? Math.max(...state.allIds) + 1 : 0
+
+      return dotProp(state)
+        .merge(`allIds`, [newColumnId])
+        .set(`byId.${newColumnId}`, {
+          id: newColumnId,
+          type: action.typeColumn,
+          param: action.param,
+          ads: [],
+        })
+        .value()
+
+      case 'removeColumn':
+        const removeIndex = state.allIds.findIndex((el) => el === action.columnId)
+
+        return dotProp(state)
+          .delete(`allIds.${removeIndex}`)
+          .delete(`byId.${action.columnId}`)
+          .value()
     default:
       return state
   }

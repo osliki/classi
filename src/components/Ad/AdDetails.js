@@ -2,14 +2,16 @@ import React, { Component } from 'react'
 import './index.css'
 import PropTypes from 'prop-types'
 import moment from 'moment'
+import {cut, getUserShort} from '../../utils'
+
+import { CircularProgress } from 'material-ui/Progress'
+import Typography from 'material-ui/Typography'
+import Paper from 'material-ui/Paper'
 
 import {ImgMiddleLoader} from '../Loaders'
-import Img from '../Img'
 import ImageZoom from 'react-medium-image-zoom'
-
-import { CircularProgress } from 'material-ui/Progress';
-import Typography from 'material-ui/Typography';
-import Paper from 'material-ui/Paper';
+import Img from '../Img'
+import UserName from '../UserName'
 
 class AdDetails extends Component {
   static propTypes = {
@@ -21,17 +23,17 @@ class AdDetails extends Component {
   }
 
   render() {
-    const {ad, onZoom, onUnzoom} = this.props
+    const {ad, onZoom, onUnzoom, catName} = this.props
     const bzzLoaded = ad.bzz.loaded
 
     const {user = '', createdAt, updatedAt} = ad.eth.data
     const {header, text = '', photos = []} = ad.bzz.data
 
-    const userShort = '@' + user.substr(2, 2) + '...' +  user.substr(38)
+    const userShort = getUserShort(user)
     const photo = photos[0]
 
-    const createdAtFrom = createdAt ? moment(createdAt * 1000).fromNow() : ''
-    const updatedAtFrom = updatedAt ? moment(updatedAt * 1000).fromNow() : ''
+    const createdAtFrom = createdAt ? moment(createdAt * 1000).fromNow() : '...'
+    const updatedAtFrom = updatedAt ? moment(updatedAt * 1000).fromNow() : '...'
 
     return (
       <Paper className="AdDetails">
@@ -40,10 +42,17 @@ class AdDetails extends Component {
             <CircularProgress />
           :
             <div>
-              <Typography gutterBottom variant="headline" component="h1">
-                {header}
+              <Typography noWrap variant="body1" color="textSecondary">
+                {`${createdAtFrom}`} {createdAt === updatedAt ? '' : ` (edited ${updatedAtFrom})`}
+                <br />
+                {'User: '} <UserName user={user} />
+                <br /><br />
               </Typography>
 
+              <Typography variant="headline" component="h1">
+                {header}
+              </Typography>
+              <br/>
               <div className="img-list">
                 {photos.map((hash, index) => (
                   <div className="img-item" key={index}>
@@ -76,6 +85,12 @@ class AdDetails extends Component {
 
               <Typography component="pre">
                 {text}
+              </Typography>
+
+              <br />
+
+              <Typography noWrap variant="body1" color="textSecondary">
+                {`Category: ${catName ? catName : '...'}`}
               </Typography>
             </div>
         }

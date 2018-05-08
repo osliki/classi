@@ -1,0 +1,16 @@
+
+
+.new-column-dialog {
+  overflow-y: visible !important;
+  align-self: flex-start;
+}
+
+.new-column-dialog-content {
+  min-width: 500px;
+  overflow-y: visible !important;
+}
+
+.new-column-dialog .downshift-container {
+  /* height: 150px; */
+  overflow-y: visible;
+}

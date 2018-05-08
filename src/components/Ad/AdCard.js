@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import dotProp from 'dot-prop-immutable-chain'
+import {cut, getUserShort} from '../../utils'
 import './index.css'
 
 import {ImgLoader, HeaderLoader, TextLoader, CardLoader} from '../Loaders'
@@ -29,6 +29,11 @@ class AdCard extends Component {
     onReload: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
     onShowAdDetails: PropTypes.func.isRequired,
+    catName: PropTypes.string.isRequired
+  }
+
+  static defaultProps  = {
+    catName: ''
   }
 
   constructor(props) {
@@ -52,7 +57,7 @@ class AdCard extends Component {
   }
 
   render() {
-    const {ad, onReload, onEdit} = this.props
+    const {ad, onReload, onEdit, catName} = this.props
 
     const bzzLoaded = ad.bzz.loaded
 
@@ -63,10 +68,10 @@ class AdCard extends Component {
     const {user = '', createdAt} = ad.eth.data
     const {header, text = '', photos = []} = ad.bzz.data
 
-    const userShort = '@' + user.substr(2, 2) + '...' +  user.substr(38)
+    const userShort = getUserShort(user)
     const photo = photos[0]
 
-    const date = createdAt ? moment(createdAt * 1000).fromNow() : ''
+    const date = createdAt ? moment(createdAt * 1000).fromNow() : '...'
 
     const { anchorEl } = this.state
     const open = Boolean(anchorEl)
@@ -100,9 +105,15 @@ class AdCard extends Component {
                   <MenuItem onClick={(e) => {onEdit(ad); this.handleClose(e)}}>Edit</MenuItem>
                 </Menu>
              </div>
+           }
+
+            subheader={
+              <span>
+                {`${date}`}
+                <br/>
+                {`User: ${userShort}`}
+              </span>
             }
-            title={userShort}
-            subheader={`Published: ${date}`}
             classes={{
               title: 'card-header'
             }}
@@ -126,10 +137,10 @@ class AdCard extends Component {
           }
 
           {bzzLoaded ?
-            <CardContent onClick={onShowAdDetails}>
-              <Typography variant="title" component="h2">{this.cut(header, 25)}</Typography>
+            <CardContent onClick={onShowAdDetails} classes={{root: 'card-content'}}>
+              <Typography noWrap variant="title" component="h2">{header}</Typography>
               <br/>
-              <Typography paragraph>{this.cut(text, 140)}</Typography>
+              <Typography paragraph>{cut(text, 140)}</Typography>
             </CardContent>
           :
             <CardContent>
@@ -143,6 +154,12 @@ class AdCard extends Component {
               }
             </CardContent>
           }
+
+          <CardContent classes={{root: 'card-content'}}>
+            <Typography noWrap variant="body1" color="textSecondary">
+              {`Category: ${catName ? catName : '...'}`}
+            </Typography>
+          </CardContent>
 
           <CardActions disableActionSpacing={true}>
             <IconButton>

@@ -52,6 +52,16 @@ export const getCats = () => async (dispatch, getState) => {
 }
 
 
+export const removeColumn = (columnId) => ({
+  type: 'removeColumn',
+  columnId
+})
+
+export const newColumn = (typeColumn, param) => ({
+  type: 'newColumn',
+  typeColumn,
+  param
+})
 
 const getColumnAdsLoading = (columnId) => ({
   type: 'getColumnAdsLoading',
@@ -64,7 +74,7 @@ const getColumnAdsReceive = (columnId, ads) => ({
   ads,
 })
 
-export const getColumnAds = (columnId, max = 2) => async (dispatch, getState) => {
+export const getColumnAds = (columnId, max = 20) => async (dispatch, getState) => {
   const column = getState().columns.byId[columnId]
 
   const getAds = async (totalMethod, getMethod) => {
@@ -348,10 +358,10 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
 
   }
 
-
   request.on('receipt', receipt => {
     console.log('receipt', receipt)
     dispatch(adFormSuccess(draftId))
+    dispatch(closeAdForm())
   }).on('confirmation', (confirmationNumber, receipt) => {
     if (confirmationNumber === 5)
       console.log('confirmationNumber', receipt)

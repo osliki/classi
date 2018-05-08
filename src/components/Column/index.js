@@ -1,8 +1,9 @@
 import React, {Component } from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
+import {account} from '../../provider'
+import {getUserShort} from '../../utils'
 import './index.css'
-import PerfectScrollbar from 'react-perfect-scrollbar'
 
 import {CircularProgress} from 'material-ui/Progress'
 import AppBar from 'material-ui/AppBar'
@@ -12,9 +13,10 @@ import IconButton from 'material-ui/IconButton'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import Menu, { MenuItem } from 'material-ui/Menu'
 
+import PerfectScrollbar from 'react-perfect-scrollbar'
 import Ad from '../Ad'
 
-import {getColumnAds} from '../../store/actions'
+import {getColumnAds, removeColumn} from '../../store/actions'
 
 class Column extends Component {
   static propTypes = {
@@ -31,12 +33,12 @@ class Column extends Component {
     }
   }
 
-  async componentWillMount() {
-    const {id, dispatch} = this.props
+  componentWillMount() {
+    const {onInit} = this.props
 
     window.addEventListener('resize', this.onResize)
 
-    await dispatch(getColumnAds(id))
+    onInit()
   }
 
   componentWillUnmount() {
@@ -55,8 +57,30 @@ class Column extends Component {
     this.setState({anchorEl: null})
   }
 
+  getHeader = () => {
+    const {column, cats} = this.props
+    const {type, param} = column
+
+    switch(type) {
+      case 'user':
+        if (param === account) return 'my'
+
+        return getUserShort(param)
+
+      case 'cat':
+        return cats[param] ? cats[param].name : ''
+
+      default:
+        param
+    }
+    return
+  }
+
   render() {
-    let {ads, loading, type, param} = this.props.column
+    const {removeColumn, column, id} = this.props
+    const {ads, loading, type} = column
+
+    const header = this.getHeader()
 
     const { anchorEl } = this.state
     const open = Boolean(anchorEl)
@@ -73,10 +97,10 @@ class Column extends Component {
                 <AppBar position="sticky" color="default">
                   <Toolbar>
                     <Typography noWrap variant="subheading" style={{flex: 1}}>
-                      {type} {param ? `: ${param}` : ''}
+                      {type}{header ? `: ${header}` : ''}
                     </Typography>
 
-                    <IconButton  onClick={this.handleMenu}>
+                    <IconButton onClick={this.handleMenu}>
                       <MoreVertIcon />
                     </IconButton>
                     <Menu
@@ -92,7 +116,7 @@ class Column extends Component {
                       open={open}
                       onClose={this.handleClose}
                     >
-                      <MenuItem onClick={(e) => { this.handleClose(e)}}>Remove</MenuItem>
+                      <MenuItem onClick={(e) => { this.handleClose(e); removeColumn(id); }}>Remove</MenuItem>
                     </Menu>
 
                   </Toolbar>
@@ -112,7 +136,19 @@ class Column extends Component {
 
 export default connect((state, ownProps) => {
   return {
-    column: state.columns.byId[ownProps.id]
+    column: state.columns.byId[ownProps.id],
+    cats: state.cats
+  }
+}, (dispatch, ownProps) => {
+  const columnId = ownProps.id
+
+  return {
+    onInit: () => {
+      dispatch(getColumnAds(columnId))
+    },
+    removeColumn: () => {
+      dispatch(removeColumn(columnId))
+    }
   }
 })(Column)
 

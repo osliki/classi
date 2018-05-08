@@ -1,15 +1,18 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
+
+import dotProp from 'dot-prop-immutable-chain'
+
 import './index.css'
 
 import AdCard from './AdCard'
 import AdDetails from './AdDetails'
 
 import {getAd, getAdDetails, showAd, zoomAd, unzoomAd, showAdForm, initDraft} from '../../store/actions'
+import {getCatsByName} from '../../store/selectors'
 
 class Ad extends Component {
-
   static propTypes = {
     id: PropTypes.number.isRequired,
     view: PropTypes.oneOf(['card', 'details']).isRequired,
@@ -31,10 +34,13 @@ class Ad extends Component {
 
 
   render() {
-    const {id, ad, view, onShowAdDetails, onZoom, onUnzoom, loadAd, onEdit} = this.props
-    const callbacks = {
+    const {id, ad, view, onShowAdDetails, onZoom, onUnzoom, loadAd, onEdit, cats} = this.props
+    const catId = dotProp(ad).get('eth.data.catId').value()
+
+    const commonProps = {
       onReload: loadAd,
       onEdit: onEdit,
+      catName: catId ? cats[catId].name : ''
     }
 
     return (ad
@@ -44,14 +50,14 @@ class Ad extends Component {
           <AdCard
             ad={ad}
             onShowAdDetails={onShowAdDetails}
-            {...callbacks}
+            {...commonProps}
           />
         :
           <AdDetails
             ad={ad}
             onZoom={onZoom}
             onUnzoom={onUnzoom}
-            {...callbacks}
+            {...commonProps}
           />
         )
       :
@@ -62,7 +68,8 @@ class Ad extends Component {
 
 export default connect((state, ownProps) => {
     return {
-      ad: state.ads.byId[ownProps.id]
+      ad: state.ads.byId[ownProps.id],
+      cats: state.cats
     }
   }, (dispatch, ownProps) => {
     const id = ownProps.id

@@ -26,7 +26,7 @@ class AdFormDialog extends Component {
         open={opened}
         onClose={onClose}
       >
-        <DialogTitle>Ad form</DialogTitle>
+        <DialogTitle>Ad Form</DialogTitle>
 
         <DialogContent>
           <DialogContentText>

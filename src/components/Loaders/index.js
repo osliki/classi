@@ -39,6 +39,13 @@ export const TextLoader = (props) => (
   </ContentLoader>
 )
 
+// export const StringLoader = (props) => (
+//   <ContentLoader height="20" {...props}>
+//     {/* Pure SVG */}
+//     <rect x="0" y="20" rx="3" ry="3" width="40%" height="12" />
+//   </ContentLoader>
+// )
+
 export const InfoLoader = (props) => (
   <ContentLoader height="40" {...props}>
     {/* Pure SVG */}
