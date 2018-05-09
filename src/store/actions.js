@@ -74,10 +74,11 @@ const getColumnAdsLoading = (columnId) => ({
   columnId
 })
 
-const getColumnAdsSuccess = (columnId, ads) => ({
+const getColumnAdsSuccess = (columnId, ads, total) => ({
   type: 'getColumnAdsSuccess',
   columnId,
-  ads
+  ads,
+  total
 })
 
 const getColumnAdsError = (columnId, error) => ({
@@ -86,10 +87,14 @@ const getColumnAdsError = (columnId, error) => ({
   error
 })
 
-export const getColumnAds = (columnId, max = 20) => async (dispatch, getState) => {
+export const getColumnAds = (columnId, max = 3) => async (dispatch, getState) => {
+  console.log('getColumnAds', columnId)
+
   const column = getState().columns.byId[columnId]
 
-  const getAds = async (totalMethod, getMethod) => {
+  if (column.type === 'fav') return
+
+  const getAds = async function getAds(totalMethod, getMethod) {
     const param = column.param
 
     let total = await (totalMethod === 'getAdsCount' ?
@@ -98,20 +103,19 @@ export const getColumnAds = (columnId, max = 20) => async (dispatch, getState) =
     ).call()
 
     total = Number(total)
+    let ads = []
 
-    if (total === 0) return []
+    if (total === 0) return {ads, total}
 
-    let last = column.ads.length - 1
-    if (last < 0) last = 0
-
-    let start = total - 1 - last
+    let start = total - 1 - column.ads.length
     if (start < 0) start = 0
 
     let end =  start - max
-    if (end < 0) end = 0
+    if (end < 0) end = -1
 
-    let promises = [], ads = []
-    for (let index = start; index >= end; index--) {
+    let promises = []
+console.log('start = ' +start, 'end = ' +end, 'total = ' +total)
+    for (let index = start; index > end; index--) {
       getMethod ?
         promises.push(contract.methods[getMethod](param, index).call()) :
         ads.push(index)
@@ -120,25 +124,25 @@ export const getColumnAds = (columnId, max = 20) => async (dispatch, getState) =
     if (promises.length) // important!!!
       ads = await Promise.all(promises)
 
-    return ads
+    return {ads, total}
   }
 
   dispatch(getColumnAdsLoading(columnId))
 
-  let ads = []
+  let res
 
   try {
     switch(column.type) {
       case 'all':
-        ads = await getAds('getAdsCount')
+        res = await getAds('getAdsCount')
         break
 
       case 'user':
-        ads = await getAds('getAdsCountByUser', 'getAdIdByUser')
+        res = await getAds('getAdsCountByUser', 'getAdIdByUser')
         break
 
       case 'cat':
-        ads = await getAds('getAdsCountByCat', 'getAdIdByCat')
+        res = await getAds('getAdsCountByCat', 'getAdIdByCat')
         break
     }
   } catch (error) {
@@ -146,7 +150,7 @@ export const getColumnAds = (columnId, max = 20) => async (dispatch, getState) =
     return
   }
 
-  dispatch(getColumnAdsSuccess(columnId, ads))
+  dispatch(getColumnAdsSuccess(columnId, res.ads, res.total))
 }
 
 
@@ -401,3 +405,76 @@ export const removeFav = (adId) => ({
   type: 'removeFav',
   adId
 })
+
+
+
+/*** Up Ad ***/
+
+export const getAccountInfo = () => async (dispatch, getState) => {
+  return {
+    token: 0, //amount
+    tokenApproved: 0, ///
+    address: '',
+    upPrice: 0,
+    tokenPrice: 0,
+    loading: false,
+    error: null
+  }
+}
+/*
+export const approveTokens = (amount) => async (dispatch, getState) => {
+  contractToken.methods.approve(contract.address, amount).send({
+    from: account,
+    gasPrice: web3.utils.toWei('1', 'gwei'),
+    gas: 100000
+  }).on('receipt', (receipt) => {
+    console.log('receipt', receipt)
+  }).on('confirmation', (confirmationNumber, receipt) => {
+    if (confirmationNumber === 5)
+      console.log('confirmationNumber', receipt)
+  }).on('error', (error, receit) => {
+    console.log('error', error, receit)
+  })
+}*/
+
+export const upAd = (id) => async (dispatch, getState) => {
+
+  //await dispatch(getAccountInfo())
+
+  const account = getState().account
+
+  if (!account.address) {
+    alert('Account info is not available. Log in to MetaMask.')
+    return
+  }
+
+  if (!account.token || account.token < account.upPrice) {
+    alert('Not enough token OSLIK on your wallet. Buy more or get them as a bonus on your first ad publication.')
+    return
+  }
+
+  if (account.token < account.tokenApproved) { // !!! order important (missed !account.token)
+    alert('Not enough authorized tokens.')
+    return
+  }
+
+
+/*
+1. token amount
+2. approved?
+*/
+
+
+  contract.methods.upAd(id).send({
+    from: account,
+    gasPrice: web3.utils.toWei('1', 'gwei'),
+    gas: 100000
+  }).on('receipt', (receipt) => {
+    console.log('receipt', receipt)
+  }).on('confirmation', (confirmationNumber, receipt) => {
+    if (confirmationNumber === 5)
+      console.log('confirmationNumber', receipt)
+  }).on('error', (error, receit) => {
+    console.log('error', error, receit)
+  })
+}

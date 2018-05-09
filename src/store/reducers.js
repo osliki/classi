@@ -119,6 +119,7 @@ const columns = (state = {
   switch (action.type) {
 
     case 'newColumn':
+    console.log('newColumn')
       const newColumnId = state.allIds.length ? Math.max(...state.allIds) + 1 : 0
 
       return dotProp(state)
@@ -130,6 +131,7 @@ const columns = (state = {
           loading: false,
           error: null,
           ads: [],
+          total: 0
         })
         .value()
 
@@ -158,13 +160,20 @@ const columns = (state = {
         .value()
 
     case 'getColumnAdsSuccess':
-      return dotProp(state)
+      let newState = dotProp(state)
         .merge(`byId.${action.columnId}`, {
           loading: false,
           error: null,
-          ads: action.ads.map(id => Number(id))
+          total: action.total
         })
         .value()
+
+      if (action.ads.length)
+        newState = dotProp(newState)
+          .merge(`byId.${action.columnId}.ads`, action.ads.map(id => Number(id)))
+          .value()
+
+      return newState
 
     default:
       return state

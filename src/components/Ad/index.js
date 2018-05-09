@@ -9,7 +9,7 @@ import './index.css'
 import AdCard from './AdCard'
 import AdDetails from './AdDetails'
 
-import {getAd, getAdDetails, showAd, zoomAd, unzoomAd, showAdForm, initDraft, newColumn, addFav, removeFav} from '../../store/actions'
+import {getAd, getAdDetails, showAd, zoomAd, unzoomAd, showAdForm, initDraft, newColumn, addFav, removeFav, upAd} from '../../store/actions'
 import {getCatsByName, getFavsById} from '../../store/selectors'
 
 class Ad extends Component {
@@ -34,7 +34,7 @@ class Ad extends Component {
 
 
   render() {
-    const {id, ad, view, onShowAdDetails, onZoom, onUnzoom, loadAd, onEdit, cats, onShowUser, onAddFav, onRemoveFav, inFav} = this.props
+    const {id, ad, view, onShowAdDetails, onZoom, onUnzoom, loadAd, onEdit, cats, onShowUser, onAddFav, onRemoveFav, isFav, onUp} = this.props
     const catId = dotProp(ad).get('eth.data.catId').value()
 
     const commonProps = {
@@ -43,7 +43,8 @@ class Ad extends Component {
       catName: catId ? cats[catId].name : '',
       onAddFav,
       onRemoveFav,
-      inFav
+      isFav,
+      onUp
     }
 
     return (ad
@@ -74,7 +75,7 @@ export default connect((state, ownProps) => {
     return {
       ad: state.ads.byId[ownProps.id],
       cats: state.cats.byId,
-      inFav: getFavsById(state)[ownProps.id]
+      isFav: getFavsById(state)[ownProps.id]
     }
   }, (dispatch, ownProps) => {
     const id = ownProps.id
@@ -113,6 +114,9 @@ export default connect((state, ownProps) => {
       },
       onRemoveFav: (adId) => {
         dispatch(removeFav(adId))
+      },
+      onUp: (adId) => {
+        dispatch(upAd(adId))
       }
     }
   }

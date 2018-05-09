@@ -40,6 +40,11 @@ class AdForm extends Component {
 
     const {header, text, catName, catId} = this.props.draft
 
+    if (catId === '' && catName.trim() === '') {
+      this.catNameInput.focus()
+      return
+    }
+
     if (header.trim() === '') {
       this.headerInput.focus()
       return
@@ -47,11 +52,6 @@ class AdForm extends Component {
 
     if (text.trim() === '') {
       this.textInput.focus()
-      return
-    }
-
-    if (catId === '' && catName.trim() === '') {
-      this.catNameInput.focus()
       return
     }
 

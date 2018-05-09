@@ -35,11 +35,9 @@ class Column extends Component {
   }
 
   componentWillMount() {
-    const {onInit} = this.props
-
     window.addEventListener('resize', this.onResize)
 
-    onInit()
+    this.props.loadAds()
   }
 
   componentWillUnmount() {
@@ -60,7 +58,7 @@ class Column extends Component {
 
   getHeader = () => {
     const {column, cats} = this.props
-    const {type, param} = column
+    const {type, param = ''} = column
 
     switch(type) {
       case 'user':
@@ -69,7 +67,7 @@ class Column extends Component {
         return getUserShort(param)
 
       case 'cat':
-        return cats[param] ? cats[param].name : ''
+        return cats[param] ? cats[param].name : ' '
 
       default:
         param
@@ -77,28 +75,42 @@ class Column extends Component {
     return
   }
 
+  onYReachEnd = () => {
+    console.log('onYReachEnd')
+    const {loading, ads, total} = this.props.column
+
+    if (total === ads.length || loading/* || !ads.length*/) return
+
+console.log('onYReachEnd', this.props.column)//!!!!!!!!!!!
+    this.props.loadAds()
+  }
+
   render() {
-    const {removeColumn, column, id, favs} = this.props
+    const {removeColumn, column, id, favs, loadAds} = this.props
     const {loading, type, error} = column
 
     const ads = (type === 'fav' ? favs : column.ads)
+    const total = (type === 'fav' ? favs.length : column.total)
 
     const header = this.getHeader()
 
     const {anchorEl} = this.state
     const open = Boolean(anchorEl)
 
-console.log('Render column', column)
+console.log('Render Column', column, loading)
 
     return (
       <section className="Column">
         <div className="scrl" style={{height: this.state.winHeight}}>
 
-          <PerfectScrollbar option={{suppressScrollX: true}}>
+          <PerfectScrollbar
+            option={{suppressScrollX: true}}
+            onYReachEnd={type === 'fav' ? undefined : this.onYReachEnd}
+          >
             <AppBar position="sticky" color="default">
               <Toolbar>
                 <Typography noWrap variant="subheading" style={{flex: 1}}>
-                  {type}{header ? `: ${header}` : ''}
+                  {type}({total}){header ? `: ${header}` : ''}
                 </Typography>
 
                 <IconButton onClick={this.handleMenu}>
@@ -123,32 +135,34 @@ console.log('Render column', column)
               </Toolbar>
             </AppBar>
 
+            {(error
+              ?
+                <Typography align="center" style={{flex: 1}}>
+                  <br/><br/>
+                  Something went wrong :(
+                  <br/>
+                  <br/>
+                  <small>{error.message}</small>
+                </Typography>
+              :
+                (ads.length
+                  ?
+                    ads.map(id => (
+                      <Ad key={id} id={id} view="card" />
+                    ))
+                  :
+                    <Typography align="center" style={{flex: 1}}>
+                      <br/><br/>
+                      Ads not found
+                    </Typography>
+                )
+            )}
+
             {loading
               ?
                 <CircularProgress />
               :
-                (error
-                  ?
-                    <Typography align="center" style={{flex: 1}}>
-                      <br/><br/>
-                      Something went wrong :(
-                      <br/>
-                      <br/>
-                      <small>{error.message}</small>
-                    </Typography>
-                  :
-                    (ads.length
-                      ?
-                        ads.map(id => (
-                          <Ad key={id} id={id} view="card" />
-                        ))
-                      :
-                        <Typography align="center" style={{flex: 1}}>
-                          <br/><br/>
-                          Ads not found
-                        </Typography>
-                    )
-                )
+                null
             }
 
           </PerfectScrollbar>
@@ -176,7 +190,7 @@ export default connect((state, ownProps) => {
   const columnId = ownProps.id
 
   return {
-    onInit: () => {
+    loadAds: () => {
       dispatch(getColumnAds(columnId))
     },
     removeColumn: () => {

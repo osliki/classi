@@ -33,12 +33,12 @@ class AdCard extends Component {
     onShowUser: PropTypes.func.isRequired,
     onAddFav: PropTypes.func.isRequired,
     onRemoveFav: PropTypes.func.isRequired,
-    inFav: PropTypes.bool.isRequired,
+    isFav: PropTypes.bool.isRequired,
   }
 
   static defaultProps  = {
     catName: '',
-    inFav: false
+    isFav: false
   }
 
   constructor(props) {
@@ -63,7 +63,7 @@ class AdCard extends Component {
 
   render() {
 console.log('RENDER AdCard')
-    const {ad, onReload, onEdit, catName, onShowUser, onAddFav, onRemoveFav, inFav} = this.props
+    const {ad, onReload, onEdit, catName, onShowUser, onAddFav, onRemoveFav, isFav, onUp} = this.props
 
     const bzzLoaded = ad.bzz.loaded
 
@@ -168,10 +168,10 @@ console.log('RENDER AdCard')
           </CardContent>
 
           <CardActions disableActionSpacing={true}>
-            <IconButton onClick={() => {inFav ? onRemoveFav(ad.id) :  onAddFav(ad.id)}}>
-              <FavoriteIcon color={inFav ? 'error' :  'action'} />
+            <IconButton title="Add to Favorites" onClick={() => {isFav ? onRemoveFav(ad.id) :  onAddFav(ad.id)}}>
+              <FavoriteIcon color={isFav ? 'error' :  'action'} />
             </IconButton>
-            <IconButton>
+            <IconButton title="Move it to the top" onClick={() => {onUp(ad.id)}}>
               <ArrowUpwardIcon />
             </IconButton>
           </CardActions>
