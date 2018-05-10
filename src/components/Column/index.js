@@ -2,7 +2,6 @@ import React, {Component } from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import dotProp from 'dot-prop-immutable-chain'
-import {account} from '../../provider'
 import {getUserShort} from '../../utils'
 import './index.css'
 
@@ -12,7 +11,9 @@ import Toolbar from 'material-ui/Toolbar'
 import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
+import ClearIcon from '@material-ui/icons/Clear'
 import Menu, { MenuItem } from 'material-ui/Menu'
+import Paper from 'material-ui/Paper';
 
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import Ad from '../Ad'
@@ -57,12 +58,12 @@ class Column extends Component {
   }
 
   getHeader = () => {
-    const {column, cats} = this.props
+    const {column, cats, address} = this.props
     const {type, param = ''} = column
 
     switch(type) {
       case 'user':
-        if (param.toLowerCase() === account) return 'my'
+        if (param === address) return 'my'
 
         return getUserShort(param)
 
@@ -81,7 +82,7 @@ class Column extends Component {
 
     if (total === ads.length || loading/* || !ads.length*/) return
 
-console.log('onYReachEnd', this.props.column)//!!!!!!!!!!!
+    console.log('onYReachEnd', this.props.column)//!!!!!!!!!!!
     this.props.loadAds()
   }
 
@@ -97,44 +98,28 @@ console.log('onYReachEnd', this.props.column)//!!!!!!!!!!!
     const {anchorEl} = this.state
     const open = Boolean(anchorEl)
 
-console.log('Render Column', column, loading)
-
+    console.log('Render Column', column, loading)
     return (
       <section className="Column">
-        <div className="scrl" style={{height: this.state.winHeight}}>
+
+        <AppBar position="sticky" color="default">
+          <Toolbar disableGutters classes={{root: 'column-header'}}>
+            <Typography noWrap variant="subheading" style={{flex: 1}}>
+              {type}({total}){header ? `: ${header}` : ''}
+            </Typography>
+
+            <IconButton onClick={(e) => { this.handleClose(e); removeColumn(id); }}>
+              <ClearIcon  style={{ fontSize: 20 }} />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+
+        <div className="scrl" style={{height: this.state.winHeight-120}}>
 
           <PerfectScrollbar
             option={{suppressScrollX: true}}
             onYReachEnd={type === 'fav' ? undefined : this.onYReachEnd}
           >
-            <AppBar position="sticky" color="default">
-              <Toolbar>
-                <Typography noWrap variant="subheading" style={{flex: 1}}>
-                  {type}({total}){header ? `: ${header}` : ''}
-                </Typography>
-
-                <IconButton onClick={this.handleMenu}>
-                  <MoreVertIcon />
-                </IconButton>
-                <Menu
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right',
-                  }}
-                  open={open}
-                  onClose={this.handleClose}
-                >
-                  <MenuItem onClick={(e) => { this.handleClose(e); removeColumn(id); }}>Remove</MenuItem>
-                </Menu>
-
-              </Toolbar>
-            </AppBar>
-
             {(error
               ?
                 <Typography align="center" style={{flex: 1}}>
@@ -151,10 +136,15 @@ console.log('Render Column', column, loading)
                       <Ad key={id} id={id} view="card" />
                     ))
                   :
-                    <Typography align="center" style={{flex: 1}}>
-                      <br/><br/>
-                      Ads not found
-                    </Typography>
+                    (loading
+                      ?
+                        null
+                      :
+                        <Typography align="center" style={{flex: 1}}>
+                          <br/><br/>
+                          Ads not found
+                        </Typography>
+                    )
                 )
             )}
 
@@ -184,7 +174,8 @@ export default connect((state, ownProps) => {
   return {
     column: column,
     cats: state.cats.byId,
-    favs: column.type === 'fav' ? state.favs : emptyFavs
+    favs: column.type === 'fav' ? state.favs : emptyFavs,
+    address: state.account.address
   }
 }, (dispatch, ownProps) => {
   const columnId = ownProps.id
@@ -221,3 +212,32 @@ export default connect((state, ownProps) => {
       ads: [...ads, ...prevState.ads]
     }
   })*/
+/*
+            <AppBar color="default">
+              <Toolbar>
+                <Typography noWrap variant="subheading" style={{flex: 1}}>
+                  {type}({total}){header ? `: ${header}` : ''}
+                </Typography>
+
+                <IconButton onClick={this.handleMenu}>
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={open}
+                  onClose={this.handleClose}
+                >
+                  <MenuItem onClick={(e) => { this.handleClose(e); removeColumn(id); }}>Remove</MenuItem>
+                </Menu>
+
+              </Toolbar>
+            </AppBar>
+*/

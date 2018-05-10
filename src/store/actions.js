@@ -1,4 +1,4 @@
-import {contract, web3, account} from '../provider'
+import {contract, contractToken, web3} from '../provider'
 import dotProp from 'dot-prop-immutable-chain'
 
 
@@ -34,7 +34,7 @@ export const getCat = (id) => async (dispatch, getState) => {
   dispatch(getCatLoading(id))
 
   try {
-    [name, adsCount] = await Promise.all([
+    ;[name, adsCount] = await Promise.all([
       contract.methods.catsRegister(id).call(),
       contract.methods.getAdsCountByCat(id).call()
     ])
@@ -183,7 +183,7 @@ const getAdSuccess = (from, id, ad) => ({
 })
 
 export const getAd = (id) => async (dispatch, getState) => {
-  const ads = getState().ads
+  //onst ads = getState().ads
   //if (!ads.allIds.includes(id)) // just in case
 
   dispatch(initNewAd(id))
@@ -204,12 +204,13 @@ export const getAdDetails = (id) => async (dispatch, getState) => {
   const ads = getState().ads
 
   const contentAddress = dotProp.get(ads, `byId.${id}.eth.data.text`)
-  if (!contentAddress)
+  if (!contentAddress) {
+    dispatch(getAdError('bzz', id, new Error('Text is empty.')))
     return
+  }
 
   const loading = dotProp.get(ads, `byId.${id}.bzz.loading`)
-  if (loading)
-    return
+  if (loading) return
 
   dispatch(getAdLoading('bzz', id))
 
@@ -352,31 +353,31 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
     return
   }
 
-  //if (!hash) return
+  const from = getAccountAddress(getState(), (error) => dispatch(adFormError(draftId, new Error(error))))
+  if (!from) return
 
   let request
 
   if (id === '') {
     if (catId === '') {
       request = contract.methods.newCatWithAd(catName, hash).send({
-        from: account,
+        from,
         gasPrice: web3.utils.toWei('1', 'gwei'),
         gas: 300000
       })
     } else {
       request = contract.methods.newAd(catId, hash).send({
-        from: account,
+        from,
         gasPrice: web3.utils.toWei('1', 'gwei'),
         gas: 300000
       })
     }
   } else {
     request = contract.methods.editAd(id, hash).send({
-      from: account,
+      from,
       gasPrice: web3.utils.toWei('1', 'gwei'),
       gas: 100000
     })
-
   }
 
   request.on('receipt', receipt => {
@@ -408,65 +409,98 @@ export const removeFav = (adId) => ({
 
 
 
+/*** Account ***/
+
+export const accountLoading = () => ({
+  type: 'accountLoading'
+})
+
+export const accountError = (error) => ({
+  type: 'accountError',
+  error
+})
+
+export const accountSuccess = (data) => ({
+  type: 'accountSuccess',
+  data
+})
+
+export const accountUpdate = (data) => ({
+  type: 'accountUpdate',
+  data
+})
+
+export const getAccount = () => async (dispatch, getState) => {
+  dispatch(accountLoading())
+
+  let address, tokenBalance, tokenAllowance, tokenPrice, upPrice
+
+  try {
+    const accounts = await web3.eth.getAccounts()
+
+    address = accounts[0]
+
+    ;[
+      tokenBalance,
+      tokenAllowance,
+      upPrice
+    ] = await Promise.all([
+      contractToken.methods.balanceOf(address).call(),
+      contractToken.methods.allowance(address, contract._address).call(),
+      contract.methods.upPrice().call()
+    ])
+  } catch(error) {
+    dispatch(accountError(error))
+    return
+  }
+
+  dispatch(accountSuccess({
+    address,
+    tokenBalance,
+    tokenAllowance,
+    tokenPrice,
+    upPrice
+  }))
+
+}
+
+
+
 /*** Up Ad ***/
 
-export const getAccountInfo = () => async (dispatch, getState) => {
-  return {
-    token: 0, //amount
-    tokenApproved: 0, ///
-    address: '',
-    upPrice: 0,
-    tokenPrice: 0,
-    loading: false,
-    error: null
+const getAccountAddress = (state, onError) => {
+  const from = state.account.address
+
+  if (!from) {
+    const error = 'Your Ethereum address not available. Log in to MetaMask.'
+    onError && onError(error)
+    alert(error)
+    return
   }
+
+  return from
 }
-/*
-export const approveTokens = (amount) => async (dispatch, getState) => {
-  contractToken.methods.approve(contract.address, amount).send({
-    from: account,
-    gasPrice: web3.utils.toWei('1', 'gwei'),
-    gas: 100000
-  }).on('receipt', (receipt) => {
-    console.log('receipt', receipt)
-  }).on('confirmation', (confirmationNumber, receipt) => {
-    if (confirmationNumber === 5)
-      console.log('confirmationNumber', receipt)
-  }).on('error', (error, receit) => {
-    console.log('error', error, receit)
-  })
-}*/
 
 export const upAd = (id) => async (dispatch, getState) => {
 
-  //await dispatch(getAccountInfo())
+  const {upPrice, tokenBalance, tokenAllowance} = getState().account
 
-  const account = getState().account
+  const from = getAccountAddress(getState())
+  if (!from) return
 
-  if (!account.address) {
-    alert('Account info is not available. Log in to MetaMask.')
+  if (upPrice > tokenAllowance) {
+    dispatch(openApproveTokenDialog())
     return
   }
 
-  if (!account.token || account.token < account.upPrice) {
-    alert('Not enough token OSLIK on your wallet. Buy more or get them as a bonus on your first ad publication.')
+  if (upPrice > tokenBalance) {
+    const error = 'Not enough OSLIK tokens. Buy more or get them as a bonus on your first Ad publication.'
+    alert(error)
     return
   }
-
-  if (account.token < account.tokenApproved) { // !!! order important (missed !account.token)
-    alert('Not enough authorized tokens.')
-    return
-  }
-
-
-/*
-1. token amount
-2. approved?
-*/
-
 
   contract.methods.upAd(id).send({
-    from: account,
+    from,
     gasPrice: web3.utils.toWei('1', 'gwei'),
     gas: 100000
   }).on('receipt', (receipt) => {
@@ -474,7 +508,43 @@ export const upAd = (id) => async (dispatch, getState) => {
   }).on('confirmation', (confirmationNumber, receipt) => {
     if (confirmationNumber === 5)
       console.log('confirmationNumber', receipt)
+
   }).on('error', (error, receit) => {
     console.log('error', error, receit)
+  })
+
+}
+
+
+
+/*** ApproveTokenDialog ***/
+
+export const openApproveTokenDialog = () => ({
+  type: 'openApproveTokenDialog'
+})
+
+export const closeApproveTokenDialog = () => ({
+  type: 'closeApproveTokenDialog'
+})
+
+export const approveToken = (amount = 10**8) => async (dispatch, getState) => {
+  const from = getAccountAddress(getState())
+  if (!from) return
+
+  contractToken.methods.approve(contract._address, web3.utils.toWei(String(amount), 'ether')).send({
+    from,
+    gasPrice: web3.utils.toWei('1', 'gwei'),
+    gas: 50000
+  }).on('receipt', (receipt) => {
+    console.log('receipt', receipt)
+    dispatch(closeApproveTokenDialog())
+  }).on('confirmation', (confirmationNumber, receipt) => {
+    if (confirmationNumber === 8) {
+      console.log('confirmationNumber', receipt)
+      dispatch(getAccount())
+    }
+  }).on('error', (error, receit) => {
+    console.log('error', error, receit)
+    dispatch(closeApproveTokenDialog())
   })
 }

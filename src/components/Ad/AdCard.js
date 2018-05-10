@@ -15,13 +15,9 @@ import IconButton from 'material-ui/IconButton'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
-
 import Card, { CardHeader, CardActions, CardContent, CardMedia } from 'material-ui/Card'
 import Menu, { MenuItem } from 'material-ui/Menu'
-
-// import Image from "react-graceful-image";
-
-
+import Tooltip from 'material-ui/Tooltip'
 
 class AdCard extends Component {
   static propTypes = {
@@ -34,6 +30,7 @@ class AdCard extends Component {
     onAddFav: PropTypes.func.isRequired,
     onRemoveFav: PropTypes.func.isRequired,
     isFav: PropTypes.bool.isRequired,
+    onUp: PropTypes.func.isRequired,
   }
 
   static defaultProps  = {
@@ -62,7 +59,6 @@ class AdCard extends Component {
   }
 
   render() {
-console.log('RENDER AdCard')
     const {ad, onReload, onEdit, catName, onShowUser, onAddFav, onRemoveFav, isFav, onUp} = this.props
 
     const bzzLoaded = ad.bzz.loaded
@@ -77,11 +73,13 @@ console.log('RENDER AdCard')
     const userShort = getUserShort(user)
     const photo = photos[0]
 
-    const date = createdAt ? moment(createdAt * 1000).fromNow() : '...'
+    const dateFrom = createdAt ? moment(createdAt * 1000).fromNow() : '...'
+    const dateUsual = createdAt ? moment(createdAt * 1000).calendar() : '...'
 
     const { anchorEl } = this.state
     const open = Boolean(anchorEl)
 
+    console.log('RENDER AdCard', ad)
     return (
       <div className="AdCard">
 
@@ -114,11 +112,15 @@ console.log('RENDER AdCard')
            }
 
             subheader={
-              <span>
-                {`${date}`}
-                <br/>
-                {`User: ${userShort}`}
-              </span>
+              <div>
+                <div title={dateUsual}>
+                  {`${dateFrom}`}
+                </div>
+
+                <div title={user}>
+                  {`User: ${userShort}`}
+                </div>
+              </div>
             }
             classes={{
               title: 'card-header'
@@ -168,12 +170,16 @@ console.log('RENDER AdCard')
           </CardContent>
 
           <CardActions disableActionSpacing={true}>
-            <IconButton title="Add to Favorites" onClick={() => {isFav ? onRemoveFav(ad.id) :  onAddFav(ad.id)}}>
-              <FavoriteIcon color={isFav ? 'error' :  'action'} />
-            </IconButton>
-            <IconButton title="Move it to the top" onClick={() => {onUp(ad.id)}}>
-              <ArrowUpwardIcon />
-            </IconButton>
+            <Tooltip title="Add to Favorites">
+              <IconButton onClick={() => {isFav ? onRemoveFav(ad.id) :  onAddFav(ad.id)}}>
+                <FavoriteIcon color={isFav ? 'error' :  'action'} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Raise Ad in Category">
+              <IconButton onClick={() => {onUp(ad.id)}}>
+                <ArrowUpwardIcon />
+              </IconButton>
+            </Tooltip>
           </CardActions>
         </Card>
 

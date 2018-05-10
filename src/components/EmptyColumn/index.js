@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux'
-import {account} from '../../provider'
 
 import './index.css';
 
@@ -53,7 +52,7 @@ class EmptyColumn extends Component {
   }
 
   newColumn = (type) => {
-    const {onAdd} = this.props
+    const {onAdd, address} = this.props
 
     switch (type) {
       case 'all':
@@ -61,7 +60,7 @@ class EmptyColumn extends Component {
         return
 
       case 'my':
-        onAdd('user', account)
+        onAdd('user', address)
         return
 
       case 'fav':
@@ -92,9 +91,9 @@ class EmptyColumn extends Component {
             </ListItemText>
           </ListItem>
 
-          <ListItem button onClick={() => this.newColumn('my')}>
+          <ListItem button onClick={() => this.newColumn('cat')}>
             <ListItemText>
-              New 'my' column
+              New 'category' column
             </ListItemText>
           </ListItem>
 
@@ -104,15 +103,15 @@ class EmptyColumn extends Component {
             </ListItemText>
           </ListItem>
 
-          <ListItem button onClick={() => this.newColumn('cat')}>
-            <ListItemText>
-              New 'category' column
-            </ListItemText>
-          </ListItem>
-
           <ListItem button onClick={() => this.newColumn('user')}>
             <ListItemText>
               New 'user' column
+            </ListItemText>
+          </ListItem>
+
+          <ListItem button onClick={() => this.newColumn('my')}>
+            <ListItemText>
+              New 'my' column
             </ListItemText>
           </ListItem>
 
@@ -125,6 +124,7 @@ class EmptyColumn extends Component {
               Create Ad
             </ListItemText>
           </ListItem>
+
         </List>
 
         <Dialog
@@ -214,7 +214,8 @@ class EmptyColumn extends Component {
 
 export default connect((state, ownProps) => {
     return {
-      catsArray: getCatsArray(state)
+      catsArray: getCatsArray(state),
+      address: state.account.address
     }
   }, (dispatch, ownProps) => {
     return {
@@ -227,3 +228,34 @@ export default connect((state, ownProps) => {
       }
     }
 })(EmptyColumn)
+
+
+/*
+
+{address
+  ?
+    <ListItem button onClick={() => this.newColumn('my')}>
+      <ListItemText>
+        New 'my' column
+      </ListItemText>
+    </ListItem>
+  :
+    null
+}
+
+{address
+  ?
+    <ListItem button onClick={newAd}>
+      <ListItemIcon>
+        <AddIcon />
+      </ListItemIcon>
+
+      <ListItemText>
+        Create Ad
+      </ListItemText>
+    </ListItem>
+  :
+    null
+}
+
+*/

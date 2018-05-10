@@ -3,15 +3,19 @@
   width: 100%;
   display: table;
   table-layout: fixed;
+  margin: 0;
+  padding: 0;
 }
 
 .Board .Column, .Board .EmptyColumn {
-  height: 100%;
-  border-right:  1px solid #ccc;
   display: table-cell;
+  vertical-align:top;
+  margin: 0;
+  padding: 0;
 }
 
 .Board .Column {
+  border-right:  1px solid #ccc;
   width: 300px;
 }
 
@@ -21,10 +25,4 @@
 
 .Board .EmptyColumn nav {
   min-width: 280px;
-}
-
-
-.scrl{
-  height: 100%;
-  overflow:hidden;
 }

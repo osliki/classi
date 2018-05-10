@@ -5,10 +5,13 @@ import './index.css'
 import AppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
 
+import PerfectScrollbar from 'react-perfect-scrollbar'
+
 import Column from '../Column'
 import EmptyColumn from '../EmptyColumn'
 import AdDetailsDialog from '../Ad/AdDetailsDialog'
 import AdFormDialog from '../AdForm/AdFormDialog'
+import ApproveTokenDialog from '../ApproveTokenDialog'
 
 import {getCats} from '../../store/actions'
 
@@ -21,16 +24,21 @@ class Board extends Component {
     const {columns} = this.props
 
     return (
-      <main className="Board">
+      <PerfectScrollbar
+        option={{suppressScrollY: true}}
+      >
+        <main className="Board">
           {columns.allIds.map(id => (
             <Column key={id} id={id} />
           ))}
 
           <EmptyColumn />
 
-        <AdFormDialog/>
-        <AdDetailsDialog/>
-      </main>
+          <AdFormDialog/>
+          <AdDetailsDialog/>
+          <ApproveTokenDialog/>
+        </main>
+      </PerfectScrollbar>
     )
   }
 }

@@ -325,6 +325,73 @@ const favs = (state = [], action) => {
   }
 }
 
+const account = (state = {
+  address: '',
+  tokenBalance: 0,
+  tokenAllowance: 0,
+  tokenPrice: 0,
+  upPrice: 0,
+  loading: false,
+  error: null
+}, action) => {
+  switch (action.type) {
+    case 'accountLoading':
+      return {
+        ...state,
+        loading: true,
+        error: null
+      }
+
+    case 'accountError':
+      return {
+        ...state,
+        loading: false,
+        error: action.error
+      }
+
+    case 'accountSuccess':
+      //const {address, tokenBalance, tokenAllowance, tokenPrice, upPrice} = action.data
+
+      return {
+        ...state,
+        ...action.data,
+        loading: false,
+        error: null
+      }
+
+    case 'accountUpdate':
+      return {
+        ...state,
+        ...action.data
+      }
+
+    default:
+      return state
+  }
+}
+
+
+const approveTokenDialog = (state = {
+  opened: false
+}, action) => {
+  switch (action.type) {
+    case 'openApproveTokenDialog':
+      return {
+        ...state,
+        opened: true
+      }
+
+    case 'closeApproveTokenDialog':
+      return {
+        ...state,
+        opened: false
+      }
+
+    default:
+      return state
+  }
+}
+
 const rootReducer = combineReducers({
   cats,
   ads,
@@ -332,7 +399,9 @@ const rootReducer = combineReducers({
   ad,
   adForm,
   drafts,
-  favs
+  favs,
+  account,
+  approveTokenDialog
 })
 
 export default rootReducer

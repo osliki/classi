@@ -34,17 +34,18 @@ class Ad extends Component {
 
 
   render() {
-    const {id, ad, view, onShowAdDetails, onZoom, onUnzoom, loadAd, onEdit, cats, onShowUser, onAddFav, onRemoveFav, isFav, onUp} = this.props
+    const {id, ad, view, onShowAdDetails, onZoom, onUnzoom, loadAd, onEdit, cats, onShowUser, onAddFav, onRemoveFav, isFav, onUp, account} = this.props
     const catId = dotProp(ad).get('eth.data.catId').value()
 
     const commonProps = {
       onReload: loadAd,
       onEdit,
-      catName: catId ? cats[catId].name : '',
+      catName: (catId ? cats[catId].name : ''),
       onAddFav,
       onRemoveFav,
       isFav,
-      onUp
+      onUp,
+      account
     }
 
     return (ad
@@ -75,7 +76,8 @@ export default connect((state, ownProps) => {
     return {
       ad: state.ads.byId[ownProps.id],
       cats: state.cats.byId,
-      isFav: getFavsById(state)[ownProps.id]
+      isFav: getFavsById(state)[ownProps.id],
+      account: state.account
     }
   }, (dispatch, ownProps) => {
     const id = ownProps.id

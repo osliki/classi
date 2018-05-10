@@ -1,8 +1,10 @@
-body, html, #root{
-  height:100%;
+body, html, #root {
+  height: 100%;
+  width: 100%;
   font-size: 14px;
-  overflow-y:hidden;
+  overflow: hidden;
 }
+
 
 .img-cover {
   width:100%;

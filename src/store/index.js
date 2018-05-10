@@ -31,22 +31,8 @@ const initialState = {
     allIds: [],
   },
   ads: {
-    byId: {
-      0: {
-        id: 0,
-        eth: {
-          loading: false,
-          error: undefined,
-          data: {},
-        },
-        bzz: {
-          loading: false,
-          error: undefined,
-          data: {},
-        },
-      }
-    },
-    allIds: [0],
+    byId: {},
+    allIds: [],
   },
   ad: {
     id: null,
@@ -57,9 +43,21 @@ const initialState = {
     draftId: null,
     opened: false
   },
-  drafts: {
+  drafts: {},
+  favs: [0],
+  account: {
+    address: '',
+    tokenAmount: 0, //amount
+    tokenApproved: 0, ///
+    tokenPrice: 0,
+    upPrice: 0,
+    loading: false,
+    error: null
   },
-  favs: []
+  approveTokenDialog: {
+    opened: false
+  }
+
   /*,
   transactions: {
   }*/

@@ -35,6 +35,9 @@ class AdDetails extends Component {
     const createdAtFrom = createdAt ? moment(createdAt * 1000).fromNow() : '...'
     const updatedAtFrom = updatedAt ? moment(updatedAt * 1000).fromNow() : '...'
 
+    const createdAtUsual = createdAt ? moment(createdAt * 1000).calendar() : '...'
+    const updatedAtUsual = updatedAt ? moment(updatedAt * 1000).calendar() : '...'
+
     return (
       <Paper className="AdDetails">
         { !bzzLoaded
@@ -43,10 +46,17 @@ class AdDetails extends Component {
           :
             <div>
               <Typography noWrap variant="body1" color="textSecondary">
-                {`${createdAtFrom}`} {createdAt === updatedAt ? '' : ` (edited ${updatedAtFrom})`}
+                <div>
+                  <span title={createdAtUsual}>
+                    {`${createdAtFrom}`}
+                  </span>
+
+                   {createdAt === updatedAt ? '' : ` (edited ${updatedAtFrom})`}
+                </div>
+                <div>
+                  {'User: '} <UserName user={user} />
+                </div>
                 <br />
-                {'User: '} <UserName user={user} />
-                <br /><br />
               </Typography>
 
               <Typography variant="headline" component="h1">

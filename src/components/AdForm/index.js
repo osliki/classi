@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import {createSelector} from 'reselect'
 import dotProp from 'dot-prop-immutable-chain'
-import {contract, web3, account} from '../../provider'
 
 import './index.css'
 

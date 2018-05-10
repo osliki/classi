@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import { Provider } from 'react-redux'
-import './App.css'
+
+import AppBar from './components/AppBar'
 import Board from './components/Board'
 import store from './store'
 
@@ -13,7 +14,6 @@ import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 
 const theme = createMuiTheme({
   typography: {
-    // In Japanese the characters are usually larger.
     fontSize: 10,
     htmlFontSize: 12,
   },
@@ -26,6 +26,8 @@ class App extends Component {
         <MuiThemeProvider theme={theme}>
           <div className="App">
             <CssBaseline />
+            
+            <AppBar />
             <Board />
           </div>
         </MuiThemeProvider>
