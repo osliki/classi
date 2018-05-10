@@ -8,7 +8,7 @@ const cats = (state = {
   switch (action.type) {
     case 'initNewCat':
       return dotProp(state)
-        .merge(`allIds`, [action.id])
+        //.merge(`allIds`, [action.id])
         .set(`byId.${action.id}`, {
           id: action.id,
           name: '',
@@ -44,10 +44,22 @@ const cats = (state = {
         })
         .value()
 
-    /*case 'catNewAdsCount':
+    case 'getCatsSuccess':
+      const {names, adsCounts} = action
+
+      const cats = {}
+
+      names.forEach((name, id) => {
+        cats[id] = {
+          id,
+          name,
+          adsCount: adsCounts[id]
+        }
+      })
+console.dir(cats)
       return dotProp(state)
-        .set(`byId.${action.id}.adsCount`, action.adsCount)
-        .value()*/
+        .set('byId', cats)
+        .value()
 
     default:
       return state
@@ -168,10 +180,14 @@ const columns = (state = {
         })
         .value()
 
-      if (action.ads.length)
+      if (action.ads.length) {
+        const newAds = action.ads.map(id => Number(id))
+        const oldAds = dotProp(newState).get(`byId.${action.columnId}.ads`).value()
+
         newState = dotProp(newState)
-          .merge(`byId.${action.columnId}.ads`, action.ads.map(id => Number(id)))
+          .set(`byId.${action.columnId}.ads`, (action.which === 'old' ? [...oldAds, ...newAds] : [...newAds, ...oldAds]))
           .value()
+      }
 
       return newState
 
@@ -392,6 +408,31 @@ const approveTokenDialog = (state = {
   }
 }
 
+const blacklist = (state = [], action) => {
+  switch (action.type) {
+    case 'addToBL':
+
+      if (state.includes(action.id)) return state
+
+      return [
+        ...state,
+        action.id
+      ]
+
+    case 'removeFromBL':
+      const removeIndex = state.findIndex(el => el === action.id)
+
+      if (removeIndex < 0) return state
+
+      return dotProp(state)
+        .delete(removeIndex)
+        .value()
+
+    default:
+      return state
+  }
+}
+
 const rootReducer = combineReducers({
   cats,
   ads,
@@ -401,7 +442,8 @@ const rootReducer = combineReducers({
   drafts,
   favs,
   account,
-  approveTokenDialog
+  approveTokenDialog,
+  blacklist
 })
 
 export default rootReducer

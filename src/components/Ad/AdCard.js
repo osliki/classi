@@ -9,15 +9,15 @@ import {ImgLoader, HeaderLoader, TextLoader, CardLoader} from '../Loaders'
 import Img from '../Img'
 
 import {CircularProgress} from 'material-ui/Progress';
-import Typography from 'material-ui/Typography';
+import Typography from 'material-ui/Typography'
 import Button from 'material-ui/Button'
 import IconButton from 'material-ui/IconButton'
 import FavoriteIcon from '@material-ui/icons/Favorite'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
+import Tooltip from 'material-ui/Tooltip'
+import MoreVertIcon from '@material-ui/icons/MoreVert'
 import Card, { CardHeader, CardActions, CardContent, CardMedia } from 'material-ui/Card'
 import Menu, { MenuItem } from 'material-ui/Menu'
-import Tooltip from 'material-ui/Tooltip'
 
 class AdCard extends Component {
   static propTypes = {
@@ -31,11 +31,16 @@ class AdCard extends Component {
     onRemoveFav: PropTypes.func.isRequired,
     isFav: PropTypes.bool.isRequired,
     onUp: PropTypes.func.isRequired,
+    onAddToBL: PropTypes.func.isRequired,
+    onRemoveFromBL: PropTypes.func.isRequired,
+    isBlacklisted: PropTypes.bool.isRequired,
+    account: PropTypes.object.isRequired,
   }
 
   static defaultProps  = {
     catName: '',
-    isFav: false
+    isFav: false,
+    isBlacklisted: false,
   }
 
   constructor(props) {
@@ -59,7 +64,7 @@ class AdCard extends Component {
   }
 
   render() {
-    const {ad, onReload, onEdit, catName, onShowUser, onAddFav, onRemoveFav, isFav, onUp} = this.props
+    const {ad, onReload, onEdit, catName, onShowUser, onAddFav, onRemoveFav, isFav, onUp, onAddToBL, onRemoveFromBL, isBlacklisted, account} = this.props
 
     const bzzLoaded = ad.bzz.loaded
 
@@ -70,7 +75,9 @@ class AdCard extends Component {
     const {user = '', createdAt} = ad.eth.data
     const {header, text = '', photos = []} = ad.bzz.data
 
-    const userShort = getUserShort(user)
+    const isAuthor = (account.address && account.address === user)
+    const userShort = isAuthor ? 'me' : getUserShort(user)
+
     const photo = photos[0]
 
     const dateFrom = createdAt ? moment(createdAt * 1000).fromNow() : '...'
@@ -79,7 +86,23 @@ class AdCard extends Component {
     const { anchorEl } = this.state
     const open = Boolean(anchorEl)
 
+
     console.log('RENDER AdCard', ad)
+
+    if (isBlacklisted)
+      return (
+        <div className="AdCard">
+          <Card>
+            <CardHeader />
+
+            <CardContent>
+              <Typography>
+                <i>This Ad has been blacklisted.</i> <a href="#" onClick={(e) => {e.preventDefault(); onRemoveFromBL()}}>Undo</a>
+              </Typography>
+            </CardContent>
+          </Card>
+        </div>)
+
     return (
       <div className="AdCard">
 
@@ -104,9 +127,13 @@ class AdCard extends Component {
                   onClose={this.handleClose}
                 >
                   <MenuItem onClick={(e) => {onShowUser(ad.eth.data.user); this.handleClose(e)}}>Show user`s ads</MenuItem>
-                  <MenuItem onClick={this.handleClose}>Add user to Blacklist</MenuItem>
                   <MenuItem onClick={(e) => {onReload(); this.handleClose(e)}}>Reload</MenuItem>
-                  <MenuItem onClick={(e) => {onEdit(ad); this.handleClose(e)}}>Edit</MenuItem>
+                  {isAuthor
+                    ?
+                      <MenuItem onClick={(e) => {onEdit(ad); this.handleClose(e)}}>Edit</MenuItem>
+                    :
+                      <MenuItem onClick={(e) => {onAddToBL(); this.handleClose(e)}}>Add to Blacklist</MenuItem>
+                  }
                 </Menu>
              </div>
            }
@@ -171,12 +198,12 @@ class AdCard extends Component {
 
           <CardActions disableActionSpacing={true}>
             <Tooltip title="Add to Favorites">
-              <IconButton onClick={() => {isFav ? onRemoveFav(ad.id) :  onAddFav(ad.id)}}>
+              <IconButton onClick={() => {isFav ? onRemoveFav() :  onAddFav()}}>
                 <FavoriteIcon color={isFav ? 'error' :  'action'} />
               </IconButton>
             </Tooltip>
             <Tooltip title="Raise Ad in Category">
-              <IconButton onClick={() => {onUp(ad.id)}}>
+              <IconButton onClick={() => {onUp()}}>
                 <ArrowUpwardIcon />
               </IconButton>
             </Tooltip>

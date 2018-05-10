@@ -87,7 +87,8 @@ class AdForm extends Component {
                     clearSelection()
                   }
 
-                  if(catsByName[val]) {
+                  // if (catsByName[val]) { // without trim ?? dont remember why
+                  else { // without trim
                     selectItem(cat)
                   }
                 }}

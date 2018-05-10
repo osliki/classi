@@ -16,6 +16,19 @@
   width: 148px;
 }
 
+.AdDetails-header {
+  display: flex;
+}
+
+.AdDetails-info {
+  flex: 1 1 auto;
+}
+
+.AdDetails-actions {
+  
+  text-align: right;
+}
+
 
   /*
 .AdDetails .img-fill {

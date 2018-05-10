@@ -1,6 +1,6 @@
 import {contract, contractToken, web3} from '../provider'
 import dotProp from 'dot-prop-immutable-chain'
-
+import {getBlacklistById} from './selectors'
 
 /*** Cats ***/
 
@@ -27,6 +27,12 @@ const getCatSuccess = (id, name, adsCount) => ({
   adsCount
 })
 
+const getCatsSuccess = (names, adsCounts) => ({
+  type: 'getCatsSuccess',
+  names,
+  adsCounts
+})
+
 export const getCat = (id) => async (dispatch, getState) => {
   let name, adsCount
 
@@ -49,9 +55,18 @@ export const getCat = (id) => async (dispatch, getState) => {
 export const getCats = () => async (dispatch, getState) => {
   const catsCount = await contract.methods.getCatsCount().call()
 
+  let promisesCat = [],
+    promisesCount = []
+
   for (let id = 0; id < catsCount; id++) {
-    dispatch(getCat(id))
+    promisesCat.push(contract.methods.catsRegister(id).call())
+    promisesCount.push(contract.methods.getAdsCountByCat(id).call())
   }
+
+  const names = await Promise.all(promisesCat)
+  const adsCounts = await Promise.all(promisesCount)
+
+  dispatch(getCatsSuccess(names, adsCounts))
 }
 
 
@@ -74,9 +89,10 @@ const getColumnAdsLoading = (columnId) => ({
   columnId
 })
 
-const getColumnAdsSuccess = (columnId, ads, total) => ({
+const getColumnAdsSuccess = (columnId, which, ads, total) => ({
   type: 'getColumnAdsSuccess',
   columnId,
+  which,
   ads,
   total
 })
@@ -87,70 +103,96 @@ const getColumnAdsError = (columnId, error) => ({
   error
 })
 
-export const getColumnAds = (columnId, max = 3) => async (dispatch, getState) => {
+export const getColumnAds = (columnId, which = 'old', max = 3) => async (dispatch, getState) => {
   console.log('getColumnAds', columnId)
 
   const column = getState().columns.byId[columnId]
 
-  if (column.type === 'fav') return
+  if (column.loading || column.type === 'fav') return
 
-  const getAds = async function getAds(totalMethod, getMethod) {
-    const param = column.param
+  dispatch(getColumnAdsLoading(columnId))
+
+  const getOldAds = async (totalMethod, getMethod) => {
+    console.log('getOldAds')
+
+    let total = column.total
+
+    if (!total) {
+      total = await (totalMethod === 'getAdsCount' ?
+        contract.methods.getAdsCount() :
+        contract.methods[totalMethod](column.param)
+      ).call()
+
+      total = Number(total)
+    }
+
+    let start = total - 1 - column.ads.length // if < 0, for will be skipped
+
+    let end = start - max
+    if (end < 0) end = -1
+
+    return {total, start, end}
+  }
+
+  const getNewAds = async (totalMethod) => {
+    const columnTotal = column.total
 
     let total = await (totalMethod === 'getAdsCount' ?
-      contract.methods[totalMethod]() :
-      contract.methods[totalMethod](param)
+      contract.methods.getAdsCount() :
+      contract.methods[totalMethod](column.param)
     ).call()
 
     total = Number(total)
-    let ads = []
 
-    if (total === 0) return {ads, total}
+    let start = total - 1
+    let end = columnTotal - 1
 
-    let start = total - 1 - column.ads.length
-    if (start < 0) start = 0
+    return {total, start, end}
+  }
 
-    let end =  start - max
-    if (end < 0) end = -1
+  const procedure = (which === 'old' ? getOldAds : getNewAds)
+
+  let res
+  let ads = []
+
+  try {
+    let getMethod
+
+    switch(column.type) {
+      case 'all':
+        res = await procedure('getAdsCount')
+        break
+
+      case 'user':
+        res = await procedure('getAdsCountByUser')
+        getMethod = 'getAdIdByUser'
+        break
+
+      case 'cat':
+        res = await procedure('getAdsCountByCat')
+        getMethod = 'getAdIdByCat'
+        break
+    }
+
+    const {start, end} = res
 
     let promises = []
-console.log('start = ' +start, 'end = ' +end, 'total = ' +total)
+
     for (let index = start; index > end; index--) {
       getMethod ?
-        promises.push(contract.methods[getMethod](param, index).call()) :
+        promises.push(contract.methods[getMethod](column.param, index).call()) :
         ads.push(index)
     }
 
     if (promises.length) // important!!!
       ads = await Promise.all(promises)
 
-    return {ads, total}
-  }
-
-  dispatch(getColumnAdsLoading(columnId))
-
-  let res
-
-  try {
-    switch(column.type) {
-      case 'all':
-        res = await getAds('getAdsCount')
-        break
-
-      case 'user':
-        res = await getAds('getAdsCountByUser', 'getAdIdByUser')
-        break
-
-      case 'cat':
-        res = await getAds('getAdsCountByCat', 'getAdIdByCat')
-        break
-    }
   } catch (error) {
     dispatch(getColumnAdsError(columnId, error))
     return
   }
 
-  dispatch(getColumnAdsSuccess(columnId, res.ads, res.total))
+  dispatch(getColumnAdsSuccess(columnId, which, ads, res.total))
 }
 
 
@@ -187,6 +229,11 @@ export const getAd = (id) => async (dispatch, getState) => {
   //if (!ads.allIds.includes(id)) // just in case
 
   dispatch(initNewAd(id))
+
+  const blacklist = getState().blacklist
+
+  if (getBlacklistById(getState())[id]) return
+
   dispatch(getAdLoading('eth', id))
 
   let newAd
@@ -548,3 +595,16 @@ export const approveToken = (amount = 10**8) => async (dispatch, getState) => {
     dispatch(closeApproveTokenDialog())
   })
 }
+
+
+/*** Blacklist ***/
+
+export const addToBL = (id) => ({
+  type: 'addToBL',
+  id
+})
+
+export const removeFromBL = (id) => ({
+  type: 'removeFromBL',
+  id
+})

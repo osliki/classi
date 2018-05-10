@@ -1,12 +1,43 @@
 import {createStore, applyMiddleware} from 'redux'
 import thunk from 'redux-thunk'
+import throttle from 'lodash/throttle'
+import union from 'lodash/union'
+import dotProp from 'dot-prop-immutable-chain'
+
 import rootReducer from './reducers'
+import {loadState, saveState} from './localStorage'
 
 const initialState = {
   cats: {  //{id, name, adsCount}
     byId: {},
     allIds: [],
   },
+  ads: {
+    byId: {},
+    allIds: [],
+  },
+  ad: {
+    id: null,
+    zoom: false,
+    opened: false
+  },
+  adForm: {
+    draftId: null,
+    opened: false
+  },
+  account: {
+    address: '',
+    tokenAmount: 0, //amount
+    tokenApproved: 0, ///
+    tokenPrice: 0,
+    upPrice: 0,
+    loading: false,
+    error: null
+  },
+  approveTokenDialog: {
+    opened: false
+  },
+
   columns: {
     byId: {
       0: {
@@ -26,49 +57,45 @@ const initialState = {
         type: 'cat',
         param: 3,
         ads: [],
+      },
+      7: {
+        id: 7,
+        type: 'fav'
       }
     },
-    allIds: [],
-  },
-  ads: {
-    byId: {},
-    allIds: [],
-  },
-  ad: {
-    id: null,
-    zoom: false,
-    opened: false
-  },
-  adForm: {
-    draftId: null,
-    opened: false
+    allIds: [7],
   },
   drafts: {},
-  favs: [0],
-  account: {
-    address: '',
-    tokenAmount: 0, //amount
-    tokenApproved: 0, ///
-    tokenPrice: 0,
-    upPrice: 0,
-    loading: false,
-    error: null
-  },
-  approveTokenDialog: {
-    opened: false
-  }
+  favs: [5, 12, 0],
+  blacklist: [12],
 
-  /*,
-  transactions: {
-  }*/
 }
+
+const persistedState = loadState()
+persistedState.blacklist = union(persistedState.blacklist || [], [1, 4])
 
 const store = createStore(
   rootReducer,
-  initialState,
+  persistedState,
   applyMiddleware(
     thunk
   )
 )
+
+store.subscribe(throttle(() => {
+  const {columns, drafts, favs, blacklist} = store.getState()
+
+  let cleanedColumns = columns
+  columns.allIds.forEach(id => {
+    cleanedColumns = dotProp(cleanedColumns)
+      .merge(`byId.${id}`, {
+        loading: false,
+        ads: []
+      })
+      .value()
+  })
+
+  saveState({columns: cleanedColumns, drafts, favs, blacklist})
+}, 1000))
 
 export default store

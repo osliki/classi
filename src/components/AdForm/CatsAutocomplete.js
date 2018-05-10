@@ -18,7 +18,7 @@ const CatsAutocomplete = ({
   return (
     <Downshift
       onChange={onChange}
-      itemToString={(item) => (item == null || item.name == null ? '' : String(item.name))}
+      itemToString={item => (item == null ? inputValue : String(item.name))}
       defaultSelectedItem={defaultSelectedItem}
     >
       {({getInputProps,

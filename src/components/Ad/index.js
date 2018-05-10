@@ -9,8 +9,8 @@ import './index.css'
 import AdCard from './AdCard'
 import AdDetails from './AdDetails'
 
-import {getAd, getAdDetails, showAd, zoomAd, unzoomAd, showAdForm, initDraft, newColumn, addFav, removeFav, upAd} from '../../store/actions'
-import {getCatsByName, getFavsById} from '../../store/selectors'
+import {getAd, getAdDetails, showAd, zoomAd, unzoomAd, showAdForm, initDraft, newColumn, addFav, removeFav, upAd, addToBL, removeFromBL} from '../../store/actions'
+import {getCatsByName, getFavsById, getBlacklistById} from '../../store/selectors'
 
 class Ad extends Component {
   static propTypes = {
@@ -32,20 +32,52 @@ class Ad extends Component {
     loadAd()
   }
 
+  onRemoveFromBL = () => {
+    const {onRemoveFromBL, ad, loadAd} = this.props
+
+    onRemoveFromBL()
+
+    const loaded = dotProp(ad).get('eth.loaded').value()
+
+    if (!loaded) loadAd()
+  }
 
   render() {
-    const {id, ad, view, onShowAdDetails, onZoom, onUnzoom, loadAd, onEdit, cats, onShowUser, onAddFav, onRemoveFav, isFav, onUp, account} = this.props
+    const {id,
+      ad,
+      view,
+      cats,
+      onShowAdDetails,
+      onZoom,
+      onUnzoom,
+      loadAd,
+      onEdit,
+      onShowUser,
+      onAddFav,
+      onRemoveFav,
+      isFav,
+      onUp,
+      account,
+      onAddToBL,
+      isBlacklisted
+    } = this.props
+
+    const {onRemoveFromBL} = this
+
     const catId = dotProp(ad).get('eth.data.catId').value()
 
     const commonProps = {
       onReload: loadAd,
       onEdit,
-      catName: (catId ? cats[catId].name : ''),
+      catName: (catId && cats[catId] ? cats[catId].name : ''),
       onAddFav,
       onRemoveFav,
       isFav,
       onUp,
-      account
+      account,
+      onAddToBL,
+      onRemoveFromBL,
+      isBlacklisted
     }
 
     return (ad
@@ -77,7 +109,8 @@ export default connect((state, ownProps) => {
       ad: state.ads.byId[ownProps.id],
       cats: state.cats.byId,
       isFav: getFavsById(state)[ownProps.id],
-      account: state.account
+      account: state.account,
+      isBlacklisted: getBlacklistById(state)[ownProps.id],
     }
   }, (dispatch, ownProps) => {
     const id = ownProps.id
@@ -92,7 +125,9 @@ export default connect((state, ownProps) => {
       },
       onEdit: (ad) => {
         const draftId = `${ad.id}_${ad.eth.data.updatedAt}`
-        /* clean drafts */
+
+        /* need clean drafts */
+
         dispatch(initDraft(draftId, {
           id: ad.id,
           catId: ad.eth.data.catId,
@@ -100,6 +135,7 @@ export default connect((state, ownProps) => {
           text: ad.bzz.data.text,
           photos: ad.bzz.data.photos
         }))
+
         dispatch(showAdForm(draftId))
       },
       onZoom: () => {
@@ -111,14 +147,20 @@ export default connect((state, ownProps) => {
       onShowUser: (param) => {
         dispatch(newColumn('user', param))
       },
-      onAddFav: (adId) => {
-        dispatch(addFav(adId))
+      onAddFav: () => {
+        dispatch(addFav(id))
       },
-      onRemoveFav: (adId) => {
-        dispatch(removeFav(adId))
+      onRemoveFav: () => {
+        dispatch(removeFav(id))
       },
-      onUp: (adId) => {
-        dispatch(upAd(adId))
+      onUp: () => {
+        dispatch(upAd(id))
+      },
+      onAddToBL: () => {
+        dispatch(addToBL(id))
+      },
+      onRemoveFromBL: () => {
+        dispatch(removeFromBL(id))
       }
     }
   }

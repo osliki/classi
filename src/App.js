@@ -6,6 +6,7 @@ import AppBar from './components/AppBar'
 import Board from './components/Board'
 import store from './store'
 
+
 import 'react-perfect-scrollbar/dist/css/styles.css'
 
 import 'typeface-roboto'
@@ -26,7 +27,7 @@ class App extends Component {
         <MuiThemeProvider theme={theme}>
           <div className="App">
             <CssBaseline />
-            
+
             <AppBar />
             <Board />
           </div>

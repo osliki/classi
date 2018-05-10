@@ -183,32 +183,7 @@ class EmptyColumn extends Component {
         </Dialog>
 
       </section>
-
-
-      /*<section className="EmptyColumn">
-        <ul>
-          <li>
-            <a href="">Ads from a category</a>
-          </li>
-          <li>
-            <a href="">Ads from an user</a>
-          </li>
-          <li>
-            <a href="">Favorite ads</a>
-          </li>
-          <li>
-            <a href="">My ads</a>
-          </li>
-          <li>
-            <a href="">Black list</a>
-          </li>
-          <li>
-            <Button onClick={newAd}>New ad</Button>
-          </li>
-        </ul>
-
-      </section>*/
-    );
+    )
   }
 }
 
