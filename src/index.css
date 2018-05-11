@@ -55,6 +55,10 @@ body, html, #root {
   padding-bottom: 0px !important;
 }
 
+.card-content-loader {
+  padding-top: 0px !important;
+}
+
 .user-name-short{
   width: 290px;
   display: inline-block;

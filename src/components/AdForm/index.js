@@ -101,6 +101,8 @@ class AdForm extends Component {
               />
           }
 
+          {catName}
+
           <TextField
             name="header"
             label="Header"

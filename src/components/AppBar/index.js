@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {onChangeAccount} from '../../provider'
+import {onChangeAccount, web3} from '../../provider'
 import {getUserShort} from '../../utils'
 
 import './index.css'
@@ -31,7 +31,7 @@ class AppBar extends Component {
   }
 
   render() {
-    const {address, tokenAmount, tokenAllowance, upPrice} = this.props.account
+    const {address, tokenBalance, tokenAllowance, upPrice} = this.props.account
 
     console.log('RENDER AppBar', this.props.account)
 
@@ -48,22 +48,29 @@ class AppBar extends Component {
               <span title={address ? address : 'Guest'}>{address ? getUserShort(address) : 'Guest'}</span>
             </Typography>
 
-            <Typography color="textSecondary" variant="body1">
-              <span title="Inner currency OSLIK">
-                {tokenAmount} OSLIK
-              </span>
+            {address
+              ?
+                <Typography color="textSecondary" variant="body1">
+                  <span title="Inner currency OSLIK">
+                    {web3.utils.fromWei(String(tokenBalance), 'ether')} OSLIK
+                  </span>
 
-                {tokenAllowance > upPrice
-                  ?
-                    <span title="dApp is authorized" >
-                      <LockOpenIcon style={{fontSize: 14}} />
-                    </span>
-                  :
-                    <span title="dApp not authorized" >
-                      <LockIcon style={{fontSize: 14}} />
-                    </span>
-                }
-            </Typography>
+                  {tokenAllowance > upPrice
+                    ?
+                      <span title="This dApp is authorized" >
+                        <LockOpenIcon style={{fontSize: 14}} />
+                      </span>
+                    :
+                      <span title="This dApp not authorized" >
+                        <LockIcon style={{fontSize: 14}} />
+                      </span>
+                  }
+                </Typography>
+              :
+                null
+            }
+
+
 
           </Typography>
 

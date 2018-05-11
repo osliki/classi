@@ -2,9 +2,9 @@ import React from 'react'
 import ContentLoader from 'react-content-loader'
 
 export const ImgLoader = (props) => (
-  <ContentLoader height="150" {...props}>
+  <ContentLoader width="280" height="150" {...props}>
     {/* Pure SVG */}
-    <rect x="0" y="0" rx="3" ry="3" width="100%" height="160" />
+    <rect x="0" y="0" rx="3" ry="3" width="100%" height="100%" />
   </ContentLoader>
 )
 
@@ -31,11 +31,13 @@ export const HeaderLoader = (props) => (
 )
 
 export const TextLoader = (props) => (
-  <ContentLoader height="50" {...props}>
+  <ContentLoader height="90" {...props}>
     {/* Pure SVG */}
     <rect x="0" y="0" rx="3" ry="3" width="100%" height="12" />
     <rect x="0" y="20" rx="3" ry="3" width="60%" height="12" />
     <rect x="0" y="40" rx="3" ry="3" width="80%" height="12" />
+    <rect x="0" y="60" rx="3" ry="3" width="90%" height="12" />
+    <rect x="0" y="80" rx="3" ry="3" width="40%" height="12" />
   </ContentLoader>
 )
 

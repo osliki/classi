@@ -280,7 +280,9 @@ const drafts = (state = getDefaultDraft(), action) => {
         .value()
 
     case 'adFormSuccess':
-      return getDefaultDraft()
+      return dotProp(state)
+        .delete(id)
+        .value()
 
     case 'adFormError':
       return dotProp(state)
@@ -333,7 +335,7 @@ const favs = (state = [], action) => {
       console.log('removeFavremoveFav', state, removeIndex)
 
       return dotProp(state)
-        .delete(`${removeIndex}`)
+        .delete(removeIndex)
         .value()
 
     default:
@@ -433,6 +435,30 @@ const blacklist = (state = [], action) => {
   }
 }
 
+const transactions = (state = {}, action) => {
+  switch (action.type) {
+    case 'addTr':
+      return {
+        ...state,
+        [action.hash]: {
+          purpose: action.purpose,
+          receipt: action.receipt,
+          payload: action.payload
+        }
+      }
+
+    case 'removeTr':
+      return dotProp(state)
+        .delete(action.hash)
+        .value()
+
+    default:
+      return state
+  }
+}
+
+
+
 const rootReducer = combineReducers({
   cats,
   ads,
@@ -443,7 +469,8 @@ const rootReducer = combineReducers({
   favs,
   account,
   approveTokenDialog,
-  blacklist
+  blacklist,
+  transactions
 })
 
 export default rootReducer

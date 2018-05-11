@@ -9,12 +9,10 @@ import {loadState, saveState} from './localStorage'
 
 const initialState = {
   cats: {  //{id, name, adsCount}
-    byId: {},
-    allIds: [],
+    byId: {}
   },
   ads: {
-    byId: {},
-    allIds: [],
+    byId: {}
   },
   ad: {
     id: null,
@@ -68,12 +66,12 @@ const initialState = {
   drafts: {},
   favs: [5, 12, 0],
   blacklist: [12],
-
+  transactions: {},
 }
 
 const persistedState = loadState()
 persistedState.blacklist = union(persistedState.blacklist || [], [1, 4])
-
+console.log('persistedState = ', persistedState)
 const store = createStore(
   rootReducer,
   persistedState,
@@ -83,7 +81,7 @@ const store = createStore(
 )
 
 store.subscribe(throttle(() => {
-  const {columns, drafts, favs, blacklist} = store.getState()
+  const {columns, drafts, favs, blacklist, transactions} = store.getState()
 
   let cleanedColumns = columns
   columns.allIds.forEach(id => {
@@ -95,7 +93,7 @@ store.subscribe(throttle(() => {
       .value()
   })
 
-  saveState({columns: cleanedColumns, drafts, favs, blacklist})
+  saveState({columns: cleanedColumns, drafts, favs, blacklist, transactions})
 }, 1000))
 
 export default store

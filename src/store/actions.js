@@ -384,7 +384,8 @@ export const adFormError = (draftId, error) => ({
 export const adFormSubmit = (draftId) => async (dispatch, getState) => {
   dispatch(adFormStart(draftId))
 
-  const {header, text, photos, catName, catId, id} = getState().drafts[draftId]
+  const draft = getState().drafts[draftId]
+  const {header, text, photos, catName, catId, id} = draft
 
   let hash
   try {
@@ -403,16 +404,20 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
   const from = getAccountAddress(getState(), (error) => dispatch(adFormError(draftId, new Error(error))))
   if (!from) return
 
-  let request
+  let request, purpose = ''
 
   if (id === '') {
     if (catId === '') {
+      purpose = 'newCatWithAd'
+
       request = contract.methods.newCatWithAd(catName, hash).send({
         from,
         gasPrice: web3.utils.toWei('1', 'gwei'),
-        gas: 300000
+        gas: 500000
       })
     } else {
+      purpose = 'newAd'
+
       request = contract.methods.newAd(catId, hash).send({
         from,
         gasPrice: web3.utils.toWei('1', 'gwei'),
@@ -420,6 +425,8 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
       })
     }
   } else {
+    purpose = 'editAd'
+
     request = contract.methods.editAd(id, hash).send({
       from,
       gasPrice: web3.utils.toWei('1', 'gwei'),
@@ -427,16 +434,20 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
     })
   }
 
-  request.on('receipt', receipt => {
+  request.on('receipt', (receipt) => {
     console.log('receipt', receipt)
+    dispatch(addTr(receipt.transactionHash, purpose, receipt, draft))
     dispatch(adFormSuccess(draftId))
     dispatch(closeAdForm())
   }).on('confirmation', (confirmationNumber, receipt) => {
-    if (confirmationNumber === 5)
-      console.log('confirmationNumber', receipt)
-  }).on('error', (error, receit) => {
-    console.log('error', error, receit)
+    if (confirmationNumber === 8) {
+      console.log('confirmationNumber', confirmationNumber)
+      dispatch(getAccount()) // to update balance after reward (if 1 ad)
+    }
+  }).on('error', (error) => {
+    alert(error.message)
     dispatch(adFormError(draftId, error))
+    dispatch(closeAdForm())
   })
 }
 
@@ -552,12 +563,14 @@ export const upAd = (id) => async (dispatch, getState) => {
     gas: 100000
   }).on('receipt', (receipt) => {
     console.log('receipt', receipt)
+    dispatch(addTr(receipt.transactionHash, 'upAd', receipt, id))
   }).on('confirmation', (confirmationNumber, receipt) => {
-    if (confirmationNumber === 5)
-      console.log('confirmationNumber', receipt)
-
-  }).on('error', (error, receit) => {
-    console.log('error', error, receit)
+    if (confirmationNumber === 8) {
+      console.log('confirmationNumber', confirmationNumber)
+      dispatch(getAccount())
+    }
+  }).on('error', (error) => {
+    alert(error.message)
   })
 
 }
@@ -584,14 +597,15 @@ export const approveToken = (amount = 10**8) => async (dispatch, getState) => {
     gas: 50000
   }).on('receipt', (receipt) => {
     console.log('receipt', receipt)
+    dispatch(addTr(receipt.transactionHash, 'approveToken', receipt, amount))
     dispatch(closeApproveTokenDialog())
   }).on('confirmation', (confirmationNumber, receipt) => {
     if (confirmationNumber === 8) {
-      console.log('confirmationNumber', receipt)
+      console.log('confirmationNumber', confirmationNumber)
       dispatch(getAccount())
     }
-  }).on('error', (error, receit) => {
-    console.log('error', error, receit)
+  }).on('error', (error) => {
+    alert(error.message)
     dispatch(closeApproveTokenDialog())
   })
 }
@@ -607,4 +621,20 @@ export const addToBL = (id) => ({
 export const removeFromBL = (id) => ({
   type: 'removeFromBL',
   id
+})
+
+
+/*** transactions ***/
+
+export const addTr = (hash, purpose, receipt, payload) => ({
+  type: 'addTr',
+  hash,
+  purpose,
+  receipt,
+  payload
+})
+
+export const removeTr = (hash) => ({
+  type: 'removeTr',
+  hash
 })

@@ -18,8 +18,12 @@ const CatsAutocomplete = ({
   return (
     <Downshift
       onChange={onChange}
-      itemToString={item => (item == null ? inputValue : String(item.name))}
+      itemToString={item => {
+        return (item == null ? inputValue : String(item.name)) // or else after blur empty
+      }}
+      defaultInputValue={inputValue}
       defaultSelectedItem={defaultSelectedItem}
+      inputValue={inputValue}
     >
       {({getInputProps,
         getItemProps,
@@ -39,7 +43,6 @@ const CatsAutocomplete = ({
             inputRef={inputRef}
             required
             {...getInputProps({
-              value: inputValue,
               onChange: (e) => onInputChange(e, clearSelection, selectItem)
             })}
           />

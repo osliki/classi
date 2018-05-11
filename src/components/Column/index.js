@@ -13,7 +13,7 @@ import IconButton from 'material-ui/IconButton'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import ClearIcon from '@material-ui/icons/Clear'
 import Menu, { MenuItem } from 'material-ui/Menu'
-import Paper from 'material-ui/Paper';
+import Paper from 'material-ui/Paper'
 
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import Ad from '../Ad'

@@ -178,8 +178,10 @@ class AdCard extends Component {
               <Typography paragraph>{cut(text, 140)}</Typography>
             </CardContent>
           :
-            <CardContent>
+            <CardContent classes={{root: 'card-content-loader'}}>
               <HeaderLoader animate={!ad.bzz.error} />
+              <br/>
+              <br/>
               <TextLoader animate={!ad.bzz.error} />
               {ad.bzz.error ?
                 <div className="retry-link">

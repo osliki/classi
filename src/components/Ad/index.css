@@ -25,7 +25,7 @@
 }
 
 .AdDetails-actions {
-  
+
   text-align: right;
 }
 
@@ -66,10 +66,11 @@
   justify-content: center;
   align-items: center;
   height: 100%;
-  width:100%;
+  width: 100%;
   position: relative;
-  top:-85px;
-  left:0;
+  top: -110px;
+  left: 0px;
+  height: 0px;
 }
 
 
