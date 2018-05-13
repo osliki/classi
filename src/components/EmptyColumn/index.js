@@ -77,7 +77,7 @@ class EmptyColumn extends Component {
   }
 
   render() {
-    const {newAd, catsArray} = this.props
+    const {newAd, cats} = this.props
     const {opened, catValue, type, param} = this.state
 
     return (
@@ -139,8 +139,9 @@ class EmptyColumn extends Component {
               {type === 'cat'
                 ?
                   <CatsAutocomplete
-                    items={catsArray}
+                    items={getCatsArray({cats})}
                     inputValue={catValue}
+                    inputRef={el => el && el.focus()}
                     onInputChange={(e) => {
                       this.setState({catValue: e.target.value})
                     }}
@@ -159,6 +160,7 @@ class EmptyColumn extends Component {
                     fullWidth
                     required
                     value={param}
+                    inputRef={el => el && el.focus()}
                     onChange={(e) => this.setState({param: e.target.value})}
                   />
               }
@@ -189,7 +191,8 @@ class EmptyColumn extends Component {
 
 export default connect((state, ownProps) => {
     return {
-      catsArray: getCatsArray(state),
+      //catsArray: getCatsArray(state),
+      cats: state.cats,
       address: state.account.address
     }
   }, (dispatch, ownProps) => {

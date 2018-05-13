@@ -18,18 +18,12 @@ class Ad extends Component {
     view: PropTypes.oneOf(['card', 'details']).isRequired,
   }
 
-  constructor(props) {
-    super(props)
-
-    //this.onReload = this.onReload.bind(this)
-  }
-
-  componentWillMount() {
+  async componentWillMount() {
     const {ad, loadAd} = this.props
 
     if (ad) return
 
-    loadAd()
+    await loadAd()
   }
 
   onRemoveFromBL = () => {
@@ -99,7 +93,7 @@ class Ad extends Component {
           />
         )
       :
-        null
+        <div style={{height: '400px'}}></div>
     )
   }
 }

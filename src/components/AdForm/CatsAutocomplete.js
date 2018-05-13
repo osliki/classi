@@ -42,8 +42,9 @@ const CatsAutocomplete = ({
             fullWidth
             inputRef={inputRef}
             required
+            inputProps={{maxLength: 100}}
             {...getInputProps({
-              onChange: (e) => onInputChange(e, clearSelection, selectItem)
+              onChange: (e) => onInputChange(e, clearSelection, selectItem),
             })}
           />
 
@@ -62,7 +63,7 @@ const CatsAutocomplete = ({
                       fontWeight: selectedItem && (selectedItem.name === item.name) ? 'bold' : 'normal',
                     }}
                   >
-                    {item.loading ? 'loading...' : `${item.name} (${item.adsCount})`}
+                    {item.loading ? 'loading...' : `(${item.adsCount}) ${item.name}`}
                   </MenuItem>
                 ))
               }

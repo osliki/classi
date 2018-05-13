@@ -19,6 +19,7 @@ import List, { ListItem, ListItemText } from 'material-ui/List'
 import Snackbar from 'material-ui/Snackbar'
 
 import UserName from '../UserName'
+import Transactions from '../Transactions'
 
 import {getAccount} from '../../store/actions'
 
@@ -69,9 +70,10 @@ class AppBar extends Component {
               :
                 null
             }
+          </Typography>
 
-
-
+          <Typography component="div">
+            <Transactions />
           </Typography>
 
         </Toolbar>

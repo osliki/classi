@@ -30,6 +30,10 @@ class AdForm extends Component {
     formRef: PropTypes.func
   }
 
+  componentDidMount() {
+    this.catNameInput.focus()
+  }
+
   onChange = (e) => {
     this.props.onChange(e.target.name, e.target.value)
   }
@@ -58,7 +62,7 @@ class AdForm extends Component {
   }
 
   render() {
-    const {formRef = () => {}, onChange, onUpload, onPhotoRemove, draft = {}, catsArray, catsByName} = this.props
+    const {formRef = () => {}, onChange, onUpload, onPhotoRemove, draft = {}, cats, catsByName} = this.props
     const {id = '', catId = '', catName = '', header = '', text = '', uploadingImgs = 0, photos = []} = draft
     const totalImgs = photos.length + uploadingImgs
 
@@ -73,22 +77,19 @@ class AdForm extends Component {
             :
               <CatsAutocomplete
                 inputValue={catName}
-                items={catsArray}
+                items={getCatsArray({cats})}
                 defaultSelectedItem={catsByName[catName]}
-                inputRef={(el) => this.catNameInput = el}
+                inputRef={el => this.catNameInput = el}
                 onInputChange={(e, clearSelection, selectItem) => {
                   const val = e.target.value
                   const cat = catsByName[val.trim()]
 
-                  onChange('catName', val.toLowerCase())
+                  onChange('catName', val)
                   onChange('catId', (cat ? cat.id : ''))
 
                   if (!cat) {
                     clearSelection()
-                  }
-
-                  // if (catsByName[val]) { // without trim ?? dont remember why
-                  else { // without trim
+                  } else {
                     selectItem(cat)
                   }
                 }}
@@ -100,8 +101,6 @@ class AdForm extends Component {
                 }}
               />
           }
-
-          {catName}
 
           <TextField
             name="header"
@@ -188,7 +187,7 @@ class AdForm extends Component {
 
 export default connect((state, ownProps) => {
   return {
-    catsArray: getCatsArray(state),
+    cats: state.cats,
     catsByName: getCatsByName(state),
     draft: state.drafts[ownProps.draftId]
   }

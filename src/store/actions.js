@@ -73,11 +73,45 @@ export const getCats = () => async (dispatch, getState) => {
 
 /*** Columns ***/
 
-export const newColumn = (typeColumn, param) => ({
-  type: 'newColumn',
-  typeColumn,
-  param
-})
+export const newColumn = (typeColumn, param) => {
+  //getColumnAds
+/*
+new ads in all
+new ads in cat
+new cat in user
+*/
+
+  switch(typeColumn) {
+    case 'all':
+      /*console.log('column all new event add')
+      //https://github.com/MetaMask/metamask-extension/issues/3642
+      contract.events.EventNewAd({}, (error, event)=>{console.log('EventNewAd', error)})
+        .on('data', (event) => {
+          console.log('column all new event data', event)
+        })
+        .on('changed', function(event){
+          console.log('column all new event changed', event)
+            // remove event from local database
+        })
+        .on('error', console.error);*/
+
+      break;
+
+    case 'user':
+
+      break;
+
+    case 'cat':
+
+      break;
+  }
+
+  return {
+    type: 'newColumn',
+    typeColumn,
+    param
+  }
+}
 
 export const removeColumn = (columnId) => ({
   type: 'removeColumn',
@@ -382,10 +416,12 @@ export const adFormError = (draftId, error) => ({
 })
 
 export const adFormSubmit = (draftId) => async (dispatch, getState) => {
-  dispatch(adFormStart(draftId))
-
   const draft = getState().drafts[draftId]
-  const {header, text, photos, catName, catId, id} = draft
+  const {header, text, photos, catName, catId, id = '', loading} = draft // id can be undefined
+
+  if (loading) return
+
+  dispatch(adFormStart(draftId))
 
   let hash
   try {
@@ -404,23 +440,24 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
   const from = getAccountAddress(getState(), (error) => dispatch(adFormError(draftId, new Error(error))))
   if (!from) return
 
+  let gasPrice = await web3.eth.getGasPrice()
+  gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
+
   let request, purpose = ''
 
   if (id === '') {
-    if (catId === '') {
-      purpose = 'newCatWithAd'
+    purpose = 'newAd'
 
+    if (catId === '') {
       request = contract.methods.newCatWithAd(catName, hash).send({
         from,
-        gasPrice: web3.utils.toWei('1', 'gwei'),
-        gas: 500000
+        gasPrice,//: web3.utils.toWei('1', 'gwei'),
+        gas: 500000 // catName can be long
       })
     } else {
-      purpose = 'newAd'
-
       request = contract.methods.newAd(catId, hash).send({
         from,
-        gasPrice: web3.utils.toWei('1', 'gwei'),
+        gasPrice,//: web3.utils.toWei('1', 'gwei'),
         gas: 300000
       })
     }
@@ -429,25 +466,26 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
 
     request = contract.methods.editAd(id, hash).send({
       from,
-      gasPrice: web3.utils.toWei('1', 'gwei'),
+      gasPrice,//: web3.utils.fromWei(gasPrice, 'gwei'),
       gas: 100000
     })
   }
 
-  request.on('receipt', (receipt) => {
-    console.log('receipt', receipt)
-    dispatch(addTr(receipt.transactionHash, purpose, receipt, draft))
+  request.on('transactionHash', (txHash) => {
+    console.log('txHash', txHash)
+    dispatch(addTx(txHash, purpose, {draft}))
     dispatch(adFormSuccess(draftId))
     dispatch(closeAdForm())
-  }).on('confirmation', (confirmationNumber, receipt) => {
-    if (confirmationNumber === 8) {
+    dispatch(openTxsMenu())
+    request.off('error') // another callback will handle it
+  })/*.on('confirmation', (confirmationNumber, receipt) => {
+    if (confirmationNumber === 5) {
       console.log('confirmationNumber', confirmationNumber)
-      dispatch(getAccount()) // to update balance after reward (if 1 ad)
+      dispatch(getAccount()) // to update balance after reward (if 1 ad) + icon lock in appbar
     }
-  }).on('error', (error) => {
+  })*/.on('error', (error, receipt) => {
     alert(error.message)
     dispatch(adFormError(draftId, error))
-    dispatch(closeAdForm())
   })
 }
 
@@ -557,22 +595,26 @@ export const upAd = (id) => async (dispatch, getState) => {
     return
   }
 
-  contract.methods.upAd(id).send({
+  let gasPrice = await web3.eth.getGasPrice()
+  gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
+
+  const request = contract.methods.upAd(id).send({
     from,
-    gasPrice: web3.utils.toWei('1', 'gwei'),
+    gasPrice,//: web3.utils.fromWei(gasPrice, 'gwei'),
     gas: 100000
-  }).on('receipt', (receipt) => {
-    console.log('receipt', receipt)
-    dispatch(addTr(receipt.transactionHash, 'upAd', receipt, id))
-  }).on('confirmation', (confirmationNumber, receipt) => {
-    if (confirmationNumber === 8) {
+  }).on('transactionHash', (txHash) => {
+    console.log('txHash', txHash)
+    dispatch(addTx(txHash, 'upAd', {id}))
+    dispatch(openTxsMenu())
+    request.off('error')
+  })/*.on('confirmation', (confirmationNumber, receipt) => {
+    if (confirmationNumber === 5) {
       console.log('confirmationNumber', confirmationNumber)
       dispatch(getAccount())
     }
-  }).on('error', (error) => {
+  })*/.on('error', (error, receipt) => { // if receipt then out of gas
     alert(error.message)
   })
-
 }
 
 
@@ -591,22 +633,26 @@ export const approveToken = (amount = 10**8) => async (dispatch, getState) => {
   const from = getAccountAddress(getState())
   if (!from) return
 
-  contractToken.methods.approve(contract._address, web3.utils.toWei(String(amount), 'ether')).send({
+  let gasPrice = await web3.eth.getGasPrice()
+  gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
+
+  const request = contractToken.methods.approve(contract._address, web3.utils.toWei(String(amount), 'ether')).send({
     from,
-    gasPrice: web3.utils.toWei('1', 'gwei'),
+    gasPrice, //: web3.utils.fromWei(gasPrice, 'gwei'),
     gas: 50000
-  }).on('receipt', (receipt) => {
-    console.log('receipt', receipt)
-    dispatch(addTr(receipt.transactionHash, 'approveToken', receipt, amount))
+  }).on('transactionHash', (txHash) => {
+    console.log('txHash', txHash)
+    dispatch(addTx(txHash, 'approveToken', {amount, from}))
+    dispatch(openTxsMenu())
     dispatch(closeApproveTokenDialog())
-  }).on('confirmation', (confirmationNumber, receipt) => {
-    if (confirmationNumber === 8) {
+    request.off('error')
+  })/*.on('confirmation', (confirmationNumber, receipt) => {
+    if (confirmationNumber === 5) {
       console.log('confirmationNumber', confirmationNumber)
       dispatch(getAccount())
     }
-  }).on('error', (error) => {
+  })*/.on('error', (error, receipt) => {
     alert(error.message)
-    dispatch(closeApproveTokenDialog())
   })
 }
 
@@ -626,15 +672,71 @@ export const removeFromBL = (id) => ({
 
 /*** transactions ***/
 
-export const addTr = (hash, purpose, receipt, payload) => ({
-  type: 'addTr',
-  hash,
+export const addTx = (txHash, purpose, payload) => ({
+  type: 'addTx',
+  txHash,
   purpose,
-  receipt,
   payload
 })
 
-export const removeTr = (hash) => ({
-  type: 'removeTr',
-  hash
+export const removeTx = (txHash) => ({
+  type: 'removeTx',
+  txHash
+})
+
+export const updateTxStatus = (txHash, status) => ({
+  type: 'updateTxStatus',
+  txHash,
+  status
+})
+
+export const getTxStatus = (txHash, onSuccess = () => {}, onFail = () => {}) => async (dispatch, getState) => {
+  let status = 'pending'
+  let confirmationNumber = 0
+
+  const prevStatus = dotProp(getState()).get(`transactions.${txHash}.status`).value()
+
+  const [/*tx, */receipt, curBlockNumber] = await Promise.all([
+    //web3.eth.getTransaction(txHash),
+    web3.eth.getTransactionReceipt(txHash),
+    web3.eth.getBlockNumber()
+  ])
+
+  console.log('data', {txHash, receipt, curBlockNumber})
+
+  if (receipt === null || receipt.blockNumber === null) {
+    status = 'pending'
+  } else {
+    if (receipt.status === false) {
+      status = 'failed'
+    } else {
+      confirmationNumber = curBlockNumber - receipt.blockNumber
+
+      if (confirmationNumber < 2) {
+        status = 'confirmation'
+      } else {
+        status = 'succeed'
+      }
+    }
+  }
+
+  if (prevStatus !== status) {
+    dispatch(updateTxStatus(txHash, status))
+
+    if (status === 'succeed') onSuccess()
+    else if (status === 'failed') onFail()
+  }
+
+}
+
+
+
+/*** Txs Menu ***/
+
+export const openTxsMenu = () => ({
+  type: 'openTxsMenu'
+})
+
+export const closeTxsMenu = () => ({
+  type: 'closeTxsMenu'
 })

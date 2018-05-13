@@ -14,11 +14,16 @@ const contractToken = new web3.eth.Contract(contractTokenAbi, contractTokenAddre
 
 web3.bzz.setProvider('http://swarm-gateways.net')
 
+const subscribers = []
+const onChangeAccount = (callback) => {
+  subscribers.push(callback)
+}
+
 var account = ''
 const loop = async () => {
   let accounts
   try {
-    accounts = await web3.eth.getAccounts()
+    accounts = await web3.eth.getAccounts() // if tab is opened on open browser, getAccounts never return result and loop will die
   } catch(error) {
     console.log('loop', error)
   }
@@ -32,11 +37,6 @@ const loop = async () => {
 }
 
 loop()
-
-const subscribers = []
-const onChangeAccount = (callback) => {
-  subscribers.push(callback)
-}
 
 export {
   contract,

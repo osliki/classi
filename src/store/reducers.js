@@ -131,7 +131,6 @@ const columns = (state = {
   switch (action.type) {
 
     case 'newColumn':
-    console.log('newColumn')
       const newColumnId = state.allIds.length ? Math.max(...state.allIds) + 1 : 0
 
       return dotProp(state)
@@ -164,6 +163,8 @@ const columns = (state = {
         .value()
 
     case 'getColumnAdsError':
+      if (!dotProp(state).get(`byId.${action.columnId}`).value()) return state // if column is deleted
+
       return dotProp(state)
         .merge(`byId.${action.columnId}`, {
           loading: false,
@@ -172,6 +173,8 @@ const columns = (state = {
         .value()
 
     case 'getColumnAdsSuccess':
+      if (!dotProp(state).get(`byId.${action.columnId}`).value()) return state // if column is deleted
+
       let newState = dotProp(state)
         .merge(`byId.${action.columnId}`, {
           loading: false,
@@ -267,7 +270,7 @@ const drafts = (state = getDefaultDraft(), action) => {
 
   switch (action.type) {
     case 'initDraft':
-      if (state[id]) return state
+      if (state[id]) return state // ?????
 
       return dotProp(state)
         .set(id, action.data ? {...getDefaultDraft(), ...action.data} : getDefaultDraft())
@@ -437,20 +440,50 @@ const blacklist = (state = [], action) => {
 
 const transactions = (state = {}, action) => {
   switch (action.type) {
-    case 'addTr':
+    case 'addTx':
+      return dotProp(state)
+        .set(action.txHash, {
+          purpose: action.purpose,
+          payload: action.payload,
+          status: 'pending'
+        })
+        .value()
+
+    case 'removeTx':
+      return dotProp(state)
+        .delete(action.txHash)
+        .value()
+
+    case 'updateTxStatus':
+      if (!dotProp(state).get(action.txHash).value()) return state // if tx is deleted
+
+      return dotProp(state)
+        .merge(action.txHash, {
+          status: action.status
+        })
+        .value()
+
+    default:
+      return state
+  }
+}
+
+
+const txsMenu = (state = {
+  opened: false
+}, action) => {
+  switch (action.type) {
+    case 'openTxsMenu':
       return {
         ...state,
-        [action.hash]: {
-          purpose: action.purpose,
-          receipt: action.receipt,
-          payload: action.payload
-        }
+        opened: true
       }
 
-    case 'removeTr':
-      return dotProp(state)
-        .delete(action.hash)
-        .value()
+    case 'closeTxsMenu':
+      return {
+        ...state,
+        opened: false
+      }
 
     default:
       return state
@@ -470,7 +503,8 @@ const rootReducer = combineReducers({
   account,
   approveTokenDialog,
   blacklist,
-  transactions
+  transactions,
+  txsMenu
 })
 
 export default rootReducer

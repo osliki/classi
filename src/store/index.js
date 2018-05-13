@@ -6,7 +6,7 @@ import dotProp from 'dot-prop-immutable-chain'
 
 import rootReducer from './reducers'
 import {loadState, saveState} from './localStorage'
-
+/*
 const initialState = {
   cats: {  //{id, name, adsCount}
     byId: {}
@@ -37,30 +37,7 @@ const initialState = {
   },
 
   columns: {
-    byId: {
-      0: {
-        id: 0,
-        type: 'all',
-        loading: false,
-        ads: [],
-      },
-      2: {
-        id: 2,
-        type: 'user',
-        param: '0x35ceA1d89B0b6A5d1EeDc45D6317933613ff0d5A',
-        ads: [],
-      },
-      5: {
-        id: 5,
-        type: 'cat',
-        param: 3,
-        ads: [],
-      },
-      7: {
-        id: 7,
-        type: 'fav'
-      }
-    },
+    byId: {},
     allIds: [7],
   },
   drafts: {},
@@ -68,13 +45,41 @@ const initialState = {
   blacklist: [12],
   transactions: {},
 }
+*/
 
 const persistedState = loadState()
-persistedState.blacklist = union(persistedState.blacklist || [], [1, 4])
 console.log('persistedState = ', persistedState)
+
+
+
+const treatmentState = (state) => {
+  try {
+    state.blacklist = union(state.blacklist || [], [])
+
+    state.columns.allIds.forEach(id => {
+      state.columns.byId[id] = {...state.columns.byId[id], ...{
+        loading: false,
+        total: 0,
+        ads: []
+      }}
+    })
+
+    Object.keys(state.drafts).forEach(draftId => {
+      state.drafts[draftId] = {...state.drafts[draftId], ...{
+        uploadingImgs: 0,
+        loading: false
+      }}
+    })
+
+    return state
+  } catch(error) {
+    return undefined
+  }
+}
+
 const store = createStore(
   rootReducer,
-  persistedState,
+  treatmentState(persistedState),
   applyMiddleware(
     thunk
   )
@@ -83,17 +88,9 @@ const store = createStore(
 store.subscribe(throttle(() => {
   const {columns, drafts, favs, blacklist, transactions} = store.getState()
 
-  let cleanedColumns = columns
-  columns.allIds.forEach(id => {
-    cleanedColumns = dotProp(cleanedColumns)
-      .merge(`byId.${id}`, {
-        loading: false,
-        ads: []
-      })
-      .value()
-  })
 
-  saveState({columns: cleanedColumns, drafts, favs, blacklist, transactions})
+
+  saveState({columns, drafts, favs, blacklist, transactions})
 }, 1000))
 
 export default store

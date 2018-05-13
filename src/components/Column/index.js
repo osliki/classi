@@ -2,6 +2,7 @@ import React, {Component } from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 import dotProp from 'dot-prop-immutable-chain'
+import throttle from 'lodash/throttle'
 import {getUserShort} from '../../utils'
 import './index.css'
 
@@ -12,7 +13,7 @@ import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import ClearIcon from '@material-ui/icons/Clear'
-import Menu, { MenuItem } from 'material-ui/Menu'
+import Menu, {MenuItem} from 'material-ui/Menu'
 import Paper from 'material-ui/Paper'
 
 import PerfectScrollbar from 'react-perfect-scrollbar'
@@ -38,7 +39,7 @@ class Column extends Component {
   componentWillMount() {
     window.addEventListener('resize', this.onResize)
 
-    this.props.loadAds()
+    this.props.getColumnAds()
   }
 
   componentWillUnmount() {
@@ -80,14 +81,14 @@ class Column extends Component {
     console.log('onYReachEnd')
     const {loading, ads, total} = this.props.column
 
-    if (total === ads.length || loading/* || !ads.length*/) return
+    if (total === ads.length || loading /* || !ads.length*/) return // loading insted of ads.length
 
     console.log('onYReachEnd', this.props.column)//!!!!!!!!!!!
-    this.props.loadAds()
+    this.props.getColumnAds()
   }
 
   render() {
-    const {removeColumn, column, id, favs, loadAds} = this.props
+    const {removeColumn, column, id, favs} = this.props
     const {loading, type, error} = column
 
     const ads = (type === 'fav' ? favs : column.ads)
@@ -99,6 +100,7 @@ class Column extends Component {
     const open = Boolean(anchorEl)
 
     console.log('Render Column', column, loading)
+
     return (
       <section className="Column">
 
@@ -132,9 +134,11 @@ class Column extends Component {
               :
                 (ads.length
                   ?
-                    ads.map(id => (
-                      <Ad key={id} id={id} view="card" />
-                    ))
+                    ads.map(id => {
+                      return (
+                        <Ad key={id} id={id} view="card" />
+                      )
+                    })
                   :
                     (loading
                       ?
@@ -157,9 +161,6 @@ class Column extends Component {
 
           </PerfectScrollbar>
 
-
-
-
         </div>
       </section>
     )
@@ -181,7 +182,7 @@ export default connect((state, ownProps) => {
   const columnId = ownProps.id
 
   return {
-    loadAds: () => {
+    getColumnAds: () => {
       dispatch(getColumnAds(columnId))
     },
     removeColumn: () => {

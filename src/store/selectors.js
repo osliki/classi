@@ -44,3 +44,24 @@ export const getBlacklistById = createSelector(
     return obj
   }
 )
+
+
+
+export const getScannedTx = createSelector(
+  (state) => state.txs,
+  (txs) => {
+    console.log('RESELECT txs', txs)
+
+    let arr = []
+
+    Object.keys(txs).forEach(txHash => {
+      const tx = txs[txHash] || {}
+
+      if (tx.status === 'confirmation' || tx.status === 'pending') {
+        arr.push(txHash)
+      }
+    })
+
+    return arr
+  }
+)

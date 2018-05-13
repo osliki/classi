@@ -193,7 +193,7 @@ class AdCard extends Component {
           }
 
           <CardContent classes={{root: 'card-content'}}>
-            <Typography noWrap variant="body1" color="textSecondary">
+            <Typography noWrap variant="body1" color="textSecondary" title={catName}>
               {`Category: ${catName ? catName : '...'}`}
             </Typography>
           </CardContent>
