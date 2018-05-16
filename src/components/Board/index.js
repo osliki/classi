@@ -13,11 +13,29 @@ import AdDetailsDialog from '../Ad/AdDetailsDialog'
 import AdFormDialog from '../AdForm/AdFormDialog'
 import ApproveTokenDialog from '../ApproveTokenDialog'
 
-import {getCats} from '../../store/actions'
+import {getCats, showAd, closeAd} from '../../store/actions'
 
 class Board extends Component {
-  componentWillMount() {
+
+  constructor(props) {
+    super(props)
+
     this.props.getCats()
+
+    this.pattern = /#osliki-classi\/ad\/([0-9]*)/i
+    window.addEventListener('hashchange', this.onHashChange, false)
+    this.onHashChange()
+  }
+
+  onHashChange = () => {
+    const hash = window.location.hash
+
+    if (this.pattern.test(hash)) {
+      const params = hash.match(this.pattern)
+      this.props.showAd(params[1])
+    } else {
+      this.props.closeAd()
+    }
   }
 
   render() {
@@ -51,6 +69,8 @@ export default connect((state) => {
   return {
     getCats: () => {
       dispatch(getCats())
-    }
+    },
+    showAd: (adId) => dispatch(showAd(adId)),
+    closeAd: () => dispatch(closeAd())
   }
 })(Board)

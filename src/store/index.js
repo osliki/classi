@@ -60,6 +60,7 @@ const treatmentState = (state) => {
       state.columns.byId[id] = {...state.columns.byId[id], ...{
         loading: false,
         total: 0,
+        newAdsCount: 0,
         ads: []
       }}
     })
@@ -87,8 +88,6 @@ const store = createStore(
 
 store.subscribe(throttle(() => {
   const {columns, drafts, favs, blacklist, transactions} = store.getState()
-
-
 
   saveState({columns, drafts, favs, blacklist, transactions})
 }, 1000))

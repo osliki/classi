@@ -18,7 +18,7 @@ import AdForm from '../AdForm'
 import CatsAutocomplete from '../AdForm/CatsAutocomplete'
 
 import {getCatsArray, getCatsByName} from '../../store/selectors'
-import {showAdForm, initDraft, newColumn} from '../../store/actions'
+import {showAdForm, initDraft, newColumn, checkNewCats} from '../../store/actions'
 
 class EmptyColumn extends Component {
 
@@ -52,7 +52,7 @@ class EmptyColumn extends Component {
   }
 
   newColumn = (type) => {
-    const {onAdd, address} = this.props
+    const {onAdd, address, checkNewCats} = this.props
 
     switch (type) {
       case 'all':
@@ -66,9 +66,13 @@ class EmptyColumn extends Component {
       case 'fav':
         onAdd('fav')
         return
+
+      case 'cat':
+        checkNewCats()
+        break
     }
 
-    this.setState({
+    this.setState({ // open dialog if not all my or user
       opened: true,
       type: type,
       param: '',
@@ -77,9 +81,10 @@ class EmptyColumn extends Component {
   }
 
   render() {
-    const {newAd, cats} = this.props
+    const {newAd, cats, catsLoading} = this.props
     const {opened, catValue, type, param} = this.state
 
+    console.log('RENDER EmptyColumn')
     return (
       <section className="EmptyColumn">
 
@@ -142,6 +147,7 @@ class EmptyColumn extends Component {
                     items={getCatsArray({cats})}
                     inputValue={catValue}
                     inputRef={el => el && el.focus()}
+                    catsLoading={catsLoading}
                     onInputChange={(e) => {
                       this.setState({catValue: e.target.value})
                     }}
@@ -193,16 +199,21 @@ export default connect((state, ownProps) => {
     return {
       //catsArray: getCatsArray(state),
       cats: state.cats,
+      catsLoading: state.cats.loading,
       address: state.account.address
     }
   }, (dispatch, ownProps) => {
     return {
       onAdd: (type, param) => {
         dispatch(newColumn(type, param))
+
       },
       newAd: () => {
         dispatch(initDraft('new'))
         dispatch(showAdForm('new'))
+      },
+      checkNewCats: () => {
+        dispatch(checkNewCats())
       }
     }
 })(EmptyColumn)

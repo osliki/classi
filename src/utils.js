@@ -25,6 +25,9 @@ export const getTxName = (tx = {}, txHash) => {
     case 'approveToken':
       name = `dApp authorization from ${getUserShort(from)}`
       break
+    case 'newComment':
+      name = `New comment #${draft.adId}`
+      break
   }
 
   return name

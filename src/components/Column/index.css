@@ -17,3 +17,21 @@
 
   overflow: hidden;
 }
+
+
+.circ-progress{
+  padding: 15px;
+  width: 100%;
+  text-align: center;
+}
+
+
+.column-header button {
+  width: 40px !important;
+  height: 40px !important;
+
+}
+
+.column-header svg {
+  font-size: 20px;
+}

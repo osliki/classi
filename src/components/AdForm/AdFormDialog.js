@@ -45,7 +45,7 @@ class AdFormDialog extends Component {
             Cancel
           </Button>
           <Button onClick={() => this.form.dispatchEvent(new Event('submit'))} disabled={Boolean(loading)}>
-            Submit
+            {loading ? 'Loading...' : 'Submit'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -66,6 +66,8 @@ export default connect((state, ownProps) => {
     }
   }, (dispatch, ownProps) => {
     return {
-      onClose: () => dispatch(closeAdForm())
+      onClose: () => {
+        dispatch(closeAdForm())
+      }
     }
 })(AdFormDialog)

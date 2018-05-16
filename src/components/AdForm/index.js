@@ -14,7 +14,7 @@ import Button from 'material-ui/Button'
 import ButtonBase from 'material-ui/ButtonBase'
 import FileUpload from '@material-ui/icons/FileUpload'
 import PhotoCamera from '@material-ui/icons/PhotoCamera'
-import { LinearProgress } from 'material-ui/Progress'
+import {LinearProgress} from 'material-ui/Progress'
 import IconButton from 'material-ui/IconButton'
 import ClearIcon from '@material-ui/icons/Clear'
 
@@ -22,7 +22,7 @@ import Img from '../Img'
 import {SmallImgLoader} from '../Loaders'
 import CatsAutocomplete from './CatsAutocomplete'
 
-import {adFormChange, adFormPhotoUpload, adFormPhotoRemove, adFormSubmit, initDraft} from '../../store/actions'
+import {adFormChange, adFormPhotoUpload, adFormPhotoRemove, adFormSubmit, checkNewCats} from '../../store/actions'
 import {getCatsArray, getCatsByName} from '../../store/selectors'
 
 class AdForm extends Component {
@@ -30,8 +30,14 @@ class AdForm extends Component {
     formRef: PropTypes.func
   }
 
+  constructor(props) {
+    super(props)
+
+    this.props.checkNewCats()
+  }
+
   componentDidMount() {
-    this.catNameInput.focus()
+    this.catNameInput && this.catNameInput.focus()
   }
 
   onChange = (e) => {
@@ -62,7 +68,7 @@ class AdForm extends Component {
   }
 
   render() {
-    const {formRef = () => {}, onChange, onUpload, onPhotoRemove, draft = {}, cats, catsByName} = this.props
+    const {formRef = () => {}, onChange, onUpload, onPhotoRemove, draft = {}, cats, catsByName, catsLoading} = this.props
     const {id = '', catId = '', catName = '', header = '', text = '', uploadingImgs = 0, photos = []} = draft
     const totalImgs = photos.length + uploadingImgs
 
@@ -80,6 +86,7 @@ class AdForm extends Component {
                 items={getCatsArray({cats})}
                 defaultSelectedItem={catsByName[catName]}
                 inputRef={el => this.catNameInput = el}
+                catsLoading={catsLoading}
                 onInputChange={(e, clearSelection, selectItem) => {
                   const val = e.target.value
                   const cat = catsByName[val.trim()]
@@ -135,7 +142,7 @@ class AdForm extends Component {
             {photos.map((hash, index) => (
               <div className="img-item" key={index}>
                 <Img
-                   src={`http://swarm-gateways.net/bzzr:/${hash}`}
+                   src={`https://ipfs.io/ipfs/${hash}`}
                    loader={<SmallImgLoader />}
                  />
 
@@ -188,6 +195,7 @@ class AdForm extends Component {
 export default connect((state, ownProps) => {
   return {
     cats: state.cats,
+    catsLoading: state.cats.loading,
     catsByName: getCatsByName(state),
     draft: state.drafts[ownProps.draftId]
   }
@@ -195,22 +203,18 @@ export default connect((state, ownProps) => {
   const {draftId, ad} = ownProps
 
   return {
-    initDraft: () => {
-      dispatch(initDraft(draftId, ad))
-    },
-    onChange: (name, value) => {
-      dispatch(adFormChange(draftId, name, value))
-    },
+    //initDraft: () => dispatch(initDraft(draftId, ad)),
+    onChange: (name, value) => dispatch(adFormChange(draftId, name, value)),
     onUpload: (e) => {
       e.preventDefault()
 
       dispatch(adFormPhotoUpload(draftId, e.target.files))
     },
-    onPhotoRemove: (index) => {
-      dispatch(adFormPhotoRemove(draftId, index))
-    },
-    onSubmit: () => {
-      dispatch(adFormSubmit(draftId))
-    }
+    onPhotoRemove: (index) => dispatch(adFormPhotoRemove(draftId, index)),
+    onSubmit: () => dispatch(adFormSubmit(draftId)),
+    checkNewCats: () => dispatch(checkNewCats())
   }
 })(AdForm)
+
+
+//                   src={`http://swarm-gateways.net/bzzr:/${hash}`}

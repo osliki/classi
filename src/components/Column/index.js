@@ -13,13 +13,16 @@ import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import ClearIcon from '@material-ui/icons/Clear'
+import RefreshIcon from '@material-ui/icons/Refresh'
+import FiberNewIcon from '@material-ui/icons/FiberNew'
 import Menu, {MenuItem} from 'material-ui/Menu'
 import Paper from 'material-ui/Paper'
+import Tooltip from 'material-ui/Tooltip'
 
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import Ad from '../Ad'
 
-import {getColumnAds, removeColumn} from '../../store/actions'
+import {getColumnAds, removeColumn, refreshColumn, purgeAds, checkNewAds} from '../../store/actions'
 
 class Column extends Component {
   static propTypes = {
@@ -34,16 +37,23 @@ class Column extends Component {
       anchorEl: null,
       winHeight: document.body.clientHeight
     }
-  }
 
-  componentWillMount() {
     window.addEventListener('resize', this.onResize)
 
-    this.props.getColumnAds()
+    const {getColumnAds, checkNewAds, column} = this.props
+
+    getColumnAds()
+
+    if (column.type !== 'fav')
+      this.interval = setInterval(() => {
+        !this.props.column.loading && checkNewAds() // to prevent show newAds button before loading first ads
+      }, 3000)
   }
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.onResize)
+
+    this.interval && clearInterval(this.interval)
   }
 
   onResize = () => {
@@ -56,6 +66,11 @@ class Column extends Component {
 
   handleClose = () => {
     this.setState({anchorEl: null})
+  }
+
+  getNewAds = () => {
+    this.props.getNewAds()
+    this._scrollRef.scrollTop = 0
   }
 
   getHeader = () => {
@@ -88,8 +103,12 @@ class Column extends Component {
   }
 
   render() {
-    const {removeColumn, column, id, favs} = this.props
-    const {loading, type, error} = column
+    const {getNewAds} = this
+    const {removeColumn, column, id, favs, refreshColumn} = this.props
+    const {loading, type, error, newAdsCount = 0} = column
+
+    // const ads = column.ads
+    // const total = column.total
 
     const ads = (type === 'fav' ? favs : column.ads)
     const total = (type === 'fav' ? favs.length : column.total)
@@ -99,7 +118,7 @@ class Column extends Component {
     const {anchorEl} = this.state
     const open = Boolean(anchorEl)
 
-    console.log('Render Column', column, loading)
+    console.log('Render Column', column)
 
     return (
       <section className="Column">
@@ -110,9 +129,38 @@ class Column extends Component {
               {type}({total}){header ? `: ${header}` : ''}
             </Typography>
 
-            <IconButton onClick={(e) => { this.handleClose(e); removeColumn(id); }}>
-              <ClearIcon  style={{ fontSize: 20 }} />
-            </IconButton>
+              {newAdsCount > 0
+                ?
+                  <Tooltip title={`Load new ads (${newAdsCount})`}>
+                    <div>
+                      <IconButton disabled={Boolean(loading)} onClick={loading ? null : getNewAds}>
+                        <FiberNewIcon />
+                      </IconButton>
+                    </div>
+                  </Tooltip>
+                :
+                  null
+              }
+
+              {type === 'fav'
+                ?
+                  null
+                :
+                  <Tooltip title="Refresh column">
+                    <div>
+                      <IconButton disabled={Boolean(loading)} onClick={loading ? null : refreshColumn}>
+                        <RefreshIcon />
+                      </IconButton>
+                    </div>
+                  </Tooltip>
+              }
+
+              <Tooltip title="Remove column">
+                <IconButton onClick={removeColumn}>
+                  <ClearIcon />
+                </IconButton>
+              </Tooltip>
+
           </Toolbar>
         </AppBar>
 
@@ -121,6 +169,7 @@ class Column extends Component {
           <PerfectScrollbar
             option={{suppressScrollX: true}}
             onYReachEnd={type === 'fav' ? undefined : this.onYReachEnd}
+            containerRef={el => this._scrollRef = el}
           >
             {(error
               ?
@@ -154,7 +203,9 @@ class Column extends Component {
 
             {loading
               ?
-                <CircularProgress />
+                <div className="circ-progress">
+                  <CircularProgress size={18} />
+                </div>
               :
                 null
             }
@@ -187,6 +238,16 @@ export default connect((state, ownProps) => {
     },
     removeColumn: () => {
       dispatch(removeColumn(columnId))
+      dispatch(purgeAds())
+    },
+    refreshColumn: () => {
+      dispatch(refreshColumn(columnId))
+    },
+    getNewAds: () => {
+      dispatch(getColumnAds(columnId, 'new'))
+    },
+    checkNewAds: () => {
+      dispatch(checkNewAds(columnId))
     }
   }
 })(Column)

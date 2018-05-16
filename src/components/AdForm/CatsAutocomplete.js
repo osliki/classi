@@ -13,7 +13,8 @@ const CatsAutocomplete = ({
   defaultSelectedItem,
   inputRef,
   inputValue,
-  onInputChange = () => {}
+  onInputChange = () => {},
+  catsLoading = false
 }) => {
   return (
     <Downshift
@@ -43,6 +44,8 @@ const CatsAutocomplete = ({
             inputRef={inputRef}
             required
             inputProps={{maxLength: 100}}
+            disabled={catsLoading}
+            helperText={catsLoading ? 'Loading categories...' : ''}
             {...getInputProps({
               onChange: (e) => onInputChange(e, clearSelection, selectItem),
             })}

@@ -11,19 +11,20 @@ import AdDetails from './AdDetails'
 
 import {getAd, getAdDetails, showAd, zoomAd, unzoomAd, showAdForm, initDraft, newColumn, addFav, removeFav, upAd, addToBL, removeFromBL} from '../../store/actions'
 import {getCatsByName, getFavsById, getBlacklistById} from '../../store/selectors'
+import {getDefaultAd} from '../../store/reducers'
 
 class Ad extends Component {
   static propTypes = {
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     view: PropTypes.oneOf(['card', 'details']).isRequired,
   }
 
-  async componentWillMount() {
-    const {ad, loadAd} = this.props
+  constructor(props) {
+    super(props)
 
-    if (ad) return
+    const {id, ad, loadAd} = this.props
 
-    await loadAd()
+    this.defaultAd = getDefaultAd(id)
   }
 
   onRemoveFromBL = () => {
@@ -74,33 +75,30 @@ class Ad extends Component {
       isBlacklisted
     }
 
-    return (ad
-      ?
-        (view === 'card'
-        ?
-          <AdCard
-            ad={ad}
-            onShowAdDetails={onShowAdDetails}
-            onShowUser={onShowUser}
-            {...commonProps}
-          />
-        :
-          <AdDetails
-            ad={ad}
-            onZoom={onZoom}
-            onUnzoom={onUnzoom}
-            {...commonProps}
-          />
-        )
-      :
-        <div style={{height: '400px'}}></div>
+    if (!ad) loadAd()
+
+    return (view === 'card'
+    ?
+      <AdCard
+        ad={ad || this.defaultAd}
+        onShowAdDetails={onShowAdDetails}
+        onShowUser={onShowUser}
+        {...commonProps}
+      />
+    :
+      <AdDetails
+        ad={ad || this.defaultAd}
+        onZoom={onZoom}
+        onUnzoom={onUnzoom}
+        {...commonProps}
+      />
     )
   }
 }
 
 export default connect((state, ownProps) => {
     return {
-      ad: state.ads.byId[ownProps.id],
+      ad: state.ads[ownProps.id],
       cats: state.cats.byId,
       isFav: getFavsById(state)[ownProps.id],
       account: state.account,
@@ -115,7 +113,8 @@ export default connect((state, ownProps) => {
         dispatch(getAdDetails(id))
       },
       onShowAdDetails: () => {
-        dispatch(showAd(id))
+        window.location.hash = `#osliki-classi/ad/${id}`
+        //dispatch(showAd(id))
       },
       onEdit: (ad) => {
         const draftId = `${ad.id}_${ad.eth.data.updatedAt}`

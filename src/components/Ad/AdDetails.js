@@ -20,6 +20,7 @@ import {ImgMiddleLoader} from '../Loaders'
 import ImageZoom from 'react-medium-image-zoom'
 import Img from '../Img'
 import UserName from '../UserName'
+import Comments from '../Comments'
 
 class AdDetails extends Component {
   static propTypes = {
@@ -69,7 +70,7 @@ class AdDetails extends Component {
       return (
         <Paper className="AdDetails">
           <Typography>
-            <i>This Ad has been blacklisted.</i> <a href="#" onClick={(e) => {e.preventDefault(); onRemoveFromBL()}}>Undo</a>
+            <i>This Ad has been blacklisted.</i> <a href="#" onClick={e => {e.preventDefault(); onRemoveFromBL()}}>Undo</a>
           </Typography>
         </Paper>
       )
@@ -97,34 +98,26 @@ class AdDetails extends Component {
                   <br />
                 </Typography>
 
-
-
-
               </div>
-
-
-
-
 
               <Typography variant="headline" component="h1">
                 {header}
               </Typography>
-
 
               <br/>
               <div className="img-list">
                 {photos.map((hash, index) => (
                   <div className="img-item" key={index}>
                     <Img
-                      src={`http://swarm-gateways.net/bzzr:/${hash}`}
+                      src={`https://ipfs.io/ipfs/${hash}`}
                       loader={<ImgMiddleLoader />}
                       loaded={(
                         <ImageZoom
                           image={{
-                            src: `http://swarm-gateways.net/bzzr:/${hash}`
+                            src: `https://ipfs.io/ipfs/${hash}`
                           }}
                           zoomImage={{
-                            src: `http://swarm-gateways.net/bzzr:/${hash}`
+                            src: `https://ipfs.io/ipfs/${hash}`
                           }}
                           zoomMargin={10}
                           defaultStyles={{
@@ -179,9 +172,11 @@ class AdDetails extends Component {
                       </IconButton>
                     </Tooltip>
                 }
-
-
               </div>
+              <Typography variant="subheader">
+                Comments:
+              </Typography>
+              <Comments adId={ad.id} />
             </div>
         }
       </Paper>

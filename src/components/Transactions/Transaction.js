@@ -12,6 +12,7 @@ import Button from 'material-ui/Button'
 import IconButton from 'material-ui/IconButton'
 import ClearIcon from '@material-ui/icons/Clear'
 import TrackChangesIcon from '@material-ui/icons/TrackChanges'
+import OpenInNewIcon from '@material-ui/icons/OpenInNew'
 import Tooltip from 'material-ui/Tooltip'
 import Card, { CardHeader, CardActions, CardContent, CardMedia } from 'material-ui/Card'
 import Menu, { MenuItem } from 'material-ui/Menu'
@@ -50,11 +51,15 @@ class Transactions extends Component {
           secondary={
             <span>
               status:&nbsp;
-              <a href={`https://etherscan.io/tx/${txHash}`}
+
+              <span title={status === 'succeed' ? `more than 5 confirmations` : ''}>
+                {status}&nbsp;
+              </span>
+
+              <a title="check on Etherscan" href={`https://etherscan.io/tx/${txHash}`}
                 target="_blank"
-                title={confirmationNumber && confirmationNumber > 0 ? `more than 5 confirmations` : ''}
               >
-                {status}
+                <OpenInNewIcon style={{fontSize: '12px'}} />
               </a>
             </span>
           }

@@ -127,7 +127,7 @@ export default connect((state, ownProps) => {
       getScannedTx({txs}).forEach(txHash => dispatch(getTxStatus(txHash, () => {
         const name = getTxName(txs[txHash], txHash)
 
-        alert(`Transaction ${name} was successful.`)
+        alert(`Transaction ${name} was successfully confirmed.`)
 
         dispatch(getAccount())
       }, () => {

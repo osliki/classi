@@ -1,5 +1,14 @@
 import {createSelector} from 'reselect';
 
+export const getCatsCount = createSelector(
+  (state) => state.cats.byId,
+  (cats) => {
+    console.log('RESELECT getCatsCount')
+
+    return Object.keys(cats).length
+  }
+)
+
 export const getCatsArray = createSelector(
   (state) => state.cats.byId,
   (cats) => {

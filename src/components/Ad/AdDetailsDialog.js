@@ -28,9 +28,7 @@ class AdDetailsDialog extends Component {
     const {ad, zoom, opened, onClose, onZoom, onUnzoom} = this.props
 
     if (!ad) return null
-/*      classes={{
-        root: 'details-modal-root'
-      }}*/
+
     return (
       <Dialog
         fullScreen
@@ -57,13 +55,13 @@ class AdDetailsDialog extends Component {
 
 export default connect((state, ownProps) => {
     return {
-      ad: state.ads.byId[state.ad.id],
+      ad: state.ads[state.ad.id],
       zoom: state.ad.zoom,
       opened: state.ad.opened
     }
   }, (dispatch) => {
     return {
-      onClose: () => dispatch(closeAd()),
+      onClose: () => window.location.hash = '',//dispatch(closeAd()),
       onZoom: () => {
         dispatch(zoomAd())
       },

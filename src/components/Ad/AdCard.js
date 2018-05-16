@@ -86,7 +86,6 @@ class AdCard extends Component {
     const { anchorEl } = this.state
     const open = Boolean(anchorEl)
 
-
     console.log('RENDER AdCard', ad)
 
     if (isBlacklisted)
@@ -159,7 +158,7 @@ class AdCard extends Component {
               <div className="img-cover" onClick={onShowAdDetails}>
                 {bzzLoaded ?
                     <Img
-                      src={`http://swarm-gateways.net/bzzr:/${photo}`}
+                      src={`https://ipfs.io/ipfs/${photo}`}
                       alt={header}
                       loader={<ImgLoader />}
                     />
@@ -186,7 +185,8 @@ class AdCard extends Component {
               {ad.bzz.error ?
                 <div className="retry-link">
                   <a href="#" onClick={onReload}>Reload</a>
-                </div> :
+                </div>
+              :
                 null
               }
             </CardContent>
@@ -204,11 +204,17 @@ class AdCard extends Component {
                 <FavoriteIcon color={isFav ? 'error' :  'action'} />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Raise Ad in Category">
-              <IconButton onClick={() => {onUp()}}>
-                <ArrowUpwardIcon />
-              </IconButton>
-            </Tooltip>
+
+            {isAuthor ?
+              <Tooltip title="Raise Ad in Category">
+                <IconButton onClick={() => {onUp()}}>
+                  <ArrowUpwardIcon />
+                </IconButton>
+              </Tooltip>
+            :
+              null
+            }
+
           </CardActions>
         </Card>
 
