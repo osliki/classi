@@ -45,6 +45,10 @@ class AppBar extends Component {
           </Typography>
 
           <Typography component="div">
+            <Transactions />
+          </Typography>
+
+          <Typography component="div">
             <Typography variant="subheading">
               <span title={address ? address : 'Guest'}>{address ? getUserShort(address) : 'Guest'}</span>
             </Typography>
@@ -72,9 +76,6 @@ class AppBar extends Component {
             }
           </Typography>
 
-          <Typography component="div">
-            <Transactions />
-          </Typography>
 
         </Toolbar>
       </Bar>

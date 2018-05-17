@@ -16,7 +16,7 @@ import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 const theme = createMuiTheme({
   typography: {
     fontSize: 10,
-    htmlFontSize: 12,
+    htmlFontSize: 11,
   },
 });
 

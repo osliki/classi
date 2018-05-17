@@ -2,8 +2,13 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 
+import './index.css'
+
+import Card, { CardHeader, CardActions, CardContent, CardMedia } from 'material-ui/Card'
+import Typography from 'material-ui/Typography'
+
 import moment from 'moment'
-import {TextLoader} from '../Loaders'
+import {CommentLoader} from '../Loaders'
 import UserName from '../UserName'
 
 import {getComment} from '../../store/actions'
@@ -33,22 +38,31 @@ class Comment extends Component {
 
     const isAuthor = (account.address && account.address === user)
 
-    console.log('RENDER Comment', comment)
+    console.log('RENDER Comment', comment, errorBzz)
+
     return (
       <div className="Comment">
-        {dateFrom}
-        <br/>
-        user: {isAuthor ? 'me' : <UserName user={user} />}
-        <br/>
+
+        <Typography noWrap component="div" color="textSecondary">
+          <span title={dateUsual}>
+            {`${dateFrom}`}
+          </span>
+          &nbsp;|&nbsp;
+          <span title={user}>
+            {isAuthor ? 'me' : <UserName user={user} />}
+          </span>
+        </Typography>
 
         {loaded ?
-          text
+          <Typography component="pre">
+            {text}
+          </Typography>
         :
           <div>
-            <TextLoader animate={!errorEth && !errorBzz} />
+            <CommentLoader animate={!errorEth && !errorBzz} />
 
             {errorBzz ?
-              <div className="retry-link">
+              <div className="retry-link retry-link-comment">
                 <a href="#" onClick={onReload}>Reload</a>
               </div>
             :
@@ -71,7 +85,8 @@ export default connect((state, ownProps) => {
     getComment: () => {
       dispatch(getComment(ownProps.id))
     },
-    onReload: () => {
+    onReload: (e) => {
+      e.preventDefault()
       dispatch(getComment(ownProps.id))
     }
   }

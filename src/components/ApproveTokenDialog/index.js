@@ -16,7 +16,9 @@ import {closeApproveTokenDialog, approveToken} from '../../store/actions'
 class ApproveTokenDialog extends Component {
 
   render() {
-    const {opened, onClose, onApproveToken} = this.props
+    const {opened, onClose, onApproveToken, loading} = this.props
+
+    if (!opened) return null
 
     return (
       <Dialog
@@ -35,8 +37,8 @@ class ApproveTokenDialog extends Component {
           <Button onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={onApproveToken}>
-            Authorize
+          <Button disabled={Boolean(loading)} onClick={onApproveToken}>
+            {loading ? 'Loading...' : 'Authorize'}
           </Button>
         </DialogActions>
       </Dialog>
@@ -46,7 +48,8 @@ class ApproveTokenDialog extends Component {
 
 export default connect((state, ownProps) => {
     return {
-      opened: state.approveTokenDialog.opened
+      opened: state.approveTokenDialog.opened,
+      loading: state.approveTokenDialog.loading
     }
   }, (dispatch, ownProps) => {
     return {

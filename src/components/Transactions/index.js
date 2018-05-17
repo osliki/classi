@@ -77,7 +77,7 @@ class Transactions extends Component {
 //onClick={this.handleMenu}
     return (
       <div className="Transactions">
-        <IconButton onClick={this.handleMenu} buttonRef={el => this.buttonRef = el} >
+        <IconButton title="Transactions" onClick={this.handleMenu} buttonRef={el => this.buttonRef = el} >
           <TrackChangesIcon />
         </IconButton>
 

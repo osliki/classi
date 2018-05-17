@@ -9,7 +9,7 @@ import './index.css'
 import AdCard from './AdCard'
 import AdDetails from './AdDetails'
 
-import {getAd, getAdDetails, showAd, zoomAd, unzoomAd, showAdForm, initDraft, newColumn, addFav, removeFav, upAd, addToBL, removeFromBL} from '../../store/actions'
+import {getAd, getAdDetails, showAd, zoomAd, unzoomAd, showAdForm, initDraft, newColumn, addFav, removeFav, openUpAdDialog, addToBL, removeFromBL} from '../../store/actions'
 import {getCatsByName, getFavsById, getBlacklistById} from '../../store/selectors'
 import {getDefaultAd} from '../../store/reducers'
 
@@ -147,7 +147,7 @@ export default connect((state, ownProps) => {
         dispatch(removeFav(id))
       },
       onUp: () => {
-        dispatch(upAd(id))
+        dispatch(openUpAdDialog(id))
       },
       onAddToBL: () => {
         dispatch(addToBL(id))

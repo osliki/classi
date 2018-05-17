@@ -50,7 +50,7 @@ body, html, #root {
   margin:auto;
 }
 
-.card-content {
+.card-content, .card-content-cat{
   padding-top: 0px !important;
   padding-bottom: 0px !important;
 }
@@ -62,4 +62,16 @@ body, html, #root {
 .user-name-short{
   width: 290px;
   display: inline-block;
+}
+
+.retry-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  top: -110px;
+  left: 0px;
+  height: 0px;
 }

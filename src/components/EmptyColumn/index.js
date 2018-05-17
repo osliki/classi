@@ -144,10 +144,11 @@ class EmptyColumn extends Component {
               {type === 'cat'
                 ?
                   <CatsAutocomplete
-                    items={getCatsArray({cats})}
+                    items={[...getCatsArray({cats})]}
                     inputValue={catValue}
                     inputRef={el => el && el.focus()}
                     catsLoading={catsLoading}
+                    label="Choose a category"
                     onInputChange={(e) => {
                       this.setState({catValue: e.target.value})
                     }}

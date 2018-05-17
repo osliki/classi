@@ -12,6 +12,7 @@ import EmptyColumn from '../EmptyColumn'
 import AdDetailsDialog from '../Ad/AdDetailsDialog'
 import AdFormDialog from '../AdForm/AdFormDialog'
 import ApproveTokenDialog from '../ApproveTokenDialog'
+import UpAdDialog from '../UpAdDialog'
 
 import {getCats, showAd, closeAd} from '../../store/actions'
 
@@ -29,7 +30,6 @@ class Board extends Component {
 
   onHashChange = () => {
     const hash = window.location.hash
-
     if (this.pattern.test(hash)) {
       const params = hash.match(this.pattern)
       this.props.showAd(params[1])
@@ -52,9 +52,10 @@ class Board extends Component {
 
           <EmptyColumn />
 
-          <AdFormDialog/>
-          <AdDetailsDialog/>
-          <ApproveTokenDialog/>
+          <AdFormDialog />
+          <AdDetailsDialog />
+          <ApproveTokenDialog />
+          <UpAdDialog />
         </main>
       </PerfectScrollbar>
     )

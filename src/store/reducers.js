@@ -131,6 +131,15 @@ const ads = (state = {}, action) => {
         })
         .value()
 
+    case 'updateCmntsCnt':
+      const cmntsCnt = dotProp(state).get(`${action.adId}.eth.data.cmntsCnt`).value()
+console.log('updateCmntsCnt', cmntsCnt, action.cmntsCnt)
+      if (cmntsCnt === undefined || cmntsCnt === action.cmntsCnt) return state
+
+      return dotProp(state)
+        .set(`${action.adId}.eth.data.cmntsCnt`, Number(action.cmntsCnt))
+        .value()
+
     default:
       return state
   }
@@ -247,21 +256,25 @@ const ad = (state = {
         id: action.id,
         opened: true
       }
+
     case 'closeAd':
       return {
         ...state,
         opened: false
       }
+
     case 'zoomAd':
       return {
         ...state,
         zoom: true
       }
+
     case 'unzoomAd':
       return {
         ...state,
         zoom: false
       }
+
     default:
       return state
   }
@@ -278,12 +291,14 @@ const adForm = (state = {
         draftId: action.draftId,
         opened: true
       }
+
     case 'closeAdForm':
       console.log('closeAdForm')
       return {
         ...state,
         opened: false
       }
+
     default:
       return state
   }
@@ -449,19 +464,72 @@ const approveTokenDialog = (state = {
     case 'openApproveTokenDialog':
       return {
         ...state,
-        opened: true
+        opened: true,
+        loading: false
       }
 
     case 'closeApproveTokenDialog':
       return {
         ...state,
-        opened: false
+        opened: false,
+        loading: false
+      }
+
+    case 'approveTokenDialogLoading':
+      return {
+        ...state,
+        loading: true
+      }
+
+    case 'approveTokenDialogError':
+      return {
+        ...state,
+        loading: false
       }
 
     default:
       return state
   }
 }
+
+
+const upAdDialog = (state = {
+  opened: false,
+  loading: false,
+  id: ''
+}, action) => {
+  switch (action.type) {
+    case 'openUpAdDialog':
+      return {
+        ...state,
+        opened: true,
+        loading: false,
+        id: action.id
+      }
+
+    case 'closeUpAdDialog':
+      return {
+        ...state,
+        opened: false
+      }
+
+    case 'upAdDialogLoading':
+      return {
+        ...state,
+        loading: true
+      }
+
+    case 'upAdDialogError':
+      return {
+        ...state,
+        loading: false
+      }
+
+    default:
+      return state
+  }
+}
+
 
 const blacklist = (state = [], action) => {
   switch (action.type) {
@@ -590,29 +658,36 @@ const comments = (state = {
 
     case 'getCommentsLoading':
       console.log('getCommentsLoading', action.adId)
-      return {...state, ...{
+      return {...state,
         loading: true,
         error: null,
         adId: action.adId
-      }}
+      }
 
     case 'getCommentsError':
       if (state.adId !== action.adId) return state // means user hasn't waited response
 
-      return {...state, ...{
+      return {...state,
         loading: false,
         error: action.error
-      }}
+      }
 
     case 'getCommentsSuccess':
       console.log('getCommentsSuccess', state.adId, action.adId)
       if (state.adId !== action.adId) return state // means user hasn't waited response
 
-      return {...state, ...{
+      return {...state,
         loading: false,
         error: null,
         allIds: action.cmntIds
-      }}
+      }
+
+    case 'updateCmntIds':
+      if (state.adId !== action.adId) return state // means user hasn't waited response
+
+      return dotProp(state)
+        .merge('allIds', action.cmntIds)
+        .value()
 
     default:
       return state
@@ -630,6 +705,7 @@ const rootReducer = combineReducers({
   favs,
   account,
   approveTokenDialog,
+  upAdDialog,
   blacklist,
   transactions,
   txsMenu,

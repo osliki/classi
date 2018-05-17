@@ -2,6 +2,9 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 
+import TextField from 'material-ui/TextField'
+import Button from 'material-ui/Button'
+
 import {addNewComment, initDraft, adFormChange, commentSubmit} from '../../store/actions'
 
 class CommentFrom extends Component {
@@ -19,7 +22,14 @@ class CommentFrom extends Component {
   onSubmit = (e) => {
     e.preventDefault()
 
-    this.props.onSubmit()
+    const {onSubmit, draft} = this.props
+
+    if (draft.text.trim() === '') {
+      this.textInput.focus()
+      return
+    }
+
+    onSubmit()
   }
 
   onChange = (e) => {
@@ -34,10 +44,26 @@ class CommentFrom extends Component {
     console.log('RENDER CommentForm', draft)
 
     return (
-      <form onSubmit={onSubmit}>
-        <input type="text" name="text" value={text} onChange={onChange} />
-        <button disabled={Boolean(loading)}>Send</button>
-      </form>
+      <div className="CommentForm">
+        <form onSubmit={onSubmit}>
+          <TextField
+            name="text"
+            placeholder="Add a new comment..."
+            value={text}
+            onChange={this.onChange}
+            margin="normal"
+            multiline
+            fullWidth
+            inputRef={el => this.textInput = el}
+            required
+          />
+
+          <Button onClick={onSubmit} disabled={Boolean(loading)}>
+            {loading ? 'Loading...' : 'Submit'}
+          </Button>
+
+        </form>
+      </div>
     )
   }
 }

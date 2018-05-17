@@ -1,6 +1,15 @@
 import React from 'react'
 import ContentLoader from 'react-content-loader'
 
+export const CommentLoader = (props) => (
+  <ContentLoader height="52" width="800" {...props}>
+    {/* Pure SVG */}
+    <rect x="0" y="8" rx="3" ry="3" width="100%" height="10" />
+    <rect x="0" y="26" rx="3" ry="3" width="60%" height="10" />
+    <rect x="0" y="42" rx="3" ry="3" width="80%" height="10" />
+  </ContentLoader>
+)
+
 export const ImgLoader = (props) => (
   <ContentLoader width="280" height="150" {...props}>
     {/* Pure SVG */}

@@ -5,6 +5,7 @@ import union from 'lodash/union'
 import throttle from 'lodash/throttle'
 
 
+
 /*** Cats ***/
 
 const initNewCat = (id) => ({
@@ -336,15 +337,19 @@ export const getAd = (id) => async (dispatch, getState) => {
 
   dispatch(getAdLoading('eth', id))
 
-  let newAd
+  let ad, cmntsCnt
   try {
-    newAd = await contract.methods.ads(id).call()
+    ;[ad, cmntsCnt] = await Promise.all([
+      contract.methods.ads(id).call(),
+      contract.methods.getCommentsCountByAd(id).call(),
+    ])
+    ad.cmntsCnt = Number(cmntsCnt)
   } catch(err) {
     dispatch(getAdError('eth', id, err))
     return
   }
 
-  dispatch(getAdSuccess('eth', id, newAd))
+  dispatch(getAdSuccess('eth', id, ad))
 }
 
 export const getAdDetails = (id) => async (dispatch, getState) => {
@@ -363,13 +368,11 @@ export const getAdDetails = (id) => async (dispatch, getState) => {
 
   let adDetails = {}, adDetailsRaw
   try {
-    // if (ipfs.util.isIPFS.multihash(contentAddress)) {
-      adDetailsRaw = await ipfs.files.cat(contentAddress)
-    /*} else {
-      adDetailsRaw = await web3.bzz.download(contentAddress)
-    }*/
+    // adDetailsRaw = await web3.bzz.download(contentAddress)
+    adDetailsRaw = await ipfs.files.cat(contentAddress)
 
-    adDetails = JSON.parse(new TextDecoder("utf-8").decode(adDetailsRaw))
+    // adDetails = JSON.parse(new TextDecoder("utf-8").decode(adDetailsRaw))
+    adDetails = JSON.parse(adDetailsRaw.toString('utf8'))
 
   } catch(error) {
     console.log('ipfs error', error)
@@ -379,6 +382,12 @@ export const getAdDetails = (id) => async (dispatch, getState) => {
 
   dispatch(getAdSuccess('bzz', id, adDetails))
 }
+
+export const updateCmntsCnt = (adId, cmntsCnt) => ({
+  type: 'updateCmntsCnt',
+  adId,
+  cmntsCnt
+})
 
 
 
@@ -670,7 +679,8 @@ const getAccountAddress = (state, onError) => {
   return from
 }
 
-export const upAd = (id) => async (dispatch, getState) => {
+export const upAd = () => async (dispatch, getState) => {
+  const id = getState().upAdDialog.id
 
   const {upPrice, tokenBalance, tokenAllowance} = getState().account
 
@@ -678,6 +688,7 @@ export const upAd = (id) => async (dispatch, getState) => {
   if (!from) return
 
   if (upPrice > tokenAllowance) {
+    dispatch(closeUpAdDialog())
     dispatch(openApproveTokenDialog())
     return
   }
@@ -691,6 +702,8 @@ export const upAd = (id) => async (dispatch, getState) => {
   let gasPrice = await web3.eth.getGasPrice()
   gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
 
+  dispatch(upAdDialogLoading())
+
   const request = contract.methods.upAd(id).send({
     from,
     gasPrice,//: web3.utils.fromWei(gasPrice, 'gwei'),
@@ -699,6 +712,7 @@ export const upAd = (id) => async (dispatch, getState) => {
     console.log('txHash', txHash)
     dispatch(addTx(txHash, 'upAd', {id}))
     dispatch(openTxsMenu())
+    dispatch(closeUpAdDialog())
     request.off('error')
   })/*.on('confirmation', (confirmationNumber, receipt) => {
     if (confirmationNumber === 5) {
@@ -706,10 +720,27 @@ export const upAd = (id) => async (dispatch, getState) => {
       dispatch(getAccount())
     }
   })*/.on('error', (error, receipt) => { // if receipt then out of gas
+    dispatch(upAdDialogError())
     alert(error.message)
   })
 }
 
+export const openUpAdDialog = (id) => ({
+  type: 'openUpAdDialog',
+  id
+})
+
+export const closeUpAdDialog = () => ({
+  type: 'closeUpAdDialog'
+})
+
+export const upAdDialogLoading = () => ({
+  type: 'upAdDialogLoading'
+})
+
+export const upAdDialogError = () => ({
+  type: 'upAdDialogError'
+})
 
 
 /*** ApproveTokenDialog ***/
@@ -722,12 +753,22 @@ export const closeApproveTokenDialog = () => ({
   type: 'closeApproveTokenDialog'
 })
 
+export const approveTokenDialogLoading = () => ({
+  type: 'approveTokenDialogLoading'
+})
+
+export const approveTokenDialogError = () => ({
+  type: 'approveTokenDialogError'
+})
+
 export const approveToken = (amount = 10**8) => async (dispatch, getState) => {
   const from = getAccountAddress(getState())
   if (!from) return
 
   let gasPrice = await web3.eth.getGasPrice()
   gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
+
+  dispatch(approveTokenDialogLoading())
 
   const request = contractToken.methods.approve(contract._address, web3.utils.toWei(String(amount), 'ether')).send({
     from,
@@ -739,15 +780,12 @@ export const approveToken = (amount = 10**8) => async (dispatch, getState) => {
     dispatch(openTxsMenu())
     dispatch(closeApproveTokenDialog())
     request.off('error')
-  })/*.on('confirmation', (confirmationNumber, receipt) => {
-    if (confirmationNumber === 5) {
-      console.log('confirmationNumber', confirmationNumber)
-      dispatch(getAccount())
-    }
-  })*/.on('error', (error, receipt) => {
+  }).on('error', (error, receipt) => {
+    dispatch(approveTokenDialogError())
     alert(error.message)
   })
 }
+
 
 
 /*** Blacklist ***/
@@ -761,6 +799,7 @@ export const removeFromBL = (id) => ({
   type: 'removeFromBL',
   id
 })
+
 
 
 /*** transactions ***/
@@ -838,16 +877,34 @@ export const closeTxsMenu = () => ({
 
 /*** Comments ***/
 
-export const getComments = (adId) => async (dispatch, getState) => {
-  /*if (!total)
-    total = await contract.methods.getCommentsCountByAd(adId)
+export const updateCmntIds = (adId, cmntIds) => ({
+  type: 'updateCmntIds',
+  adId,
+  cmntIds
+})
 
-  let promises, cids = []
-  for (index = start; index < total; index++) {
-    promises.push(contract.methods.getCommentsCountByAd(adId))
+export const checkComments = (adId) => async (dispatch, getState) => {
+  if (dotProp(getState()).get('comments.loading').value()) return
+
+  let total = await contract.methods.getCommentsCountByAd(adId).call()
+  total = Number(total)
+  const curTotal = dotProp(getState()).get(`ads.${adId}.eth.data.cmntsCnt`).value()
+console.log('checkComments', curTotal, total)
+  if (curTotal === undefined || curTotal === total) return
+  console.log('checkComments throw')
+
+  let promises = [], cmntIds = []
+  for (let index = curTotal; index < total; index++) {
+    promises.push(contract.methods.getCommentIdByAd(adId, index).call())
   }
-*/
 
+  cmntIds = await Promise.all(promises)
+
+  dispatch(updateCmntsCnt(adId, total))
+  dispatch(updateCmntIds(adId, cmntIds))
+}
+
+export const getComments = (adId) => async (dispatch, getState) => {
   dispatch(getCommentsLoading(adId))
 
   let cmntIds
@@ -856,7 +913,9 @@ export const getComments = (adId) => async (dispatch, getState) => {
   } catch(error) {
     dispatch(getCommentsError(adId, error))
   }
-console.log('getComments', adId, cmntIds)
+  console.log('getComments', adId, cmntIds)
+
+  dispatch(updateCmntsCnt(adId, cmntIds.length))
   dispatch(getCommentsSuccess(adId, cmntIds))
 }
 
@@ -875,15 +934,12 @@ export const getComment = (id) => async (dispatch, getState) => {
   let commentDetails
   try {
     const commentDetailsRaw = await ipfs.files.cat(comment.text)
-    commentDetails = JSON.parse(new TextDecoder("utf-8").decode(commentDetailsRaw))
+    // commentDetails = JSON.parse(new TextDecoder("utf-8").decode(commentDetailsRaw))
+    commentDetails = JSON.parse(commentDetailsRaw.toString('utf8'))
     dispatch(getCommentSuccess(id, 'bzz', commentDetails))
   } catch(error) {
     dispatch(getCommentError(id, 'bzz', error))
   }
-
-}
-
-export const addNewComment = (adId) => async (dispatch, getState) => {
 
 }
 
@@ -951,7 +1007,7 @@ export const commentSubmit = (adId) => async (dispatch, getState) => {
 
   let gasPrice = await web3.eth.getGasPrice()
   gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
-console.log('newComment submit', {adId, hash})
+  console.log('newComment submit', {adId, hash})
   const request = contract.methods.newComment(adId, hash).send({
     from,
     gasPrice,
@@ -960,7 +1016,7 @@ console.log('newComment submit', {adId, hash})
 
   request.on('transactionHash', (txHash) => {
     console.log('txHash', txHash)
-    dispatch(addTx(txHash, 'newComment', {draft}))
+    dispatch(addTx(txHash, 'newComment', {draft, adId}))
     dispatch(adFormSuccess(draftId))
     dispatch(openTxsMenu())
     dispatch(initDraft(draftId)) //cos user may be want add another comment right after submit

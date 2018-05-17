@@ -85,6 +85,7 @@ class AdForm extends Component {
                 inputValue={catName}
                 items={getCatsArray({cats})}
                 defaultSelectedItem={catsByName[catName]}
+                helperText="Choose existed or enter a new category name"
                 inputRef={el => this.catNameInput = el}
                 catsLoading={catsLoading}
                 onInputChange={(e, clearSelection, selectItem) => {
@@ -142,8 +143,9 @@ class AdForm extends Component {
             {photos.map((hash, index) => (
               <div className="img-item" key={index}>
                 <Img
-                   src={`https://ipfs.io/ipfs/${hash}`}
-                   loader={<SmallImgLoader />}
+                  hash={hash}
+                  src={`https://ipfs.io/ipfs/${hash}`}
+                  loader={<SmallImgLoader />}
                  />
 
                 <div className="img-remove">

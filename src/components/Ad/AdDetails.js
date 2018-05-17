@@ -50,9 +50,10 @@ class AdDetails extends Component {
 
   render() {
     const {ad, onZoom, onUnzoom, catName, onRemoveFav, onAddFav, onUp, isFav, onEdit, onAddToBL, isBlacklisted, onRemoveFromBL, account} = this.props
+    const ethError = ad.eth.error
     const bzzLoaded = ad.bzz.loaded
 
-    const {user = '', createdAt, updatedAt} = ad.eth.data
+    const {user = '', createdAt, updatedAt, cmntsCnt = 0} = ad.eth.data
     const {header, text = '', photos = []} = ad.bzz.data
 
     const isAuthor = (account.address && account.address === user)
@@ -77,107 +78,110 @@ class AdDetails extends Component {
 
     return (
       <Paper className="AdDetails">
-        { !bzzLoaded
-          ?
-            <CircularProgress />
+        {!bzzLoaded ?
+          (ethError ?
+            ethError.message
           :
-            <div>
-
-              <div className="AdDetails-header">
-                <Typography className="AdDetails-info" noWrap component="div" color="textSecondary">
-                  <div>
-                    <span title={createdAtUsual}>
-                      {`${createdAtFrom}`}
-                    </span>
-
-                     {createdAt === updatedAt ? '' : ` (edited ${updatedAtFrom})`}
-                  </div>
-                  <div>
-                    {'User: '} <UserName user={user} />
-                  </div>
-                  <br />
-                </Typography>
-
-              </div>
-
-              <Typography variant="headline" component="h1">
-                {header}
-              </Typography>
-
-              <br/>
-              <div className="img-list">
-                {photos.map((hash, index) => (
-                  <div className="img-item" key={index}>
-                    <Img
-                      src={`https://ipfs.io/ipfs/${hash}`}
-                      loader={<ImgMiddleLoader />}
-                      loaded={(
-                        <ImageZoom
-                          image={{
-                            src: `https://ipfs.io/ipfs/${hash}`
-                          }}
-                          zoomImage={{
-                            src: `https://ipfs.io/ipfs/${hash}`
-                          }}
-                          zoomMargin={10}
-                          defaultStyles={{
-                            zoomContainer: {zIndex: 999999},
-                            overlay: {opacity: 0}
-                          }}
-                          onZoom={onZoom}
-                          onUnzoom={onUnzoom}
-                        />
-                      )}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <br/>
-
-              <Typography component="pre">
-                {text}
-              </Typography>
-
-              <br />
-
-              <Typography noWrap variant="body1" color="textSecondary">
-                {`Category: ${catName ? catName : '...'}`}
-              </Typography>
-
-              <div className="AdDetails-actions">
-                <Tooltip title="Add to Favorites">
-                  <IconButton onClick={() => {isFav ? onRemoveFav() :  onAddFav()}}>
-                    <FavoriteIcon color={isFav ? 'error' :  'action'} />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Raise Ad in Category">
-                  <IconButton onClick={onUp}>
-                    <ArrowUpwardIcon />
-                  </IconButton>
-                </Tooltip>
-
-                {isAuthor
-                  ?
-                    <Tooltip title="Edit">
-                      <IconButton onClick={() => onEdit(ad)}>
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                  :
-                    <Tooltip title="Add to Blacklist">
-                      <IconButton onClick={onAddToBL}>
-                        <BlockIcon />
-                      </IconButton>
-                    </Tooltip>
-                }
-              </div>
-              <Typography variant="subheader">
-                Comments:
-              </Typography>
-              <Comments adId={ad.id} />
+            <div className="circ-progress">
+              <CircularProgress size={30} />
             </div>
+          )
+        :
+          <div>
+
+            <div className="AdDetails-header">
+              <Typography className="AdDetails-info" noWrap component="div" color="textSecondary">
+                <div>
+                  <span title={createdAtUsual}>
+                    {`${createdAtFrom}`}
+                  </span>
+
+                   {createdAt === updatedAt ? '' : ` (edited ${updatedAtFrom})`}
+                </div>
+                <div>
+                  {'User: '} <UserName user={user} />
+                </div>
+                <br />
+              </Typography>
+
+            </div>
+
+            <Typography variant="headline" component="h1">
+              {header}
+            </Typography>
+
+            <br/>
+            <div className="img-list">
+              {photos.map((hash, index) => (
+                <div className="img-item" key={index}>
+                  <Img
+                    hash={hash}
+                    src={`https://ipfs.io/ipfs/${hash}`}
+                    loader={<ImgMiddleLoader />}
+                    loaded={(src) => (
+                      <ImageZoom
+                        image={{src}}
+                        zoomImage={{src}}
+                        zoomMargin={10}
+                        defaultStyles={{
+                          zoomContainer: {zIndex: 999999},
+                          overlay: {opacity: 0}
+                        }}
+                        onZoom={onZoom}
+                        onUnzoom={onUnzoom}
+                      />
+                    )}
+                  />
+                </div>
+              ))}
+            </div>
+
+            <br/>
+
+            <Typography component="pre">
+              {text}
+            </Typography>
+
+            <br />
+
+            <Typography noWrap variant="body1" color="textSecondary">
+              {`Category: ${catName ? catName : '...'}`}
+            </Typography>
+
+            <div className="AdDetails-actions">
+              <Tooltip title="Add to Favorites">
+                <IconButton onClick={() => {isFav ? onRemoveFav() :  onAddFav()}}>
+                  <FavoriteIcon color={isFav ? 'error' :  'action'} />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip title="Raise Ad in Category">
+                <IconButton onClick={onUp}>
+                  <ArrowUpwardIcon />
+                </IconButton>
+              </Tooltip>
+
+              {isAuthor
+                ?
+                  <Tooltip title="Edit">
+                    <IconButton onClick={() => onEdit(ad)}>
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
+                :
+                  <Tooltip title="Add to Blacklist">
+                    <IconButton onClick={onAddToBL}>
+                      <BlockIcon />
+                    </IconButton>
+                  </Tooltip>
+              }
+            </div>
+            <Typography variant="subheading">
+              Comments ({cmntsCnt}):
+            </Typography>
+
+            <Comments adId={ad.id} />
+          </div>
         }
       </Paper>
     )

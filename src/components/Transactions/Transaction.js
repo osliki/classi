@@ -26,19 +26,11 @@ class Transactions extends Component {
     txHash: PropTypes.string.isRequired
   }
 
-  constructor(props) {
-    super(props)
-
-    this.state = {
-
-    }
-  }
-
   render() {
     const {tx, txHash, onRemoveTx} = this.props
     const {status = '...', confirmationNumber} = tx
 
-    let name = getTxName(tx, txHash)
+    let name = getTxName(tx, txHash, true)
 
     console.log('RENDER Transaction', tx)
 
@@ -66,7 +58,7 @@ class Transactions extends Component {
         />
 
         <ListItemSecondaryAction>
-          <IconButton>
+          <IconButton title={'Remove transaction'}>
             <ClearIcon onClick={onRemoveTx} />
           </IconButton>
         </ListItemSecondaryAction>

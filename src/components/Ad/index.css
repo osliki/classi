@@ -27,6 +27,7 @@
 .AdDetails-actions {
 
   text-align: right;
+  padding-bottom: 20px;
 }
 
 
@@ -55,24 +56,12 @@
 
 .AdCard .img-cover {
   margin-bottom: 20px;
+  text-align: center;
 }
 
 .AdCard .card-content, .AdCard .img-cover img {
   cursor: pointer;
 }
-
-.retry-link {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-  width: 100%;
-  position: relative;
-  top: -110px;
-  left: 0px;
-  height: 0px;
-}
-
 
 
 pre {
@@ -81,4 +70,21 @@ pre {
 
 .details-modal-root > div {
   background-color: #555;
+}
+
+
+.comment-icon-wrapper {
+  text-align: right;
+  padding-right: 10px;
+  flex: 1 1 auto;
+}
+
+.comment-icon {
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.54) !important;
+}
+
+.comment-icon svg {
+  font-size: 14px;
+  vertical-align:text-bottom;
 }

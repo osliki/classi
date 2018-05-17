@@ -14,7 +14,9 @@ const CatsAutocomplete = ({
   inputRef,
   inputValue,
   onInputChange = () => {},
-  catsLoading = false
+  catsLoading = false,
+  label = 'Category',
+  helperText = ''
 }) => {
   return (
     <Downshift
@@ -24,6 +26,7 @@ const CatsAutocomplete = ({
       }}
       defaultInputValue={inputValue}
       defaultSelectedItem={defaultSelectedItem}
+      defaultHighlightedIndex={0}
       inputValue={inputValue}
     >
       {({getInputProps,
@@ -38,14 +41,14 @@ const CatsAutocomplete = ({
         <div className="downshift-container">
           <TextField
             name="catName"
-            label="Category"
+            label={label}
             margin="normal"
             fullWidth
             inputRef={inputRef}
             required
             inputProps={{maxLength: 100}}
             disabled={catsLoading}
-            helperText={catsLoading ? 'Loading categories...' : ''}
+            helperText={catsLoading ? 'Loading categories...' : helperText}
             {...getInputProps({
               onChange: (e) => onInputChange(e, clearSelection, selectItem),
             })}

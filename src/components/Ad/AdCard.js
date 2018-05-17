@@ -13,6 +13,7 @@ import Typography from 'material-ui/Typography'
 import Button from 'material-ui/Button'
 import IconButton from 'material-ui/IconButton'
 import FavoriteIcon from '@material-ui/icons/Favorite'
+import ChatIcon from '@material-ui/icons/ChatBubbleOutline'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import Tooltip from 'material-ui/Tooltip'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
@@ -72,7 +73,7 @@ class AdCard extends Component {
       if (bzzLoaded && !ad.bzz.error) this.props.onShowAdDetails()
     }
 
-    const {user = '', createdAt} = ad.eth.data
+    const {user = '', createdAt, cmntsCnt = 0} = ad.eth.data
     const {header, text = '', photos = []} = ad.bzz.data
 
     const isAuthor = (account.address && account.address === user)
@@ -155,10 +156,11 @@ class AdCard extends Component {
 
           {(!bzzLoaded || (bzzLoaded && photo))
             ?
-              <div className="img-cover" onClick={onShowAdDetails}>
+              <div title={photo ? `https://ipfs.io/ipfs/${photo}` : ''} className="img-cover" onClick={onShowAdDetails}>
                 {bzzLoaded ?
                     <Img
                       src={`https://ipfs.io/ipfs/${photo}`}
+                      hash={photo}
                       alt={header}
                       loader={<ImgLoader />}
                     />
@@ -192,7 +194,7 @@ class AdCard extends Component {
             </CardContent>
           }
 
-          <CardContent classes={{root: 'card-content'}}>
+          <CardContent classes={{root: 'card-content-cat'}}>
             <Typography noWrap variant="body1" color="textSecondary" title={catName}>
               {`Category: ${catName ? catName : '...'}`}
             </Typography>
@@ -214,6 +216,12 @@ class AdCard extends Component {
             :
               null
             }
+
+            <div className="comment-icon-wrapper">
+              <Typography component="span" className="comment-icon" onClick={onShowAdDetails} title={`Comments ${cmntsCnt}`}>
+                <ChatIcon/>: {cmntsCnt}
+              </Typography>
+            </div>
 
           </CardActions>
         </Card>

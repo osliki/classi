@@ -25,9 +25,9 @@ import {closeAd, zoomAd, unzoomAd} from '../../store/actions'
 class AdDetailsDialog extends Component {
 
   render() {
-    const {ad, zoom, opened, onClose, onZoom, onUnzoom} = this.props
+    const {adId, zoom, opened, onClose, onZoom, onUnzoom} = this.props
 
-    if (!ad) return null
+//    if (!ad) return null
 
     return (
       <Dialog
@@ -47,7 +47,7 @@ class AdDetailsDialog extends Component {
         <br/>
         <br/>
 
-        <Ad id={ad.id} view="details" />
+        <Ad id={adId} view="details" />
       </Dialog>
     )
   }
@@ -55,19 +55,19 @@ class AdDetailsDialog extends Component {
 
 export default connect((state, ownProps) => {
     return {
-      ad: state.ads[state.ad.id],
+      adId: state.ad.id,
       zoom: state.ad.zoom,
       opened: state.ad.opened
     }
   }, (dispatch) => {
     return {
-      onClose: () => window.location.hash = '',//dispatch(closeAd()),
+      onClose: () => window.location.hash = '',
       onZoom: () => {
         dispatch(zoomAd())
       },
       onUnzoom: () => {
         dispatch(unzoomAd())
-      },
+      }
     }
 })(AdDetailsDialog)
 
