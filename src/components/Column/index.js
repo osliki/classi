@@ -1,8 +1,6 @@
 import React, {Component } from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import dotProp from 'dot-prop-immutable-chain'
-import throttle from 'lodash/throttle'
 import {getUserShort} from '../../utils'
 import './index.css'
 
@@ -11,12 +9,9 @@ import AppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
 import Typography from 'material-ui/Typography'
 import IconButton from 'material-ui/IconButton'
-import MoreVertIcon from '@material-ui/icons/MoreVert'
 import ClearIcon from '@material-ui/icons/Clear'
 import RefreshIcon from '@material-ui/icons/Refresh'
 import FiberNewIcon from '@material-ui/icons/FiberNew'
-import Menu, {MenuItem} from 'material-ui/Menu'
-import Paper from 'material-ui/Paper'
 import Tooltip from 'material-ui/Tooltip'
 
 import PerfectScrollbar from 'react-perfect-scrollbar'
@@ -34,7 +29,6 @@ class Column extends Component {
     super(props)
 
     this.state = {
-      anchorEl: null,
       winHeight: document.body.clientHeight
     }
 
@@ -58,14 +52,6 @@ class Column extends Component {
 
   onResize = () => {
     this.setState({winHeight: document.body.clientHeight})
-  }
-
-  handleMenu = (e) => {
-    this.setState({anchorEl: e.currentTarget})
-  }
-
-  handleClose = () => {
-    this.setState({anchorEl: null})
   }
 
   getNewAds = () => {
@@ -104,7 +90,7 @@ class Column extends Component {
 
   render() {
     const {getNewAds} = this
-    const {removeColumn, column, id, favs, refreshColumn} = this.props
+    const {removeColumn, column, favs, refreshColumn} = this.props
     const {loading, type, error, newAdsCount = 0} = column
 
     // const ads = column.ads
@@ -114,9 +100,6 @@ class Column extends Component {
     const total = (type === 'fav' ? favs.length : column.total)
 
     const header = this.getHeader()
-
-    const {anchorEl} = this.state
-    const open = Boolean(anchorEl)
 
     console.log('Render Column', column)
 

@@ -1,24 +1,21 @@
 import React, { Component } from 'react'
-import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import {cut, getUserShort} from '../../utils'
 import './index.css'
 
-import {ImgLoader, HeaderLoader, TextLoader, CardLoader} from '../Loaders'
+import {ImgLoader, HeaderLoader, TextLoader} from '../Loaders'
 import Img from '../Img'
 
-import {CircularProgress} from 'material-ui/Progress';
 import Typography from 'material-ui/Typography'
-import Button from 'material-ui/Button'
 import IconButton from 'material-ui/IconButton'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import ChatIcon from '@material-ui/icons/ChatBubbleOutline'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import Tooltip from 'material-ui/Tooltip'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
-import Card, { CardHeader, CardActions, CardContent, CardMedia } from 'material-ui/Card'
-import Menu, { MenuItem } from 'material-ui/Menu'
+import Card, {CardHeader, CardActions, CardContent} from 'material-ui/Card'
+import Menu, {MenuItem} from 'material-ui/Menu'
 
 class AdCard extends Component {
   static propTypes = {

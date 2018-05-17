@@ -2,9 +2,6 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import './index.css'
 
-import AppBar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
-
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
 import Column from '../Column'

@@ -1,25 +1,17 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
-import moment from 'moment'
-import {getUserShort} from '../../utils'
 
 import './index.css'
 
-import {CircularProgress} from 'material-ui/Progress';
 import Typography from 'material-ui/Typography'
-import Button from 'material-ui/Button'
 import IconButton from 'material-ui/IconButton'
 import ClearIcon from '@material-ui/icons/Clear'
-import TrackChangesIcon from '@material-ui/icons/TrackChanges'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
-import Tooltip from 'material-ui/Tooltip'
-import Card, { CardHeader, CardActions, CardContent, CardMedia } from 'material-ui/Card'
-import Menu, { MenuItem } from 'material-ui/Menu'
-import List, { ListItem, ListItemSecondaryAction, ListItemAvatar, ListItemText } from 'material-ui/List';
+import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List';
 
 import {getTxName} from '../../utils'
-import {removeTx, getTxStatus} from '../../store/actions'
+import {removeTx} from '../../store/actions'
 
 class Transactions extends Component {
   static propTypes = {
@@ -28,7 +20,7 @@ class Transactions extends Component {
 
   render() {
     const {tx, txHash, onRemoveTx} = this.props
-    const {status = '...', confirmationNumber} = tx
+    const {status = '...'} = tx
 
     let name = getTxName(tx, txHash, true)
 

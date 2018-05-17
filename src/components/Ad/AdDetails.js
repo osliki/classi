@@ -2,19 +2,16 @@ import React, { Component } from 'react'
 import './index.css'
 import PropTypes from 'prop-types'
 import moment from 'moment'
-import {cut, getUserShort} from '../../utils'
 
 import { CircularProgress } from 'material-ui/Progress'
 import Typography from 'material-ui/Typography'
 import Paper from 'material-ui/Paper'
-import Button from 'material-ui/Button'
 import IconButton from 'material-ui/IconButton'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward'
 import EditIcon from '@material-ui/icons/Edit'
 import BlockIcon from '@material-ui/icons/Block'
 import Tooltip from 'material-ui/Tooltip'
-import Card, { CardHeader, CardActions, CardContent, CardMedia } from 'material-ui/Card'
 
 import {ImgMiddleLoader} from '../Loaders'
 import ImageZoom from 'react-medium-image-zoom'
@@ -44,10 +41,6 @@ class AdDetails extends Component {
     isBlacklisted: false,
   }
 
-  constructor(props) {
-    super(props)
-  }
-
   render() {
     const {ad, onZoom, onUnzoom, catName, onRemoveFav, onAddFav, onUp, isFav, onEdit, onAddToBL, isBlacklisted, onRemoveFromBL, account} = this.props
     const ethError = ad.eth.error
@@ -57,15 +50,12 @@ class AdDetails extends Component {
     const {header, text = '', photos = []} = ad.bzz.data
 
     const isAuthor = (account.address && account.address === user)
-    const userShort = isAuthor ? 'me' : getUserShort(user)
-
-    const photo = photos[0]
 
     const createdAtFrom = createdAt ? moment(createdAt * 1000).fromNow() : '...'
     const updatedAtFrom = updatedAt ? moment(updatedAt * 1000).fromNow() : '...'
 
     const createdAtUsual = createdAt ? moment(createdAt * 1000).calendar() : '...'
-    const updatedAtUsual = updatedAt ? moment(updatedAt * 1000).calendar() : '...'
+    // const updatedAtUsual = updatedAt ? moment(updatedAt * 1000).calendar() : '...'
 
     if (isBlacklisted)
       return (

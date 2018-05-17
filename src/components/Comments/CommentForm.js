@@ -5,7 +5,7 @@ import {connect} from 'react-redux'
 import TextField from 'material-ui/TextField'
 import Button from 'material-ui/Button'
 
-import {addNewComment, initDraft, adFormChange, commentSubmit} from '../../store/actions'
+import {initDraft, adFormChange, commentSubmit} from '../../store/actions'
 
 class CommentFrom extends Component {
 
@@ -37,8 +37,8 @@ class CommentFrom extends Component {
   }
 
   render() {
-    const {onSubmit, onChange} = this
-    const {adId, draft = {}} = this.props
+    const {onSubmit} = this
+    const {draft = {}} = this.props
     const {text, loading} = draft
 
     console.log('RENDER CommentForm', draft)

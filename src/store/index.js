@@ -2,7 +2,6 @@ import {createStore, applyMiddleware} from 'redux'
 import thunk from 'redux-thunk'
 import throttle from 'lodash/throttle'
 import union from 'lodash/union'
-import dotProp from 'dot-prop-immutable-chain'
 
 import rootReducer from './reducers'
 import {loadState, saveState} from './localStorage'

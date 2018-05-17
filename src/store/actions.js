@@ -2,8 +2,6 @@ import {contract, contractToken, web3, ipfs} from '../provider'
 import dotProp from 'dot-prop-immutable-chain'
 import {getBlacklistById, getCatsCount} from './selectors'
 import union from 'lodash/union'
-import throttle from 'lodash/throttle'
-
 
 
 /*** Cats ***/
@@ -135,7 +133,7 @@ export const removeColumnAds = (columnId) => ({
 })
 
 export const refreshColumn = (columnId) => (dispatch, getState) => {
-  const ads = dotProp(getState()).get(`columns.byId.${columnId}.ads`, []).value()
+  //const ads = dotProp(getState()).get(`columns.byId.${columnId}.ads`, []).value()
 
   dispatch(removeColumnAds(columnId))
 

@@ -1,7 +1,5 @@
 import React, { Component } from 'react'
-import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import dotProp from 'dot-prop-immutable-chain'
 
 import './index.css'
 

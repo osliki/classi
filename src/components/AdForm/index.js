@@ -1,18 +1,14 @@
 import React, { Component } from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
-import {createSelector} from 'reselect'
-import dotProp from 'dot-prop-immutable-chain'
 
 import './index.css'
 
 import {
-  FormLabel, FormControl, FormControlLabel, FormHelperText
+  FormLabel, FormControl
 } from 'material-ui/Form'
 import TextField from 'material-ui/TextField'
-import Button from 'material-ui/Button'
 import ButtonBase from 'material-ui/ButtonBase'
-import FileUpload from '@material-ui/icons/FileUpload'
 import PhotoCamera from '@material-ui/icons/PhotoCamera'
 import {LinearProgress} from 'material-ui/Progress'
 import IconButton from 'material-ui/IconButton'
@@ -202,10 +198,9 @@ export default connect((state, ownProps) => {
     draft: state.drafts[ownProps.draftId]
   }
 }, (dispatch, ownProps) => {
-  const {draftId, ad} = ownProps
+  const {draftId} = ownProps
 
   return {
-    //initDraft: () => dispatch(initDraft(draftId, ad)),
     onChange: (name, value) => dispatch(adFormChange(draftId, name, value)),
     onUpload: (e) => {
       e.preventDefault()

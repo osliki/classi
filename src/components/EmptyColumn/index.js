@@ -8,16 +8,14 @@ import TextField from 'material-ui/TextField'
 import Dialog, {
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
 } from 'material-ui/Dialog'
 import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
 import AddIcon from '@material-ui/icons/Add'
 
-import AdForm from '../AdForm'
 import CatsAutocomplete from '../AdForm/CatsAutocomplete'
 
-import {getCatsArray, getCatsByName} from '../../store/selectors'
+import {getCatsArray} from '../../store/selectors'
 import {showAdForm, initDraft, newColumn, checkNewCats} from '../../store/actions'
 
 class EmptyColumn extends Component {

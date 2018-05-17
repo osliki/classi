@@ -1,33 +1,20 @@
 import React, { Component } from 'react'
 import {connect} from 'react-redux'
-import PropTypes from 'prop-types'
-import dotProp from 'dot-prop-immutable-chain'
 
 import './index.css'
 
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-} from 'material-ui/Dialog'
+import Dialog from 'material-ui/Dialog'
 import AppBar from 'material-ui/AppBar'
 import Toolbar from 'material-ui/Toolbar'
-import Typography from 'material-ui/Typography'
-import Button from 'material-ui/Button'
 import IconButton from 'material-ui/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 
 import Ad from './index'
 
-import {closeAd, zoomAd, unzoomAd} from '../../store/actions'
-
 class AdDetailsDialog extends Component {
 
   render() {
-    const {adId, zoom, opened, onClose, onZoom, onUnzoom} = this.props
-
-//    if (!ad) return null
+    const {adId, zoom, opened, onClose} = this.props
 
     return (
       <Dialog
@@ -61,13 +48,7 @@ export default connect((state, ownProps) => {
     }
   }, (dispatch) => {
     return {
-      onClose: () => window.location.hash = '',
-      onZoom: () => {
-        dispatch(zoomAd())
-      },
-      onUnzoom: () => {
-        dispatch(unzoomAd())
-      }
+      onClose: () => window.location.hash = ''
     }
 })(AdDetailsDialog)
 

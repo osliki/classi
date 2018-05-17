@@ -4,7 +4,6 @@ import {connect} from 'react-redux'
 
 import './index.css'
 
-import Card, { CardHeader, CardActions, CardContent, CardMedia } from 'material-ui/Card'
 import Typography from 'material-ui/Typography'
 
 import moment from 'moment'

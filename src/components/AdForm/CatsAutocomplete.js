@@ -1,7 +1,7 @@
-import React, { Component } from 'react'
+import React from 'react'
 
 import Downshift from 'downshift'
-import matchSorter, {rankings, caseRankings} from 'match-sorter'
+import matchSorter from 'match-sorter'
 
 import TextField from 'material-ui/TextField'
 import Paper from 'material-ui/Paper'

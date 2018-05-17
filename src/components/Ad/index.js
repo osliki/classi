@@ -9,8 +9,8 @@ import './index.css'
 import AdCard from './AdCard'
 import AdDetails from './AdDetails'
 
-import {getAd, getAdDetails, showAd, zoomAd, unzoomAd, showAdForm, initDraft, newColumn, addFav, removeFav, openUpAdDialog, addToBL, removeFromBL} from '../../store/actions'
-import {getCatsByName, getFavsById, getBlacklistById} from '../../store/selectors'
+import {getAd, getAdDetails, zoomAd, unzoomAd, showAdForm, initDraft, newColumn, addFav, removeFav, openUpAdDialog, addToBL, removeFromBL} from '../../store/actions'
+import {getFavsById, getBlacklistById} from '../../store/selectors'
 import {getDefaultAd} from '../../store/reducers'
 
 class Ad extends Component {
@@ -22,7 +22,7 @@ class Ad extends Component {
   constructor(props) {
     super(props)
 
-    const {id, ad, loadAd} = this.props
+    const {id} = this.props
 
     this.defaultAd = getDefaultAd(id)
   }
@@ -38,7 +38,7 @@ class Ad extends Component {
   }
 
   render() {
-    const {id,
+    const {
       ad,
       view,
       cats,
