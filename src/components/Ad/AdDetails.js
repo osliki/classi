@@ -153,19 +153,23 @@ class AdDetails extends Component {
                 </IconButton>
               </Tooltip>
 
-              <Tooltip title="Raise Ad in Category">
-                <IconButton onClick={onUp}>
-                  <ArrowUpwardIcon />
-                </IconButton>
-              </Tooltip>
+
 
               {isAuthor
                 ?
-                  <Tooltip title="Edit">
-                    <IconButton onClick={() => onEdit(ad)}>
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
+                  <span>
+                    <Tooltip title="Raise Ad in Category">
+                      <IconButton onClick={onUp}>
+                        <ArrowUpwardIcon />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Edit">
+                      <IconButton onClick={() => onEdit(ad)}>
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </span>
                 :
                   <Tooltip title="Add to Blacklist">
                     <IconButton onClick={onAddToBL}>

@@ -74,3 +74,16 @@ export const getScannedTx = createSelector(
     return arr
   }
 )
+
+export const getIsApprovePending = createSelector(
+  (state) => state.txs,
+  (state) => state.account,
+  getScannedTx,
+  (txs, account, scannedTxs) => {
+    console.log('RESELECT getIsApprovePending', scannedTxs)
+
+    return scannedTxs.some(txHash => {
+      return txs[txHash].purpose === 'approveToken' && txs[txHash].payload.from === account.address
+    })
+  }
+)

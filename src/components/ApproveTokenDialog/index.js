@@ -12,14 +12,17 @@ import Dialog, {
 import Button from 'material-ui/Button'
 import {FormHelperText} from 'material-ui/Form'
 
+import {getIsApprovePending} from '../../store/selectors'
 import {closeApproveTokenDialog, approveToken} from '../../store/actions'
 
 class ApproveTokenDialog extends Component {
 
   render() {
-    const {opened, onClose, onApproveToken, loading} = this.props
+    const {opened, onClose, onApproveToken, loading, txs, account} = this.props
 
     if (!opened) return null
+
+    const isApprovePending = getIsApprovePending({txs, account})
 
     return (
       <Dialog
@@ -39,8 +42,8 @@ class ApproveTokenDialog extends Component {
             Cancel
           </Button>
 
-          <Button disabled={Boolean(loading)} onClick={onApproveToken}>
-            {loading ? 'Waiting...' : 'Authorize'}
+          <Button disabled={Boolean(loading) || isApprovePending} onClick={onApproveToken}>
+            {loading ? 'Waiting...' : (isApprovePending ? 'Pending...' : 'Authorize')}
           </Button>
 
           {loading ?
@@ -59,7 +62,9 @@ class ApproveTokenDialog extends Component {
 export default connect((state, ownProps) => {
     return {
       opened: state.approveTokenDialog.opened,
-      loading: state.approveTokenDialog.loading
+      loading: state.approveTokenDialog.loading,
+      txs: state.transactions,
+      account: state.account,
     }
   }, (dispatch, ownProps) => {
     return {

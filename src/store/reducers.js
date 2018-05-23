@@ -310,7 +310,7 @@ const getDefaultDraft = () => ({
   catName: '',
   header: '',
   text: '',
-  agree: false,
+  agree: true,
   photos: [],
   uploadingImgs: 0,
   loading: false,

@@ -12,7 +12,7 @@ import Transaction from './Transaction'
 
 import {getTxName} from '../../utils'
 import {getScannedTx} from '../../store/selectors'
-import {getTxStatus, getAccount, openTxsMenu, closeTxsMenu} from '../../store/actions'
+import {getTxStatus, getAccount, openTxsMenu, closeTxsMenu, closeApproveTokenDialog} from '../../store/actions'
 
 class Transactions extends Component {
   static propTypes = {
@@ -123,6 +123,11 @@ export default connect((state, ownProps) => {
         alert(`Transaction ${name} was successfully confirmed.`)
 
         dispatch(getAccount())
+
+        ////txs[txHash].purpose === 'approveToken' && txs[txHash].payload.from === account.address
+        if (txs[txHash].purpose === 'approveToken') {
+          dispatch(closeApproveTokenDialog())
+        }
       }, () => {
         const name = getTxName(txs[txHash], txHash)
 

@@ -62,7 +62,6 @@ class Img extends Component {
     if (this.i) {
       this.i.onerror = null
       this.i.onload = null
-      this.i.src = null
       this.i = null
     }
 

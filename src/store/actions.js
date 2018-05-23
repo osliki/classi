@@ -546,7 +546,7 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
   if (!from) return
 
   let gasPrice = await web3.eth.getGasPrice()
-  gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
+  //gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
 
   let request, purpose = ''
 
@@ -703,7 +703,7 @@ export const upAd = () => async (dispatch, getState) => {
   }
 
   let gasPrice = await web3.eth.getGasPrice()
-  gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
+  //gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
 
   dispatch(upAdDialogLoading())
 
@@ -769,7 +769,7 @@ export const approveToken = (amount = 10**8) => async (dispatch, getState) => {
   if (!from) return
 
   let gasPrice = await web3.eth.getGasPrice()
-  gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
+  //gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
 
   dispatch(approveTokenDialogLoading())
 
@@ -1011,7 +1011,7 @@ export const commentSubmit = (adId) => async (dispatch, getState) => {
   if (!from) return
 
   let gasPrice = await web3.eth.getGasPrice()
-  gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
+  //gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
   console.log('newComment submit', {adId, hash})
   const request = contract.methods.newComment(adId, hash).send({
     from,
