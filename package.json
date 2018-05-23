@@ -2,6 +2,7 @@
   "name": "osliki-classifieds-js",
   "version": "0.1.0",
   "private": true,
+  "homepage" : ".",
   "dependencies": {
     "@material-ui/icons": "^1.0.0-beta.43",
     "autoprefixer": "7.1.6",
