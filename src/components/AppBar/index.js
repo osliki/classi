@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {onChangeAccount, web3} from '../../provider'
+import {onChangeAccount, web3, contractToken} from '../../provider'
 import {getUserShort} from '../../utils'
 
 import './index.css'
@@ -18,10 +18,10 @@ import {getAccount} from '../../store/actions'
 
 class AppBar extends Component {
 
-  componentWillMount() {
-    //this.props.getAccount()
+  constructor(props) {
+    super(props)
 
-    onChangeAccount(this.props.getAccount)
+    web3 && onChangeAccount(this.props.getAccount)
   }
 
   render() {
@@ -49,7 +49,7 @@ class AppBar extends Component {
             {address
               ?
                 <Typography color="textSecondary" variant="body1">
-                  <span title="Inner currency OSLIK">
+                  <span title={`Inner currency OSLIK ${contractToken._address}`}>
                     {web3.utils.fromWei(String(tokenBalance), 'ether')} OSLIK
                   </span>
 

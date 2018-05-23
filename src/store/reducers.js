@@ -310,6 +310,7 @@ const getDefaultDraft = () => ({
   catName: '',
   header: '',
   text: '',
+  agree: false,
   photos: [],
   uploadingImgs: 0,
   loading: false,
@@ -624,6 +625,7 @@ const getDefaultComment = (id) => {
   }
 }
 
+
 const comments = (state = {
   adId: null,
   loading: false,
@@ -695,6 +697,28 @@ const comments = (state = {
 }
 
 
+const touDialog = (state = {
+  opened: false
+}, action) => {
+  switch (action.type) {
+    case 'openTouDialog':
+      return {
+        ...state,
+        opened: true
+      }
+
+    case 'closeTouDialog':
+      return {
+        ...state,
+        opened: false
+      }
+
+    default:
+      return state
+  }
+}
+
+
 const rootReducer = combineReducers({
   cats,
   ads,
@@ -709,7 +733,8 @@ const rootReducer = combineReducers({
   blacklist,
   transactions,
   txsMenu,
-  comments
+  comments,
+  touDialog,
 })
 
 export default rootReducer

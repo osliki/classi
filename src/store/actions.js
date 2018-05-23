@@ -1,4 +1,4 @@
-import {contract, contractToken, web3, ipfs} from '../provider'
+import {contract, contractToken, web3, getIpfs} from '../provider'
 import dotProp from 'dot-prop-immutable-chain'
 import {getBlacklistById, getCatsCount} from './selectors'
 import union from 'lodash/union'
@@ -367,6 +367,8 @@ export const getAdDetails = (id) => async (dispatch, getState) => {
   let adDetails = {}, adDetailsRaw
   try {
     // adDetailsRaw = await web3.bzz.download(contentAddress)
+    console.log('raw hash', contentAddress)
+    const ipfs = await getIpfs()
     adDetailsRaw = await ipfs.files.cat(contentAddress)
 
     // adDetails = JSON.parse(new TextDecoder("utf-8").decode(adDetailsRaw))
@@ -463,7 +465,7 @@ export const adFormPhotoUpload = (draftId, files) => async (dispatch, getState) 
   Array.from(files).forEach(file => {
     const reader = new FileReader()
 
-    reader.onload = (e) => {
+    reader.onload = async (e) => {
       // const data = new Uint8Array(e.target.result)
       const data = new Buffer(e.target.result)
 
@@ -474,6 +476,7 @@ export const adFormPhotoUpload = (draftId, files) => async (dispatch, getState) 
 
         dispatch(adFormPhotoUploadError(draftId))
       })*/
+      const ipfs = await getIpfs()
 
       ipfs.files.add(data).then(res => {
         console.log('ipfs.files.add', data, res)
@@ -522,6 +525,8 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
       text,
       photos
     }))*/
+
+    const ipfs = await getIpfs()
 
     const res = await ipfs.files.add(new Buffer(JSON.stringify({
       header,
@@ -931,6 +936,7 @@ export const getComment = (id) => async (dispatch, getState) => {
 
   let commentDetails
   try {
+    const ipfs = await getIpfs()
     const commentDetailsRaw = await ipfs.files.cat(comment.text)
     // commentDetails = JSON.parse(new TextDecoder("utf-8").decode(commentDetailsRaw))
     commentDetails = JSON.parse(commentDetailsRaw.toString('utf8'))
@@ -988,6 +994,7 @@ export const commentSubmit = (adId) => async (dispatch, getState) => {
 
   let hash
   try {
+    const ipfs = await getIpfs()
     const res = await ipfs.files.add(new Buffer(JSON.stringify({
       text
     })))
@@ -1025,3 +1032,16 @@ export const commentSubmit = (adId) => async (dispatch, getState) => {
   })
 
 }
+
+
+
+/*** TouDialog ***/
+
+export const openTouDialog = (id) => ({
+  type: 'openTouDialog',
+  id
+})
+
+export const closeTouDialog = () => ({
+  type: 'closeTouDialog'
+})

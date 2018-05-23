@@ -2,7 +2,7 @@
 
 import React, {Component} from 'react'
 import {node, func, string, number} from 'prop-types'
-import {ipfs} from '../../provider'
+import {getIpfs} from '../../provider'
 
 class Img extends Component {
   static propTypes = {
@@ -42,11 +42,13 @@ class Img extends Component {
   loadImg = async () => {
     if (this.props.hash) {
       try {
+        const ipfs = await getIpfs()
         const file = await ipfs.files.cat(this.props.hash)
         const blob = new Blob([file], {type: 'image/*'})
         this.objectUrl = window.URL.createObjectURL(blob)
       } catch (error) {
         console.log('IMG error', error)
+        this.onError()
       }
     }
 
@@ -88,11 +90,11 @@ class Img extends Component {
 
   render() {
     const {isLoaded, isLoading, retryCounter} = this.state
-    const {src, loader, loaded, unloader, retryCount, retryDelay, ...rest} = this.props // clean ...rest
+    const {src, loader, loaded, unloader, retryCount, retryDelay, alt, ...rest} = this.props // clean ...rest
     const imgSrc = this.objectUrl || src
     // if we have loaded, show img
     if (isLoaded)
-      return loaded ? loaded(imgSrc) : <img src={imgSrc} {...rest} />
+      return loaded ? loaded(imgSrc) : <img src={imgSrc} alt={alt ? alt : ''} {...rest} />
 
     // if we are still trying to load, show img and a Loader if requested
     if (!isLoaded && isLoading)

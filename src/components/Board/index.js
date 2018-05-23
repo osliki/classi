@@ -1,5 +1,6 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
+
 import './index.css'
 
 import PerfectScrollbar from 'react-perfect-scrollbar'
@@ -10,6 +11,7 @@ import AdDetailsDialog from '../Ad/AdDetailsDialog'
 import AdFormDialog from '../AdForm/AdFormDialog'
 import ApproveTokenDialog from '../ApproveTokenDialog'
 import UpAdDialog from '../UpAdDialog'
+import TouDialog from '../TouDialog'
 
 import {getCats, showAd, closeAd} from '../../store/actions'
 
@@ -53,6 +55,7 @@ class Board extends Component {
           <AdDetailsDialog />
           <ApproveTokenDialog />
           <UpAdDialog />
+          <TouDialog />
         </main>
       </PerfectScrollbar>
     )

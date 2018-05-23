@@ -88,3 +88,8 @@ pre {
   font-size: 14px;
   vertical-align:text-bottom;
 }
+
+.retry-link-details{
+  padding:20px;
+  text-align: center;
+}

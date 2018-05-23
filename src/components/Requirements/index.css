@@ -1,0 +1,11 @@
+.Requirements{
+  margin: auto;
+  max-width: 800px;
+  text-align: center;
+  padding: 50px;
+}
+
+.Requirements-card{
+  max-width: 300px;
+  margin: auto;
+}

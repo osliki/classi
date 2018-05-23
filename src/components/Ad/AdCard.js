@@ -153,11 +153,11 @@ class AdCard extends Component {
 
           {(!bzzLoaded || (bzzLoaded && photo))
             ?
-              <div title={photo ? `https://ipfs.io/ipfs/${photo}` : ''} className="img-cover" onClick={onShowAdDetails}>
+              <div title={photo ? `ipfs hash: ${photo}` : ''} className="img-cover" onClick={onShowAdDetails}>
                 {bzzLoaded ?
                     <Img
-                      src={`https://ipfs.io/ipfs/${photo}`}
                       hash={photo}
+                      src={`https://gateway.ipfs.io/ipfs/${photo}`}
                       alt={header}
                       loader={<ImgLoader />}
                     />
@@ -206,7 +206,7 @@ class AdCard extends Component {
 
             {isAuthor ?
               <Tooltip title="Raise Ad in Category">
-                <IconButton onClick={() => {onUp()}}>
+                <IconButton onClick={onUp}>
                   <ArrowUpwardIcon />
                 </IconButton>
               </Tooltip>
@@ -215,7 +215,7 @@ class AdCard extends Component {
             }
 
             <div className="comment-icon-wrapper">
-              <Typography component="span" className="comment-icon" onClick={onShowAdDetails} title={`Comments ${cmntsCnt}`}>
+              <Typography component="span" className="comment-icon" onClick={this.props.onShowAdDetails} title={`Comments ${cmntsCnt}`}>
                 <ChatIcon/>: {cmntsCnt}
               </Typography>
             </div>

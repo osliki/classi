@@ -46,7 +46,7 @@ class Comment extends Component {
           <span title={dateUsual}>
             {`${dateFrom}`}
           </span>
-          &nbsp;|&nbsp;
+          &nbsp; by &nbsp;
           <span title={user}>
             {isAuthor ? 'me' : <UserName user={user} />}
           </span>

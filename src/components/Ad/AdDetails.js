@@ -42,9 +42,9 @@ class AdDetails extends Component {
   }
 
   render() {
-    const {ad, onZoom, onUnzoom, catName, onRemoveFav, onAddFav, onUp, isFav, onEdit, onAddToBL, isBlacklisted, onRemoveFromBL, account} = this.props
-    const ethError = ad.eth.error
-    const bzzLoaded = ad.bzz.loaded
+    const {ad, onZoom, onUnzoom, catName, onRemoveFav, onAddFav, onUp, isFav, onEdit, onAddToBL, isBlacklisted, onRemoveFromBL, account, onReload} = this.props
+    const {error: ethError} = ad.eth
+    const {error: bzzError, loaded: bzzLoaded} = ad.bzz
 
     const {user = '', createdAt, updatedAt, cmntsCnt = 0} = ad.eth.data
     const {header, text = '', photos = []} = ad.bzz.data
@@ -72,9 +72,17 @@ class AdDetails extends Component {
           (ethError ?
             ethError.message
           :
-            <div className="circ-progress">
-              <CircularProgress size={30} />
-            </div>
+            (bzzError ?
+              <div className="retry-link-details">
+                <Typography>
+                  <a href="#" onClick={onReload}>Reload</a>
+                </Typography>
+              </div>
+            :
+              <div className="circ-progress">
+                <CircularProgress size={30} />
+              </div>
+            )
           )
         :
           <div>
@@ -103,10 +111,10 @@ class AdDetails extends Component {
             <br/>
             <div className="img-list">
               {photos.map((hash, index) => (
-                <div className="img-item" key={index}>
+                <div className="img-item" key={hash} title={`ipfs hash: ${hash}`}>
                   <Img
                     hash={hash}
-                    src={`https://ipfs.io/ipfs/${hash}`}
+                    src={`https://gateway.ipfs.io/ipfs/${hash}`}
                     loader={<ImgMiddleLoader />}
                     loaded={(src) => (
                       <ImageZoom

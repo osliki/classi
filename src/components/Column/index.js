@@ -73,9 +73,9 @@ class Column extends Component {
         return cats[param] ? cats[param].name : ' '
 
       default:
-        param
+        return param
     }
-    return
+
   }
 
   onYReachEnd = () => {
@@ -158,7 +158,7 @@ class Column extends Component {
               ?
                 <Typography align="center" style={{flex: 1}}>
                   <br/><br/>
-                  Something went wrong :(
+                  Something went wrong. Make sure MetMask is running on the Main network
                   <br/>
                   <br/>
                   <small>{error.message}</small>

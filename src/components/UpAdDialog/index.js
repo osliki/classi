@@ -11,6 +11,7 @@ import Dialog, {
   DialogTitle,
 } from 'material-ui/Dialog'
 import Button from 'material-ui/Button'
+import {FormHelperText} from 'material-ui/Form'
 
 import {closeUpAdDialog, upAd} from '../../store/actions'
 
@@ -34,13 +35,22 @@ class UpAdDialog extends Component {
           </DialogContentText>
         </DialogContent>
 
-        <DialogActions>
+        <DialogActions style={{flexWrap: 'wrap'}}>
           <Button onClick={onClose}>
             Cancel
           </Button>
+
           <Button disabled={Boolean(loading)} onClick={onConfirm}>
-            {loading ? 'Loading...' : 'Confirm'}
+            {loading ? 'Waiting...' : 'Confirm'}
           </Button>
+
+          {loading ?
+            <FormHelperText classes={{root: 'dialog-action-message'}}>
+              Pay for the transaction in MetaMask
+            </FormHelperText>
+          :
+            null
+          }
         </DialogActions>
       </Dialog>
     )

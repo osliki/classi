@@ -108,7 +108,9 @@ export default connect((state, ownProps) => {
     const id = ownProps.id
 
     return {
-      loadAd: async () => {
+      loadAd: async (e) => {
+        e && e.preventDefault()
+        
         await dispatch(getAd(id))
         dispatch(getAdDetails(id))
       },

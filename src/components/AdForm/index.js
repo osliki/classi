@@ -5,8 +5,9 @@ import {connect} from 'react-redux'
 import './index.css'
 
 import {
-  FormLabel, FormControl
+  FormLabel, FormControl, FormHelperText, FormControlLabel
 } from 'material-ui/Form'
+import Checkbox from 'material-ui/Checkbox'
 import TextField from 'material-ui/TextField'
 import ButtonBase from 'material-ui/ButtonBase'
 import PhotoCamera from '@material-ui/icons/PhotoCamera'
@@ -18,7 +19,7 @@ import Img from '../Img'
 import {SmallImgLoader} from '../Loaders'
 import CatsAutocomplete from './CatsAutocomplete'
 
-import {adFormChange, adFormPhotoUpload, adFormPhotoRemove, adFormSubmit, checkNewCats} from '../../store/actions'
+import {adFormChange, adFormPhotoUpload, adFormPhotoRemove, adFormSubmit, checkNewCats, openTouDialog} from '../../store/actions'
 import {getCatsArray, getCatsByName} from '../../store/selectors'
 
 class AdForm extends Component {
@@ -37,13 +38,13 @@ class AdForm extends Component {
   }
 
   onChange = (e) => {
-    this.props.onChange(e.target.name, e.target.value)
+    this.props.onChange(e.target.name, e.target.type === 'checkbox' ? e.target.checked : e.target.value)
   }
 
   onSubmit = (e) => {
     e.preventDefault()
 
-    const {header, text, catName, catId} = this.props.draft
+    const {header, text, catName, catId, agree} = this.props.draft
 
     if (catId === '' && catName.trim() === '') {
       this.catNameInput.focus()
@@ -60,12 +61,19 @@ class AdForm extends Component {
       return
     }
 
+    if (!agree) {
+      this.agreeInput.parentNode.focus()
+      return
+    }
+
     this.props.onSubmit()
+
+    return false
   }
 
   render() {
-    const {formRef = () => {}, onChange, onUpload, onPhotoRemove, draft = {}, cats, catsByName, catsLoading} = this.props
-    const {id = '', catId = '', catName = '', header = '', text = '', uploadingImgs = 0, photos = []} = draft
+    const {formRef = () => {}, onChange, onUpload, onPhotoRemove, draft = {}, cats, catsByName, catsLoading, openTouDialog} = this.props
+    const {id = '', catId = '', catName = '', header = '', text = '', agree = false, uploadingImgs = 0, photos = []} = draft
     const totalImgs = photos.length + uploadingImgs
 
     return (
@@ -116,7 +124,7 @@ class AdForm extends Component {
             inputRef={el => this.headerInput = el}
             required
           />
-
+<br/>
           <TextField
             name="text"
             label="Text"
@@ -129,7 +137,7 @@ class AdForm extends Component {
             inputRef={el => this.textInput = el}
             required
           />
-
+<br/>
           <FormControl margin='normal'>
             <FormLabel>Images:</FormLabel>
           </FormControl>
@@ -137,18 +145,18 @@ class AdForm extends Component {
           <div className="img-list">
 
             {photos.map((hash, index) => (
-              <div className="img-item" key={index}>
+              <div className="img-item" key={hash}>
                 <Img
                   hash={hash}
-                  src={`https://ipfs.io/ipfs/${hash}`}
+                  src={`https://gateway.ipfs.io/ipfs/${hash}`}
                   loader={<SmallImgLoader />}
                  />
 
                 <div className="img-remove">
-                  <IconButton size="small">
-                    <ClearIcon onClick={() => {
-                      onPhotoRemove(index)
-                    }}/>
+                  <IconButton size="small" onClick={() => {
+                    onPhotoRemove(index)
+                  }}>
+                    <ClearIcon />
                   </IconButton>
                 </div>
 
@@ -182,6 +190,29 @@ class AdForm extends Component {
             </div>
 
           </div>
+
+          <FormHelperText className="photos-helper">
+            Your photos will be spreaded among other users directly from your computer. To make sure they are cached on other computers, visit this website as often as possible. It is also not recommended to upload too large pictures.
+          </FormHelperText>
+<br/>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={agree}
+                required
+                name="agree"
+                onChange={this.onChange}
+                color="primary"
+                inputRef={el => this.agreeInput = el}
+              />
+            }
+            label={
+              <span>
+                * I agree with <a href="#" onClick={openTouDialog}>Terms of Use</a>
+              </span>
+            }
+          />
+
           <button type="submit" style={{display: 'none'}} />
         </form>
       </section>
@@ -209,7 +240,8 @@ export default connect((state, ownProps) => {
     },
     onPhotoRemove: (index) => dispatch(adFormPhotoRemove(draftId, index)),
     onSubmit: () => dispatch(adFormSubmit(draftId)),
-    checkNewCats: () => dispatch(checkNewCats())
+    checkNewCats: () => dispatch(checkNewCats()),
+    openTouDialog: () => dispatch(openTouDialog())
   }
 })(AdForm)
 

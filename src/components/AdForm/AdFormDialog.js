@@ -10,6 +10,7 @@ import Dialog, {
   DialogTitle,
 } from 'material-ui/Dialog'
 import Button from 'material-ui/Button'
+import {FormHelperText} from 'material-ui/Form'
 
 import AdForm from './index'
 
@@ -38,14 +39,24 @@ class AdFormDialog extends Component {
 
         </DialogContent>
 
-        <DialogActions>
+        <DialogActions style={{flexWrap: 'wrap'}}>
           <Button onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={() => this.form.dispatchEvent(new Event('submit'))} disabled={Boolean(loading)}>
-            {loading ? 'Loading...' : 'Submit'}
+
+          <Button onClick={() => this.form.dispatchEvent(new Event('submit', {cancelable: true}))}    disabled={Boolean(loading)}>
+            {loading ? 'Waiting...' : 'Submit'}
           </Button>
+
+          {loading ?
+            <FormHelperText classes={{root: 'dialog-action-message'}}>
+              Pay for the transaction in MetaMask
+            </FormHelperText>
+          :
+            null
+          }
         </DialogActions>
+
       </Dialog>
     )
   }

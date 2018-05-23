@@ -10,6 +10,7 @@ import Dialog, {
   DialogTitle,
 } from 'material-ui/Dialog'
 import Button from 'material-ui/Button'
+import {FormHelperText} from 'material-ui/Form'
 
 import {closeApproveTokenDialog, approveToken} from '../../store/actions'
 
@@ -33,13 +34,22 @@ class ApproveTokenDialog extends Component {
           </DialogContentText>
         </DialogContent>
 
-        <DialogActions>
+        <DialogActions style={{flexWrap: 'wrap'}}>
           <Button onClick={onClose}>
             Cancel
           </Button>
+
           <Button disabled={Boolean(loading)} onClick={onApproveToken}>
-            {loading ? 'Loading...' : 'Authorize'}
+            {loading ? 'Waiting...' : 'Authorize'}
           </Button>
+
+          {loading ?
+            <FormHelperText classes={{root: 'dialog-action-message'}}>
+              Pay for the transaction in MetaMask
+            </FormHelperText>
+          :
+            null
+          }
         </DialogActions>
       </Dialog>
     )

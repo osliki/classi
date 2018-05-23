@@ -21,15 +21,23 @@ class Comments extends Component {
 
     this.props.getComments()
 
-    this.interval = setInterval(this.props.checkComments, 5000);
+    this.interval = setInterval(this.props.checkComments, 5000)
+
+    this.state = {} // to avoid Warning: Comments: Did not properly initialize state during construction. Expected state to be an object, but it was undefined.
   }
 
   componentWillUnmount() {
     this.interval && clearInterval(this.interval)
   }
 
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.adId !== nextProps.comments.adId) nextProps.getComments()
+
+    return null
+  }
+
   render() {
-    const {comments, loading, error, adId} = this.props
+    const {allIds: comments, loading, error} = this.props.comments
 
     return (
       <section className="Comments">
@@ -51,7 +59,7 @@ class Comments extends Component {
                 </Typography>
               }
 
-              <CommentForm adId={adId} />
+              <CommentForm adId={this.props.adId} />
 
             </div>
           )
@@ -63,9 +71,7 @@ class Comments extends Component {
 
 export default connect((state, ownProps) => {
   return {
-    loading: state.comments.loading,
-    error: state.comments.error,
-    comments: state.comments.allIds
+    comments: state.comments
   }
 }, (dispatch, ownProps) => {
   return {

@@ -1,16 +1,17 @@
-import React, { Component } from 'react'
-import { Provider } from 'react-redux'
+import React, {Component} from 'react'
+import {Provider} from 'react-redux'
+import {web3} from './provider'
 
 import AppBar from './components/AppBar'
 import Board from './components/Board'
+import Requirements from './components/Requirements'
 import store from './store'
-
 
 import 'react-perfect-scrollbar/dist/css/styles.css'
 
 import 'typeface-roboto'
 import CssBaseline from 'material-ui/CssBaseline'
-import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
+import {MuiThemeProvider, createMuiTheme} from 'material-ui/styles'
 
 const theme = createMuiTheme({
   typography: {
@@ -28,7 +29,12 @@ class App extends Component {
             <CssBaseline />
 
             <AppBar />
-            <Board />
+
+            {web3 ?
+              <Board />
+            :
+              <Requirements />
+            }
           </div>
         </MuiThemeProvider>
       </Provider>

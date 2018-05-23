@@ -8,6 +8,8 @@
 // To learn more about the benefits of this model, read https://goo.gl/KwvDNy.
 // This link also includes instructions on opting out of this behavior.
 
+// const { createProxyClient } = require('ipfs-postmsg-proxy')
+
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
     // [::1] is the IPv6 localhost address.
@@ -65,19 +67,26 @@ function registerValidSW(swUrl) {
               // the fresh content will have been added to the cache.
               // It's the perfect time to display a "New content is
               // available; please refresh." message in your web app.
-              console.log('New content is available; please refresh.');
+              console.log('SW New content is available; please refresh.');
             } else {
               // At this point, everything has been precached.
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
-              console.log('Content is cached for offline use.');
+              console.log('SW Content is cached for offline use.');
             }
           }
         };
       };
+
+
+    /*  window.ipfsNode = createProxyClient({
+        addListener: navigator.serviceWorker.addEventListener.bind(navigator.serviceWorker),
+        removeListener: navigator.serviceWorker.removeEventListener.bind(navigator.serviceWorker),
+        postMessage: (data) => navigator.serviceWorker.controller.postMessage(data)
+      })*/
     })
     .catch(error => {
-      console.error('Error during service worker registration:', error);
+      console.error('SW Error during service worker registration:', error);
     });
 }
 
@@ -103,7 +112,7 @@ function checkValidServiceWorker(swUrl) {
     })
     .catch(() => {
       console.log(
-        'No internet connection found. App is running in offline mode.'
+        'SW No internet connection found. App is running in offline mode.'
       );
     });
 }
