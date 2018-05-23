@@ -24,6 +24,11 @@ class AppBar extends Component {
     web3 && onChangeAccount(this.props.getAccount)
   }
 
+  precisionRound(number, precision) {
+    const factor = Math.pow(10, precision)
+    return Math.round(number * factor) / factor
+  }
+
   render() {
     const {address, tokenBalance, tokenAllowance, upPrice} = this.props.account
 
@@ -50,7 +55,7 @@ class AppBar extends Component {
               ?
                 <Typography color="textSecondary" variant="body1">
                   <span title={`Inner currency OSLIK ${contractToken._address}`}>
-                    {web3.utils.fromWei(String(tokenBalance), 'ether')} OSLIK
+                    {this.precisionRound(web3.utils.fromWei(String(tokenBalance), 'ether'), 2)} OSLIK
                   </span>
 
                   {tokenAllowance > upPrice

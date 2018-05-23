@@ -123,8 +123,8 @@ class EmptyColumn extends Component {
               <AddIcon />
             </ListItemIcon>
 
-            <ListItemText>
-              Create Ad
+            <ListItemText style={{padding: '0px'}}>
+              Poste Ad
             </ListItemText>
           </ListItem>
 

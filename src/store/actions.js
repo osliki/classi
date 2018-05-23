@@ -847,7 +847,7 @@ export const getTxStatus = (txHash, onSuccess = () => {}, onFail = () => {}) => 
     } else {
       confirmationNumber = curBlockNumber - receipt.blockNumber
 
-      if (confirmationNumber < 2) {
+      if (confirmationNumber < 5) {
         status = 'confirmation'
       } else {
         status = 'succeed'

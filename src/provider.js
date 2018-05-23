@@ -3,11 +3,13 @@ import oslikToken from './contracts/OslikToken.json'
 
 //import IPFS from 'ipfs'
 
+const network = process.env.NODE_ENV === 'production' ? 'main' : 'rinkeby'
+
 const contractAbi = oslikiClassifieds.abi
-const contractAddress = oslikiClassifieds.networks['5777'].address
+const contractAddress = oslikiClassifieds.networks[network].address
 
 const contractTokenAbi = oslikToken.abi
-const contractTokenAddress = oslikToken.networks['5777'].address
+const contractTokenAddress = oslikToken.networks[network].address
 
 let web3, contract, contractToken, onChangeAccount, account, getIpfs
 
