@@ -114,7 +114,7 @@ class AdDetails extends Component {
                 <div className="img-item" key={hash} title={`ipfs hash: ${hash}`}>
                   <Img
                     hash={hash}
-                    src={`https://gateway.ipfs.io/ipfs/${hash}`}
+                    src={`https://ipfs.io/ipfs/${hash}`}
                     loader={<ImgMiddleLoader />}
                     loaded={(src) => (
                       <ImageZoom

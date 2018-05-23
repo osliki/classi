@@ -477,11 +477,17 @@ export const adFormPhotoUpload = (draftId, files) => async (dispatch, getState) 
         dispatch(adFormPhotoUploadError(draftId))
       })*/
       const ipfs = await getIpfs()
-
       ipfs.files.add(data).then(res => {
+        const hash = res[0].path
+
+        dispatch(adFormPhotoUploadSuccess(draftId, hash))
+
+        fetch(`https://ipfs.io/ipfs/${hash}`)
+          .then(res => console.log(`fetch ipfs ${hash}`, res))
+          .catch(error => console.error(`fetch ipfs ${hash}`, error))
+
         console.log('ipfs.files.add', data, res)
-        dispatch(adFormPhotoUploadSuccess(draftId, res[0].path))
-      }).catch(err => {
+      }).catch(error => {
         alert(`Error while uploading img ${file.name}`)
 
         dispatch(adFormPhotoUploadError(draftId))
@@ -527,7 +533,6 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
     }))*/
 
     const ipfs = await getIpfs()
-
     const res = await ipfs.files.add(new Buffer(JSON.stringify({
       header,
       text,
@@ -535,6 +540,10 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
     })))
 
     hash = res[0].path
+
+    fetch(`https://ipfs.io/ipfs/${hash}`)
+      .then(res => console.log(`fetch ipfs ${hash}`, res))
+      .catch(error => console.error(`fetch ipfs ${hash}`, error))
 
     console.log("Uploaded file:", hash)
   } catch(error) {
@@ -1000,6 +1009,10 @@ export const commentSubmit = (adId) => async (dispatch, getState) => {
     })))
 
     hash = res[0].path
+
+    fetch(`https://ipfs.io/ipfs/${hash}`)
+      .then(res => console.log(`fetch ipfs ${hash}`, res))
+      .catch(error => console.error(`fetch ipfs ${hash}`, error))
 
     console.log("Uploaded file:", hash)
   } catch(error) {

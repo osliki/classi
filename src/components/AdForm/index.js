@@ -148,7 +148,7 @@ class AdForm extends Component {
               <div className="img-item" key={hash}>
                 <Img
                   hash={hash}
-                  src={`https://gateway.ipfs.io/ipfs/${hash}`}
+                  src={`https://ipfs.io/ipfs/${hash}`}
                   loader={<SmallImgLoader />}
                  />
 

@@ -157,7 +157,7 @@ class AdCard extends Component {
                 {bzzLoaded ?
                     <Img
                       hash={photo}
-                      src={`https://gateway.ipfs.io/ipfs/${photo}`}
+                      src={`https://ipfs.io/ipfs/${photo}`}
                       alt={header}
                       loader={<ImgLoader />}
                     />
