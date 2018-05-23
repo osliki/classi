@@ -647,10 +647,10 @@
             "address": "0x75c35c980c0d37ef46df04d31a140b65503c0eed"
         },
         "rinkeby": {
-          "address": "0x2a813639632e2f5b3de737b657238320f370392c"
+            "address": "0x2a813639632e2f5b3de737b657238320f370392c"
         },
         "main": {
-          "address": ""
+            "address": "0x2a813639632e2f5b3de737b657238320f370392c"
         }
     },
     "schemaVersion": "2.0.0",

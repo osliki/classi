@@ -37,7 +37,7 @@ class AppBar extends Component {
     return (
       <Bar position="sticky" color="default">
         <Toolbar classes={{root: 'toolbar'}}>
-          <Avatar component="span" alt=""  src="/favicon.ico" />
+          <Avatar component="span" alt=""  src="./favicon.ico" />
           <Typography noWrap variant="title" style={{flex: 1, paddingLeft: '10px'}}>
              Osliki Classifieds
           </Typography>
