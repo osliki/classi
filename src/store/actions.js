@@ -554,53 +554,51 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
   const from = getAccountAddress(getState(), (error) => dispatch(adFormError(draftId, new Error(error))))
   if (!from) return
 
-  let gasPrice = await web3.eth.getGasPrice()
-  //gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
-
-  let request, purpose = ''
+  const gasPrice = await web3.eth.getGasPrice()
+  let purpose = '', ethMethod, gas
 
   if (id === '') {
     purpose = 'newAd'
 
     if (catId === '') {
-      request = contract.methods.newCatWithAd(catName, hash).send({
+      ethMethod = contract.methods.newCatWithAd(catName, hash)
+      gas = await ethMethod.estimateGas({
         from,
-        gasPrice,//: web3.utils.toWei('1', 'gwei'),
         gas: 500000 // catName can be long
       })
     } else {
-      request = contract.methods.newAd(catId, hash).send({
+      ethMethod = contract.methods.newAd(catId, hash)
+      gas = await ethMethod.estimateGas({
         from,
-        gasPrice,//: web3.utils.toWei('1', 'gwei'),
         gas: 300000
       })
     }
   } else {
     purpose = 'editAd'
 
-    request = contract.methods.editAd(id, hash).send({
+    ethMethod = contract.methods.editAd(id, hash)
+    gas = await ethMethod.estimateGas({
       from,
-      gasPrice,//: web3.utils.fromWei(gasPrice, 'gwei'),
       gas: 100000
     })
   }
 
-  request.on('transactionHash', (txHash) => {
+  const request = ethMethod.send({
+    from,
+    gasPrice,
+    gas
+  }).on('transactionHash', (txHash) => {
     console.log('txHash', txHash)
     dispatch(addTx(txHash, purpose, {draft}))
     dispatch(adFormSuccess(draftId))
     dispatch(closeAdForm())
     dispatch(openTxsMenu())
     request.off('error') // another callback will handle it
-  })/*.on('confirmation', (confirmationNumber, receipt) => {
-    if (confirmationNumber === 5) {
-      console.log('confirmationNumber', confirmationNumber)
-      dispatch(getAccount()) // to update balance after reward (if 1 ad) + icon lock in appbar
-    }
-  })*/.on('error', (error, receipt) => {
+  }).on('error', (error, receipt) => {
     alert(error.message)
     dispatch(adFormError(draftId, error))
   })
+
 }
 
 
@@ -711,27 +709,28 @@ export const upAd = () => async (dispatch, getState) => {
     return
   }
 
-  let gasPrice = await web3.eth.getGasPrice()
-  //gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
-
   dispatch(upAdDialogLoading())
 
-  const request = contract.methods.upAd(id).send({
+  const ethMethod = contract.methods.upAd(id)
+  const [gasPrice, gas] = await Promise.all([
+    web3.eth.getGasPrice(),
+    ethMethod.estimateGas({
+      from,
+      gas: 100000
+    })
+  ])
+
+  const request = ethMethod.send({
     from,
-    gasPrice,//: web3.utils.fromWei(gasPrice, 'gwei'),
-    gas: 100000
+    gasPrice,
+    gas
   }).on('transactionHash', (txHash) => {
     console.log('txHash', txHash)
     dispatch(addTx(txHash, 'upAd', {id}))
     dispatch(openTxsMenu())
     dispatch(closeUpAdDialog())
     request.off('error')
-  })/*.on('confirmation', (confirmationNumber, receipt) => {
-    if (confirmationNumber === 5) {
-      console.log('confirmationNumber', confirmationNumber)
-      dispatch(getAccount())
-    }
-  })*/.on('error', (error, receipt) => { // if receipt then out of gas
+  }).on('error', (error, receipt) => { // if receipt then out of gas
     dispatch(upAdDialogError())
     alert(error.message)
   })
@@ -777,15 +776,21 @@ export const approveToken = (amount = 10**8) => async (dispatch, getState) => {
   const from = getAccountAddress(getState())
   if (!from) return
 
-  let gasPrice = await web3.eth.getGasPrice()
-  //gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
-
   dispatch(approveTokenDialogLoading())
 
-  const request = contractToken.methods.approve(contract._address, web3.utils.toWei(String(amount), 'ether')).send({
+  const ethMethod = contractToken.methods.approve(contract._address, web3.utils.toWei(String(amount), 'ether'))
+  const [gasPrice, gas] = await Promise.all([
+    web3.eth.getGasPrice(),
+    ethMethod.estimateGas({
+      from,
+      gas: 50000
+    })
+  ])
+
+  const request = ethMethod.send({
     from,
-    gasPrice, //: web3.utils.fromWei(gasPrice, 'gwei'),
-    gas: 50000
+    gasPrice,
+    gas
   }).on('transactionHash', (txHash) => {
     console.log('txHash', txHash)
     dispatch(addTx(txHash, 'approveToken', {amount, from}))
@@ -1023,16 +1028,22 @@ export const commentSubmit = (adId) => async (dispatch, getState) => {
   const from = getAccountAddress(getState(), (error) => dispatch(adFormError(draftId, new Error(error))))
   if (!from) return
 
-  let gasPrice = await web3.eth.getGasPrice()
-  //gasPrice = web3.utils.fromWei(gasPrice, 'gwei')
+  const ethMethod = contract.methods.newComment(adId, hash)
+  const [gasPrice, gas] = await Promise.all([
+    web3.eth.getGasPrice(),
+    ethMethod.estimateGas({
+      from,
+      gas: 250000
+    })
+  ])
+
   console.log('newComment submit', {adId, hash})
-  const request = contract.methods.newComment(adId, hash).send({
+
+  const request = ethMethod.send({
     from,
     gasPrice,
-    gas: 250000
-  })
-
-  request.on('transactionHash', (txHash) => {
+    gas
+  }).on('transactionHash', (txHash) => {
     console.log('txHash', txHash)
     dispatch(addTx(txHash, 'newComment', {draft, adId}))
     dispatch(adFormSuccess(draftId))

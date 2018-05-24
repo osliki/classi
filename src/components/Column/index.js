@@ -156,9 +156,9 @@ class Column extends Component {
           >
             {(error
               ?
-                <Typography align="center" style={{flex: 1}}>
+                <Typography align="center" style={{flex: 1, 'padding': '20px'}}>
                   <br/><br/>
-                  Something went wrong. Make sure MetMask is running on the Main network
+                  Something went wrong.<br/> Make sure MetaMask is running on the Main network
                   <br/>
                   <br/>
                   <small>{error.message}</small>
@@ -166,9 +166,9 @@ class Column extends Component {
               :
                 (ads.length
                   ?
-                    ads.map(id => {
+                    ads.map((id, i) => {
                       return (
-                        <Ad key={id} id={id} view="card" />
+                        <Ad key={`${id}_${i}`} id={id} view="card" />
                       )
                     })
                   :
