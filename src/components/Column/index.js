@@ -156,7 +156,7 @@ class Column extends Component {
           >
             {(error
               ?
-                <Typography align="center" style={{flex: 1, 'padding': '20px'}}>
+                <Typography align="center" style={{flex: 1, 'padding': '0px 20px'}}>
                   <br/><br/>
                   Something went wrong.<br/> Make sure MetaMask is running on the Main network
                   <br/>

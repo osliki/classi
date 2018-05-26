@@ -79,3 +79,7 @@
   max-height: 250px;
   overflow-y: auto;
 }
+
+.AdForm textarea {
+  min-height: 100px;
+}

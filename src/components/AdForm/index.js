@@ -133,7 +133,6 @@ class AdForm extends Component {
             margin="normal"
             multiline
             fullWidth
-            rows={5}
             inputRef={el => this.textInput = el}
             required
           />
