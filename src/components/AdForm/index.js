@@ -73,7 +73,7 @@ class AdForm extends Component {
 
   render() {
     const {formRef = () => {}, onChange, onUpload, onPhotoRemove, draft = {}, cats, catsByName, catsLoading, openTouDialog} = this.props
-    const {id = '', catId = '', catName = '', header = '', text = '', agree = false, uploadingImgs = 0, photos = []} = draft
+    const {id = '', catId = '', catName = '', header = '', text = '', agree = false, uploadingImgs = 0, photos = [], loading = false} = draft
     const totalImgs = photos.length + uploadingImgs
 
     return (
@@ -87,6 +87,7 @@ class AdForm extends Component {
             :
               <CatsAutocomplete
                 inputValue={catName}
+                inputDisabled={loading}
                 items={getCatsArray({cats})}
                 defaultSelectedItem={catsByName[catName]}
                 helperText="Choose existed or enter a new category name"
@@ -123,6 +124,7 @@ class AdForm extends Component {
             fullWidth
             inputRef={el => this.headerInput = el}
             required
+            disabled={loading}
           />
 <br/>
           <TextField
@@ -135,6 +137,7 @@ class AdForm extends Component {
             fullWidth
             inputRef={el => this.textInput = el}
             required
+            disabled={loading}
           />
 <br/>
           <FormControl margin='normal'>
@@ -151,20 +154,23 @@ class AdForm extends Component {
                   loader={<SmallImgLoader />}
                  />
 
-                <div className="img-remove">
-                  <IconButton size="small" onClick={() => {
-                    onPhotoRemove(index)
-                  }}>
-                    <ClearIcon />
-                  </IconButton>
-                </div>
-
+                {loading ?
+                  null
+                :
+                  <div className="img-remove">
+                    <IconButton size="small" onClick={() => {
+                      onPhotoRemove(index)
+                    }}>
+                      <ClearIcon />
+                    </IconButton>
+                  </div>
+                }
               </div>
             ))}
 
             <div className="img-item upload">
               <label>
-                <ButtonBase focusRipple component="span" title="Upload">
+                <ButtonBase disabled={loading} focusRipple component="span" title="Upload">
                   <PhotoCamera />
                 </ButtonBase>
 
@@ -174,6 +180,7 @@ class AdForm extends Component {
                   onChange={onUpload}
                   multiple
                   style={{display: 'none'}}
+                  disabled={loading}
                 />
               </label>
 
@@ -203,6 +210,7 @@ class AdForm extends Component {
                 onChange={this.onChange}
                 color="primary"
                 inputRef={el => this.agreeInput = el}
+                disabled={loading}
               />
             }
             label={
