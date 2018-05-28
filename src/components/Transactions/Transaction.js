@@ -37,7 +37,7 @@ class Transactions extends Component {
               status:&nbsp;
 
               <span title={status === 'succeed' ? `more than 5 confirmations` : ''}>
-                {status}&nbsp;
+                <b>{status}</b>&nbsp;
               </span>
 
               <a title="check on Etherscan" href={`https://etherscan.io/tx/${txHash}`}
