@@ -46,7 +46,7 @@ class AdDetails extends Component {
     const {error: ethError} = ad.eth
     const {error: bzzError, loaded: bzzLoaded} = ad.bzz
 
-    const {user = '', createdAt, updatedAt, cmntsCnt = 0} = ad.eth.data
+    const {user = '', createdAt, updatedAt, cmntsCnt = 0, text:hash = ''} = ad.eth.data
     const {header, text = '', photos = []} = ad.bzz.data
 
     const isAuthor = (account.address && account.address === user)
@@ -111,7 +111,7 @@ class AdDetails extends Component {
             <br/>
             <div className="img-list">
               {photos.map((hash, index) => (
-                <div className="img-item" key={hash} title={`ipfs hash: ${hash}`}>
+                <div className="img-item" key={index} title={`Photo /ipfs/${hash}`}>
                   <Img
                     hash={hash}
                     src={`https://ipfs.io/ipfs/${hash}`}
@@ -136,7 +136,7 @@ class AdDetails extends Component {
 
             <br/>
 
-            <Typography component="pre">
+            <Typography component="pre" title={`Text /ipfs/${hash}`}>
               {text}
             </Typography>
 

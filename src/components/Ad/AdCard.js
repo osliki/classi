@@ -70,7 +70,7 @@ class AdCard extends Component {
       if (bzzLoaded && !ad.bzz.error) this.props.onShowAdDetails()
     }
 
-    const {user = '', createdAt, cmntsCnt = 0} = ad.eth.data
+    const {user = '', createdAt, cmntsCnt = 0, text:hash = ''} = ad.eth.data
     const {header, text = '', photos = []} = ad.bzz.data
 
     const isAuthor = (account.address && account.address === user)
@@ -153,7 +153,7 @@ class AdCard extends Component {
 
           {(!bzzLoaded || (bzzLoaded && photo))
             ?
-              <div title={photo ? `ipfs hash: ${photo}` : ''} className="img-cover" onClick={onShowAdDetails}>
+              <div title={photo ? `Photo /ipfs/${photo}` : ''} className="img-cover" onClick={onShowAdDetails}>
                 {bzzLoaded ?
                     <Img
                       hash={photo}
@@ -170,13 +170,13 @@ class AdCard extends Component {
           }
 
           {bzzLoaded ?
-            <CardContent onClick={onShowAdDetails} classes={{root: 'card-content'}}>
+            <CardContent title={`Text /ipfs/${hash}`} onClick={onShowAdDetails} classes={{root: 'card-content'}}>
               <Typography noWrap variant="title" component="h2">{header}</Typography>
               <br/>
               <Typography paragraph>{cut(text, 140)}</Typography>
             </CardContent>
           :
-            <CardContent classes={{root: 'card-content-loader'}}>
+            <CardContent title={`Text /ipfs/${hash}`} classes={{root: 'card-content-loader'}}>
               <HeaderLoader animate={!ad.bzz.error} />
               <br/>
               <br/>

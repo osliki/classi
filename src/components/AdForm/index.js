@@ -147,7 +147,7 @@ class AdForm extends Component {
           <div className="img-list">
 
             {photos.map((hash, index) => (
-              <div className="img-item" key={hash}>
+              <div className="img-item" key={index} title={`Photo /ipfs/${hash}`}>
                 <Img
                   hash={hash}
                   src={`https://ipfs.io/ipfs/${hash}`}
@@ -198,7 +198,7 @@ class AdForm extends Component {
           </div>
 
           <FormHelperText className="photos-helper">
-            Your photos will be spreaded among other users directly from your computer. To make sure they are cached on other computers, visit this website as often as possible. It is also not recommended to upload too large pictures (<b>max 250kB for now</b>).
+            Your photos will be distributed among other users directly from your computer. To make sure they are properly cached on other computers, visit this website as often as possible. It is also not recommended to upload too large pictures (<b>max 250kB for now</b>).
           </FormHelperText>
 <br/>
           <FormControlLabel

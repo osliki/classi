@@ -6,7 +6,7 @@ import './index.css'
 import IconButton from 'material-ui/IconButton'
 import TrackChangesIcon from '@material-ui/icons/TrackChanges'
 import Menu from 'material-ui/Menu'
-import {ListItem, ListItemText} from 'material-ui/List';
+import List, {ListItem, ListItemText, ListSubheader} from 'material-ui/List';
 
 import Transaction from './Transaction'
 
@@ -93,6 +93,8 @@ class Transactions extends Component {
             },
           }}
         >
+          <ListSubheader disableSticky><b>Transactions:</b></ListSubheader>
+
           {txArr.length ? txArr.map(txHash => (
             <Transaction key={txHash} txHash={txHash} />
           )) : <ListItem><ListItemText>No transactions</ListItemText></ListItem>}

@@ -168,7 +168,7 @@ class Column extends Component {
                   ?
                     ads.map((id, i) => {
                       return (
-                        <Ad key={`${id}_${i}`} id={id} view="card" />
+                        <Ad key={i} id={id} view="card" />
                       )
                     })
                   :

@@ -79,7 +79,7 @@ class EmptyColumn extends Component {
   }
 
   render() {
-    const {newAd, cats, catsLoading} = this.props
+    const {newAd, cats, catsLoading, favsLength} = this.props
     const {opened, catValue, type, param} = this.state
 
     console.log('RENDER EmptyColumn')
@@ -88,31 +88,35 @@ class EmptyColumn extends Component {
 
         <List component="nav">
 
-          <ListItem button onClick={() => this.newColumn('all')}>
+          <ListItem title="Recently posted ads" button onClick={() => this.newColumn('all')}>
             <ListItemText>
               New 'all' column
             </ListItemText>
           </ListItem>
 
-          <ListItem button onClick={() => this.newColumn('cat')}>
+          <ListItem title="Ads from a category" button onClick={() => this.newColumn('cat')}>
             <ListItemText>
               New 'category' column
             </ListItemText>
           </ListItem>
 
-          <ListItem button onClick={() => this.newColumn('fav')}>
-            <ListItemText>
-              New 'fav' column
-            </ListItemText>
-          </ListItem>
+          {favsLength ?
+            <ListItem title="Favorite ads" button onClick={() => this.newColumn('fav')}>
+              <ListItemText>
+                New 'fav' column
+              </ListItemText>
+            </ListItem>
+          :
+            null
+          }
 
-          <ListItem button onClick={() => this.newColumn('user')}>
+          {/*<ListItem button onClick={() => this.newColumn('user')}>
             <ListItemText>
               New 'user' column
             </ListItemText>
-          </ListItem>
+          </ListItem>*/}
 
-          <ListItem button onClick={() => this.newColumn('my')}>
+          <ListItem title="Your ads" button onClick={() => this.newColumn('my')}>
             <ListItemText>
               New 'my' column
             </ListItemText>
@@ -199,7 +203,8 @@ export default connect((state, ownProps) => {
       //catsArray: getCatsArray(state),
       cats: state.cats,
       catsLoading: state.cats.loading,
-      address: state.account.address
+      address: state.account.address,
+      favsLength: state.favs.length
     }
   }, (dispatch, ownProps) => {
     return {
