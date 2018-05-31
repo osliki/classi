@@ -111,7 +111,7 @@ class AdDetails extends Component {
             <br/>
             <div className="img-list">
               {photos.map((hash, index) => (
-                <div className="img-item" key={index} title={`Photo /ipfs/${hash}`}>
+                <div className="img-item" key={`${hash}-${index}`} title={`Photo /ipfs/${hash}`}>
                   <Img
                     hash={hash}
                     src={`https://ipfs.io/ipfs/${hash}`}

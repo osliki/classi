@@ -67,7 +67,9 @@ class Transactions extends Component {
     const txArr = Object.keys(txs).reverse()
 
     console.log('RENDER Transactions')
-//onClick={this.handleMenu}
+
+    if (!txArr.length) return null
+
     return (
       <div className="Transactions">
         <IconButton title="Transactions" onClick={this.handleMenu} buttonRef={el => this.buttonRef = el} >
@@ -127,6 +129,7 @@ export default connect((state, ownProps) => {
         dispatch(getAccount())
 
         ////txs[txHash].purpose === 'approveToken' && txs[txHash].payload.from === account.address
+
         if (txs[txHash].purpose === 'approveToken') {
           dispatch(closeApproveTokenDialog())
         }
