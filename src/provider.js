@@ -76,7 +76,7 @@ if (window.web3) {
         '/dns4/nyc-2.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmSoLV4Bbm51jM9C4gDYZQ9Cy3U6aXMJDAbzgu2fzaDs64',
         '/dns4/wss0.bootstrap.libp2p.io/tcp/443/wss/ipfs/QmZMxNdpMkewiVZLMRxaNxUeZpDUb34pWjZ1kZvsd16Zic',
         '/dns4/wss1.bootstrap.libp2p.io/tcp/443/wss/ipfs/Qmbut9Ywz9YEDrz8ySBSgWyJk41Uvm2QJPhwDJzJyGFsD6',
-        '/dns4/osliki.net/tcp/4004/ws/ipfs/QmfJB77qXfiEdJkaSxpZgiMh9kAPiDBj3ga7TxF72QdWtf',
+        '/dns4/bootstrap.osliki.net/tcp/443/wss/ipfs/QmfJB77qXfiEdJkaSxpZgiMh9kAPiDBj3ga7TxF72QdWtf',
         '/p2p-circuit/ipfs/QmfJB77qXfiEdJkaSxpZgiMh9kAPiDBj3ga7TxF72QdWtf',
       ]
     }

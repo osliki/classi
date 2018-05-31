@@ -482,7 +482,7 @@ export const adFormPhotoUpload = (draftId, files) => async (dispatch, getState) 
 
         dispatch(adFormPhotoUploadSuccess(draftId, hash))
 
-        fetch(`http://osliki.net:8008/ipfs/${hash}`)
+        fetch(`https://gateway.osliki.net/ipfs/${hash}`)
           .then(res => console.log(`fetch ipfs ${hash}`, res))
           .catch(error => console.error(`fetch ipfs ${hash}`, error))
 
@@ -541,7 +541,7 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
 
     hash = res[0].path
 
-    fetch(`http://osliki.net:8008/ipfs/${hash}`)
+    fetch(`https://gateway.osliki.net/ipfs/${hash}`)
       .then(res => console.log(`fetch ipfs ${hash}`, res))
       .catch(error => console.error(`fetch ipfs ${hash}`, error))
 
@@ -1015,7 +1015,7 @@ export const commentSubmit = (adId) => async (dispatch, getState) => {
 
     hash = res[0].path
 
-    fetch(`http://osliki.net:8008/ipfs/${hash}`)
+    fetch(`https://gateway.osliki.net/ipfs/${hash}`)
       .then(res => console.log(`fetch ipfs ${hash}`, res))
       .catch(error => console.error(`fetch ipfs ${hash}`, error))
 
