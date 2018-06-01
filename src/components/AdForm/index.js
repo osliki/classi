@@ -197,9 +197,9 @@ class AdForm extends Component {
 
           </div>
 
-          <FormHelperText className="photos-helper">
+          {/*<FormHelperText className="photos-helper">
             Your photos will be distributed among other users directly from your computer. To make sure they are properly cached on other computers, visit this website as often as possible. It is also not recommended to upload too large pictures (<b>max 250kB for now</b>).
-          </FormHelperText>
+          </FormHelperText>*/}
 <br/>
           <FormControlLabel
             control={
