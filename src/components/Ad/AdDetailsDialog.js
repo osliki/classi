@@ -3,10 +3,10 @@ import {connect} from 'react-redux'
 
 import './index.css'
 
-import Dialog from 'material-ui/Dialog'
-import AppBar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
-import IconButton from 'material-ui/IconButton'
+import Dialog from '@material-ui/core/Dialog'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 
 import Ad from './index'

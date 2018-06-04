@@ -1,10 +1,11 @@
 import React from 'react'
-import Typography from 'material-ui/Typography'
 
 import './index.css'
 import metamaskImg from'./metamask.png'
 
-import Card, {CardContent} from 'material-ui/Card'
+import Typography from '@material-ui/core/Typography'
+import Card from '@material-ui/core/Card'
+import CardContent from '@material-ui/core/CardContent'
 
 const Requirements = (props) => {
   //const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor)

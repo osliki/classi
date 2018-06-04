@@ -86,3 +86,11 @@ body, html, #root {
   line-height: 1.5em !important;
   padding: 5px !important;
 }
+
+.badge {
+  height: 12px !important;
+  width: 12px !important;
+  left:-6px !important;
+  top: -6px !important;
+  font-size: 0.5rem !important;
+}

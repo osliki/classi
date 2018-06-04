@@ -3,10 +3,13 @@ import {connect} from 'react-redux'
 import PropTypes from 'prop-types'
 import './index.css'
 
-import IconButton from 'material-ui/IconButton'
+import IconButton from '@material-ui/core/IconButton'
 import TrackChangesIcon from '@material-ui/icons/TrackChanges'
-import Menu from 'material-ui/Menu'
-import List, {ListItem, ListItemText, ListSubheader} from 'material-ui/List';
+import Menu from '@material-ui/core/Menu'
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListSubheader from '@material-ui/core/ListSubheader';
 
 import Transaction from './Transaction'
 

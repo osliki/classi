@@ -5,12 +5,12 @@ import {getUserShort} from '../../utils'
 
 import './index.css'
 
-import Bar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
-import Typography from 'material-ui/Typography'
+import Bar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
 import LockIcon from '@material-ui/icons/Lock'
 import LockOpenIcon from '@material-ui/icons/LockOpen'
-import Avatar from 'material-ui/Avatar'
+import Avatar from '@material-ui/core/Avatar'
 
 import Transactions from '../Transactions'
 

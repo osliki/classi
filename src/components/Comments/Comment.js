@@ -4,7 +4,7 @@ import {connect} from 'react-redux'
 
 import './index.css'
 
-import Typography from 'material-ui/Typography'
+import Typography from '@material-ui/core/Typography'
 
 import moment from 'moment'
 import {CommentLoader} from '../Loaders'

@@ -180,7 +180,8 @@ const columns = (state = {
       return  dotProp(state)
         .merge(`byId.${action.columnId}`, {
           ads: [],
-          total: 0
+          total: 0,
+          newAdsCount: 0
         })
         .value()
 
@@ -232,7 +233,7 @@ const columns = (state = {
       const total = dotProp(state).get(`byId.${action.columnId}.total`, 0).value()
       const newAdsCount = dotProp(state).get(`byId.${action.columnId}.newAdsCount`).value()
 
-      if (newAdsCount === (total - action.total)) return state
+      if (newAdsCount === (action.total - total)) return state
       console.log('updateColumnNewAdsCount', total, action.total)
 
       return  dotProp(state)

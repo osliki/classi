@@ -4,15 +4,17 @@ import {connect} from 'react-redux'
 
 import './index.css'
 
-import {
-  FormLabel, FormControl, FormHelperText, FormControlLabel
-} from 'material-ui/Form'
-import Checkbox from 'material-ui/Checkbox'
-import TextField from 'material-ui/TextField'
-import ButtonBase from 'material-ui/ButtonBase'
+import FormLabel from '@material-ui/core/FormLabel'
+import FormControl from '@material-ui/core/FormControl'
+import FormHelperText from '@material-ui/core/FormHelperText'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+
+import Checkbox from '@material-ui/core/Checkbox'
+import TextField from '@material-ui/core/TextField'
+import ButtonBase from '@material-ui/core/ButtonBase'
 import PhotoCamera from '@material-ui/icons/PhotoCamera'
-import {LinearProgress} from 'material-ui/Progress'
-import IconButton from 'material-ui/IconButton'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import IconButton from '@material-ui/core/IconButton'
 import ClearIcon from '@material-ui/icons/Clear'
 
 import Img from '../Img'

@@ -3,14 +3,16 @@ import {connect} from 'react-redux'
 
 import './index.css';
 
-import Button from 'material-ui/Button'
-import TextField from 'material-ui/TextField'
-import Dialog, {
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-} from 'material-ui/Dialog'
-import List, { ListItem, ListItemIcon, ListItemText } from 'material-ui/List'
+import Button from '@material-ui/core/Button'
+import TextField from '@material-ui/core/TextField'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
 import AddIcon from '@material-ui/icons/Add'
 
 import CatsAutocomplete from '../AdForm/CatsAutocomplete'

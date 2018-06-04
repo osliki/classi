@@ -2,8 +2,8 @@ import React, {Component} from 'react'
 import PropTypes from 'prop-types'
 import {connect} from 'react-redux'
 
-import {CircularProgress} from 'material-ui/Progress'
-import Typography from 'material-ui/Typography'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import Typography from '@material-ui/core/Typography'
 
 import Comment from './Comment'
 import CommentForm from './CommentForm'

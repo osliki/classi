@@ -4,11 +4,13 @@ import PropTypes from 'prop-types'
 
 import './index.css'
 
-import Typography from 'material-ui/Typography'
-import IconButton from 'material-ui/IconButton'
+import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
 import ClearIcon from '@material-ui/icons/Clear'
 import OpenInNewIcon from '@material-ui/icons/OpenInNew'
-import { ListItem, ListItemSecondaryAction, ListItemText } from 'material-ui/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
 
 import {getTxName} from '../../utils'
 import {removeTx} from '../../store/actions'

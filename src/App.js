@@ -10,8 +10,8 @@ import store from './store'
 import 'react-perfect-scrollbar/dist/css/styles.css'
 
 import 'typeface-roboto'
-import CssBaseline from 'material-ui/CssBaseline'
-import {MuiThemeProvider, createMuiTheme} from 'material-ui/styles'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import {MuiThemeProvider, createMuiTheme} from '@material-ui/core/styles'
 
 const theme = createMuiTheme({
   typography: {

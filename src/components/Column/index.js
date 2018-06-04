@@ -4,15 +4,16 @@ import {connect} from 'react-redux'
 import {getUserShort} from '../../utils'
 import './index.css'
 
-import {CircularProgress} from 'material-ui/Progress'
-import AppBar from 'material-ui/AppBar'
-import Toolbar from 'material-ui/Toolbar'
-import Typography from 'material-ui/Typography'
-import IconButton from 'material-ui/IconButton'
+import CircularProgress from '@material-ui/core/CircularProgress'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import Typography from '@material-ui/core/Typography'
+import IconButton from '@material-ui/core/IconButton'
 import ClearIcon from '@material-ui/icons/Clear'
 import RefreshIcon from '@material-ui/icons/Refresh'
-import FiberNewIcon from '@material-ui/icons/FiberNew'
-import Tooltip from 'material-ui/Tooltip'
+//import FiberNewIcon from '@material-ui/icons/FiberNew'
+import Tooltip from '@material-ui/core/Tooltip'
+import Badge from '@material-ui/core/Badge'
 
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import Ad from '../Ad'
@@ -112,7 +113,7 @@ class Column extends Component {
               {type}({total}){header ? `: ${header}` : ''}
             </Typography>
 
-              {newAdsCount > 0
+              {/*newAdsCount > 0
                 ?
                   <Tooltip title={`Load new ads (${newAdsCount})`}>
                     <div>
@@ -122,19 +123,23 @@ class Column extends Component {
                     </div>
                   </Tooltip>
                 :
-                  null
+                  null*/
               }
 
               {type === 'fav'
                 ?
                   null
                 :
-                  <Tooltip title="Refresh column">
-                    <div>
+                  <Tooltip title={newAdsCount > 0 ? 'Load new ads' : 'Refresh column'}>
                       <IconButton disabled={Boolean(loading)} onClick={loading ? null : refreshColumn}>
-                        <RefreshIcon />
+                        {newAdsCount > 0 ?
+                          <Badge classes={{badge: 'badge'}} badgeContent={newAdsCount} color="error">
+                            <RefreshIcon />
+                          </Badge>
+                        :
+                          <RefreshIcon />
+                        }                        
                       </IconButton>
-                    </div>
                   </Tooltip>
               }
 

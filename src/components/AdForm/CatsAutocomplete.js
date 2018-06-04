@@ -3,9 +3,9 @@ import React from 'react'
 import Downshift from 'downshift'
 import matchSorter from 'match-sorter'
 
-import TextField from 'material-ui/TextField'
-import Paper from 'material-ui/Paper'
-import { MenuItem } from 'material-ui/Menu'
+import TextField from '@material-ui/core/TextField'
+import Paper from '@material-ui/core/Paper'
+import MenuItem from '@material-ui/core/MenuItem'
 
 const CatsAutocomplete = ({
   items,
