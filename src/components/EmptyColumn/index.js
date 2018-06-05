@@ -81,7 +81,7 @@ class EmptyColumn extends Component {
   }
 
   render() {
-    const {newAd, cats, catsLoading, favsLength} = this.props
+    const {newAd, cats, catsLoading, favsLength, address} = this.props
     const {opened, catValue, type, param} = this.state
 
     console.log('RENDER EmptyColumn')
@@ -118,11 +118,15 @@ class EmptyColumn extends Component {
             </ListItemText>
           </ListItem>*/}
 
-          <ListItem title="Your ads" button onClick={() => this.newColumn('my')}>
-            <ListItemText>
-              New 'my' column
-            </ListItemText>
-          </ListItem>
+          {address ?
+            <ListItem title="Your ads" button onClick={() => this.newColumn('my')}>
+              <ListItemText>
+                New 'my' column
+              </ListItemText>
+            </ListItem>
+          :
+            null
+          }
 
           <ListItem button onClick={newAd}>
             <ListItemIcon>
