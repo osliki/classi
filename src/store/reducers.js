@@ -720,6 +720,28 @@ const touDialog = (state = {
 }
 
 
+const metaMaskDialog = (state = {
+  opened: false
+}, action) => {
+  switch (action.type) {
+    case 'openMetaMaskDialog':
+      return {
+        ...state,
+        opened: true
+      }
+
+    case 'closeMetaMaskDialog':
+      return {
+        ...state,
+        opened: false
+      }
+
+    default:
+      return state
+  }
+}
+
+
 const rootReducer = combineReducers({
   cats,
   ads,
@@ -736,6 +758,7 @@ const rootReducer = combineReducers({
   txsMenu,
   comments,
   touDialog,
+  metaMaskDialog,
 })
 
 export default rootReducer

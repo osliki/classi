@@ -12,6 +12,7 @@ import AdFormDialog from '../AdForm/AdFormDialog'
 import ApproveTokenDialog from '../ApproveTokenDialog'
 import UpAdDialog from '../UpAdDialog'
 import TouDialog from '../TouDialog'
+import MetaMaskDialog from '../MetaMaskDialog'
 
 import {getCats, showAd, closeAd} from '../../store/actions'
 
@@ -56,6 +57,7 @@ class Board extends Component {
           <ApproveTokenDialog />
           <UpAdDialog />
           <TouDialog />
+          <MetaMaskDialog />
         </main>
       </PerfectScrollbar>
     )

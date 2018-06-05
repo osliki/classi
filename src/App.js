@@ -1,10 +1,10 @@
 import React, {Component} from 'react'
 import {Provider} from 'react-redux'
-import {web3} from './provider'
+// import {web3} from './provider'
 
 import AppBar from './components/AppBar'
 import Board from './components/Board'
-import Requirements from './components/Requirements'
+// import Requirements from './components/Requirements'
 import store from './store'
 
 import 'react-perfect-scrollbar/dist/css/styles.css'
@@ -30,11 +30,7 @@ class App extends Component {
 
             <AppBar />
 
-            {web3 ?
-              <Board />
-            :
-              <Requirements />
-            }
+            <Board />
           </div>
         </MuiThemeProvider>
       </Provider>

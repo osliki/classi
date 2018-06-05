@@ -1,7 +1,18 @@
-import {contract, contractToken, web3, getIpfs} from '../provider'
+import {contract, contractToken, web3, getIpfs, isMetaMaskAvail} from '../provider'
 import dotProp from 'dot-prop-immutable-chain'
 import {getBlacklistById, getCatsCount} from './selectors'
 import union from 'lodash/union'
+
+
+const kickIpfs = (hash) => {
+  fetch(`https://gateway.osliki.net/ipfs/${hash}`)
+    .then(res => console.log(`fetch ipfs ${hash}`, res))
+    .catch(error => console.error(`fetch ipfs ${hash}`, error))
+
+  fetch(`https://ipfs.infura.io/ipfs/${hash}`)
+    .then(res => console.log(`fetch ipfs ${hash}`, res))
+    .catch(error => console.error(`fetch ipfs ${hash}`, error))
+}
 
 
 /*** Cats ***/
@@ -482,9 +493,7 @@ export const adFormPhotoUpload = (draftId, files) => async (dispatch, getState) 
 
         dispatch(adFormPhotoUploadSuccess(draftId, hash))
 
-        fetch(`https://gateway.osliki.net/ipfs/${hash}`)
-          .then(res => console.log(`fetch ipfs ${hash}`, res))
-          .catch(error => console.error(`fetch ipfs ${hash}`, error))
+        kickIpfs(hash)
 
         console.log('ipfs.files.add', data, res)
       }).catch(error => {
@@ -492,7 +501,6 @@ export const adFormPhotoUpload = (draftId, files) => async (dispatch, getState) 
 
         dispatch(adFormPhotoUploadError(draftId))
       })
-
 
     }
 
@@ -517,6 +525,11 @@ export const adFormError = (draftId, error) => ({
 })
 
 export const adFormSubmit = (draftId) => async (dispatch, getState) => {
+  if (!isMetaMaskAvail) {
+    dispatch(openMetaMaskDialog())
+    return
+  }
+
   const draft = getState().drafts[draftId]
   const {header, text, photos, catName, catId, id = '', loading} = draft // id can be undefined
 
@@ -541,9 +554,7 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
 
     hash = res[0].path
 
-    fetch(`https://gateway.osliki.net/ipfs/${hash}`)
-      .then(res => console.log(`fetch ipfs ${hash}`, res))
-      .catch(error => console.error(`fetch ipfs ${hash}`, error))
+    kickIpfs(hash)
 
     console.log("Uploaded file:", res)
   } catch(error) {
@@ -998,6 +1009,11 @@ export const initComment = (id) => ({
 })
 
 export const commentSubmit = (adId) => async (dispatch, getState) => {
+  if (!isMetaMaskAvail) {
+    dispatch(openMetaMaskDialog())
+    return
+  }
+
   const draftId = 'comment'
   const draft = getState().drafts[draftId]
   const {text, loading} = draft // id can be undefined
@@ -1015,9 +1031,7 @@ export const commentSubmit = (adId) => async (dispatch, getState) => {
 
     hash = res[0].path
 
-    fetch(`https://gateway.osliki.net/ipfs/${hash}`)
-      .then(res => console.log(`fetch ipfs ${hash}`, res))
-      .catch(error => console.error(`fetch ipfs ${hash}`, error))
+    kickIpfs(hash)
 
     console.log("Uploaded file:", res)
   } catch(error) {
@@ -1061,11 +1075,21 @@ export const commentSubmit = (adId) => async (dispatch, getState) => {
 
 /*** TouDialog ***/
 
-export const openTouDialog = (id) => ({
-  type: 'openTouDialog',
-  id
+export const openTouDialog = () => ({
+  type: 'openTouDialog'
 })
 
 export const closeTouDialog = () => ({
   type: 'closeTouDialog'
+})
+
+
+
+/*** MetamaskDialog ***/
+export const openMetaMaskDialog = () => ({
+  type: 'openMetaMaskDialog'
+})
+
+export const closeMetaMaskDialog = () => ({
+  type: 'closeMetaMaskDialog'
 })
