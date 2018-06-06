@@ -75,12 +75,12 @@ class AdCard extends Component {
     }
 
     const {user = '', createdAt, cmntsCnt = 0, text:hash = ''} = ad.eth.data
-    const {header, text = '', photos = []} = ad.bzz.data
+    const {header, text = '', photos = [], preview = ''} = ad.bzz.data
 
     const isAuthor = (account.address && account.address === user)
     const userShort = isAuthor ? 'me' : getUserShort(user)
 
-    const photo = photos[0]
+    const photo = preview || photos[0]
 
     const dateFrom = createdAt ? moment(createdAt * 1000).fromNow() : '...'
     const dateUsual = createdAt ? moment(createdAt * 1000).calendar() : '...'

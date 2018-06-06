@@ -2,17 +2,8 @@ import {contract, contractToken, web3, getIpfs, isMetaMaskAvail} from '../provid
 import dotProp from 'dot-prop-immutable-chain'
 import {getBlacklistById, getCatsCount} from './selectors'
 import union from 'lodash/union'
-
-
-const kickIpfs = (hash) => {
-  fetch(`https://gateway.osliki.net/ipfs/${hash}`)
-    .then(res => console.log(`fetch ipfs ${hash}`, res))
-    .catch(error => console.error(`fetch ipfs ${hash}`, error))
-
-  fetch(`https://ipfs.infura.io/ipfs/${hash}`)
-    .then(res => console.log(`fetch ipfs ${hash}`, res))
-    .catch(error => console.error(`fetch ipfs ${hash}`, error))
-}
+import {kickIpfs, getPreview} from '../utils'
+import fileType from '../utils/fileType'
 
 
 /*** Cats ***/
@@ -546,10 +537,18 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
     }))*/
 
     const ipfs = await getIpfs()
+
+    let preview = ''
+    if (photos[0]) {
+      const file = await ipfs.files.cat(photos[0])
+      preview = await getPreview(new Blob([file], {type: fileType(file).mime}), ipfs)
+    }
+
     const res = await ipfs.files.add(new Buffer(JSON.stringify({
       header,
       text,
-      photos
+      photos,
+      preview
     })))
 
     hash = res[0].path
@@ -559,6 +558,7 @@ export const adFormSubmit = (draftId) => async (dispatch, getState) => {
     console.log("Uploaded file:", res)
   } catch(error) {
     dispatch(adFormError(draftId, error))
+    console.log('adFormSubmit error', error)
     return
   }
 
